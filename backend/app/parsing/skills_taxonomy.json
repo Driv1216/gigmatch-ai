@@ -1,0 +1,442 @@
+[
+  {
+    "canonical": "HTML",
+    "aliases": ["html", "html5"],
+    "category": "frontend"
+  },
+  {
+    "canonical": "CSS",
+    "aliases": ["css", "css3"],
+    "category": "frontend"
+  },
+  {
+    "canonical": "JavaScript",
+    "aliases": ["javascript", "js", "ecmascript"],
+    "category": "frontend"
+  },
+  {
+    "canonical": "TypeScript",
+    "aliases": ["typescript", "ts"],
+    "category": "frontend"
+  },
+  {
+    "canonical": "React",
+    "aliases": ["react", "reactjs", "react.js"],
+    "category": "frontend"
+  },
+  {
+    "canonical": "Next.js",
+    "aliases": ["next", "nextjs", "next.js", "next js"],
+    "category": "frontend"
+  },
+  {
+    "canonical": "Vue.js",
+    "aliases": ["vue", "vuejs", "vue.js", "vue js"],
+    "category": "frontend"
+  },
+  {
+    "canonical": "Angular",
+    "aliases": ["angular", "angularjs", "angular.js"],
+    "category": "frontend"
+  },
+  {
+    "canonical": "Svelte",
+    "aliases": ["svelte", "sveltekit", "svelte kit"],
+    "category": "frontend"
+  },
+  {
+    "canonical": "Tailwind CSS",
+    "aliases": ["tailwind", "tailwindcss", "tailwind css"],
+    "category": "frontend"
+  },
+  {
+    "canonical": "Bootstrap",
+    "aliases": ["bootstrap"],
+    "category": "frontend"
+  },
+  {
+    "canonical": "Redux",
+    "aliases": ["redux", "redux toolkit"],
+    "category": "frontend"
+  },
+  {
+    "canonical": "Node.js",
+    "aliases": ["node", "nodejs", "node.js", "node js"],
+    "category": "backend"
+  },
+  {
+    "canonical": "Express.js",
+    "aliases": ["express", "expressjs", "express.js", "express js"],
+    "category": "backend"
+  },
+  {
+    "canonical": "FastAPI",
+    "aliases": ["fastapi", "fast api"],
+    "category": "backend"
+  },
+  {
+    "canonical": "Django",
+    "aliases": ["django"],
+    "category": "backend"
+  },
+  {
+    "canonical": "Flask",
+    "aliases": ["flask"],
+    "category": "backend"
+  },
+  {
+    "canonical": "Spring Boot",
+    "aliases": ["spring boot", "springboot"],
+    "category": "backend"
+  },
+  {
+    "canonical": "Ruby on Rails",
+    "aliases": ["ruby on rails", "rails"],
+    "category": "backend"
+  },
+  {
+    "canonical": ".NET",
+    "aliases": [".net", "dotnet", "asp.net", "asp net"],
+    "category": "backend"
+  },
+  {
+    "canonical": "Python",
+    "aliases": ["python", "py"],
+    "category": "backend"
+  },
+  {
+    "canonical": "Java",
+    "aliases": ["java"],
+    "category": "backend"
+  },
+  {
+    "canonical": "Go",
+    "aliases": ["go", "golang"],
+    "category": "backend"
+  },
+  {
+    "canonical": "PHP",
+    "aliases": ["php"],
+    "category": "backend"
+  },
+  {
+    "canonical": "C++",
+    "aliases": ["c++", "cpp"],
+    "category": "backend"
+  },
+  {
+    "canonical": "C#",
+    "aliases": ["c#", "c sharp", "csharp"],
+    "category": "backend"
+  },
+  {
+    "canonical": "REST API",
+    "aliases": ["rest", "rest api", "restful", "restful api"],
+    "category": "backend"
+  },
+  {
+    "canonical": "GraphQL",
+    "aliases": ["graphql", "graph ql"],
+    "category": "backend"
+  },
+  {
+    "canonical": "PostgreSQL",
+    "aliases": ["postgres", "postgresql", "psql"],
+    "category": "database"
+  },
+  {
+    "canonical": "MySQL",
+    "aliases": ["mysql", "my sql"],
+    "category": "database"
+  },
+  {
+    "canonical": "MongoDB",
+    "aliases": ["mongodb", "mongo"],
+    "category": "database"
+  },
+  {
+    "canonical": "Redis",
+    "aliases": ["redis"],
+    "category": "database"
+  },
+  {
+    "canonical": "SQLite",
+    "aliases": ["sqlite", "sqlite3"],
+    "category": "database"
+  },
+  {
+    "canonical": "Supabase",
+    "aliases": ["supabase"],
+    "category": "database"
+  },
+  {
+    "canonical": "Firebase",
+    "aliases": ["firebase", "firestore"],
+    "category": "database"
+  },
+  {
+    "canonical": "SQL",
+    "aliases": ["sql"],
+    "category": "database"
+  },
+  {
+    "canonical": "Machine Learning",
+    "aliases": ["machine learning", "ml"],
+    "category": "ai_ml"
+  },
+  {
+    "canonical": "Deep Learning",
+    "aliases": ["deep learning", "dl"],
+    "category": "ai_ml"
+  },
+  {
+    "canonical": "Natural Language Processing",
+    "aliases": ["natural language processing", "nlp"],
+    "category": "ai_ml"
+  },
+  {
+    "canonical": "Computer Vision",
+    "aliases": ["computer vision", "cv"],
+    "category": "ai_ml"
+  },
+  {
+    "canonical": "TensorFlow",
+    "aliases": ["tensorflow", "tf"],
+    "category": "ai_ml"
+  },
+  {
+    "canonical": "PyTorch",
+    "aliases": ["pytorch", "torch"],
+    "category": "ai_ml"
+  },
+  {
+    "canonical": "scikit-learn",
+    "aliases": ["scikit-learn", "scikit learn", "sklearn"],
+    "category": "ai_ml"
+  },
+  {
+    "canonical": "LangChain",
+    "aliases": ["langchain", "lang chain"],
+    "category": "ai_ml"
+  },
+  {
+    "canonical": "OpenAI API",
+    "aliases": ["openai", "openai api"],
+    "category": "ai_ml"
+  },
+  {
+    "canonical": "Pandas",
+    "aliases": ["pandas"],
+    "category": "data_science"
+  },
+  {
+    "canonical": "NumPy",
+    "aliases": ["numpy", "np"],
+    "category": "data_science"
+  },
+  {
+    "canonical": "Matplotlib",
+    "aliases": ["matplotlib"],
+    "category": "data_science"
+  },
+  {
+    "canonical": "Power BI",
+    "aliases": ["power bi", "powerbi"],
+    "category": "data_science"
+  },
+  {
+    "canonical": "Tableau",
+    "aliases": ["tableau"],
+    "category": "data_science"
+  },
+  {
+    "canonical": "Apache Spark",
+    "aliases": ["apache spark", "spark", "pyspark"],
+    "category": "data_science"
+  },
+  {
+    "canonical": "Docker",
+    "aliases": ["docker"],
+    "category": "devops"
+  },
+  {
+    "canonical": "Kubernetes",
+    "aliases": ["kubernetes", "k8s"],
+    "category": "devops"
+  },
+  {
+    "canonical": "GitHub Actions",
+    "aliases": ["github actions", "gh actions"],
+    "category": "devops"
+  },
+  {
+    "canonical": "CI/CD",
+    "aliases": ["ci/cd", "ci cd", "cicd"],
+    "category": "devops"
+  },
+  {
+    "canonical": "Terraform",
+    "aliases": ["terraform"],
+    "category": "devops"
+  },
+  {
+    "canonical": "Nginx",
+    "aliases": ["nginx"],
+    "category": "devops"
+  },
+  {
+    "canonical": "AWS",
+    "aliases": ["aws", "amazon web services"],
+    "category": "cloud"
+  },
+  {
+    "canonical": "Google Cloud",
+    "aliases": ["google cloud", "gcp", "google cloud platform"],
+    "category": "cloud"
+  },
+  {
+    "canonical": "Azure",
+    "aliases": ["azure", "microsoft azure"],
+    "category": "cloud"
+  },
+  {
+    "canonical": "Vercel",
+    "aliases": ["vercel"],
+    "category": "cloud"
+  },
+  {
+    "canonical": "Netlify",
+    "aliases": ["netlify"],
+    "category": "cloud"
+  },
+  {
+    "canonical": "Render",
+    "aliases": ["render"],
+    "category": "cloud"
+  },
+  {
+    "canonical": "React Native",
+    "aliases": ["react native", "react-native"],
+    "category": "mobile"
+  },
+  {
+    "canonical": "Flutter",
+    "aliases": ["flutter", "dart flutter"],
+    "category": "mobile"
+  },
+  {
+    "canonical": "Swift",
+    "aliases": ["swift", "swiftui", "swift ui"],
+    "category": "mobile"
+  },
+  {
+    "canonical": "Kotlin",
+    "aliases": ["kotlin"],
+    "category": "mobile"
+  },
+  {
+    "canonical": "Android",
+    "aliases": ["android", "android sdk"],
+    "category": "mobile"
+  },
+  {
+    "canonical": "iOS",
+    "aliases": ["ios", "iphone", "ipad"],
+    "category": "mobile"
+  },
+  {
+    "canonical": "OWASP",
+    "aliases": ["owasp", "owasp top 10"],
+    "category": "cybersecurity"
+  },
+  {
+    "canonical": "Penetration Testing",
+    "aliases": ["penetration testing", "pentest", "pen test"],
+    "category": "cybersecurity"
+  },
+  {
+    "canonical": "Network Security",
+    "aliases": ["network security", "networking security"],
+    "category": "cybersecurity"
+  },
+  {
+    "canonical": "JWT",
+    "aliases": ["jwt", "json web token"],
+    "category": "cybersecurity"
+  },
+  {
+    "canonical": "OAuth",
+    "aliases": ["oauth", "oauth2", "oauth 2"],
+    "category": "cybersecurity"
+  },
+  {
+    "canonical": "pytest",
+    "aliases": ["pytest", "py test"],
+    "category": "testing"
+  },
+  {
+    "canonical": "Jest",
+    "aliases": ["jest"],
+    "category": "testing"
+  },
+  {
+    "canonical": "Playwright",
+    "aliases": ["playwright"],
+    "category": "testing"
+  },
+  {
+    "canonical": "Cypress",
+    "aliases": ["cypress"],
+    "category": "testing"
+  },
+  {
+    "canonical": "Selenium",
+    "aliases": ["selenium"],
+    "category": "testing"
+  },
+  {
+    "canonical": "Figma",
+    "aliases": ["figma"],
+    "category": "design"
+  },
+  {
+    "canonical": "UI/UX",
+    "aliases": ["ui/ux", "ui ux", "ux", "ui design", "ux design"],
+    "category": "design"
+  },
+  {
+    "canonical": "Adobe XD",
+    "aliases": ["adobe xd", "xd"],
+    "category": "design"
+  },
+  {
+    "canonical": "Git",
+    "aliases": ["git"],
+    "category": "tools"
+  },
+  {
+    "canonical": "GitHub",
+    "aliases": ["github", "git hub"],
+    "category": "tools"
+  },
+  {
+    "canonical": "GitLab",
+    "aliases": ["gitlab", "git lab"],
+    "category": "tools"
+  },
+  {
+    "canonical": "Jira",
+    "aliases": ["jira"],
+    "category": "tools"
+  },
+  {
+    "canonical": "Postman",
+    "aliases": ["postman"],
+    "category": "tools"
+  },
+  {
+    "canonical": "Linux",
+    "aliases": ["linux", "unix"],
+    "category": "tools"
+  }
+]

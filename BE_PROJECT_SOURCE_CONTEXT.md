@@ -1,9 +1,9 @@
 # BE Project Source Context
 
 **Last updated:** 30 June 2026  
-**Current milestone:** Milestone 2B — Client Gig Posting  
-**Current status:** Milestone 0, Milestone 1, and Milestone 2A completed; Milestone 2B implemented locally and pending SQL review/manual Supabase verification  
-**Primary project rule:** This source context overrides old report/PPT/paper content unless the user explicitly says otherwise.
+**Current milestone:** Milestone 3C — Parsing Database Foundation  
+**Current status:** Milestone 0, Milestone 1, Milestone 2A, Milestone 2B, Milestone 3A, and Milestone 3B completed and tested; Milestone 3C SQL drafted, pending manual review and Supabase application/testing  
+**Primary project rule:** This source context overrides old report/PPT/paper content unless the user explicitly says otherwise.  
 **Use rule:** Future chats should treat this file as project memory, not as a task prompt.
 ---
 
@@ -319,7 +319,10 @@ Repository path:
 Milestone 0 foundation has been implemented.
 Milestone 1 Supabase Auth and Role Routing has been implemented.
 Milestone 2A Freelancer and Client Profile Setup has been implemented and tested locally.
-Milestone 2B Client Gig Posting files have been generated locally and are pending SQL review/manual Supabase verification.
+Milestone 2B Client Gig Posting has been implemented and tested.
+Milestone 3A Skill Taxonomy and Extraction Utilities has been implemented and tested.
+Milestone 3B Stateless Backend Parsing Endpoints has been implemented and tested.
+Milestone 3C Parsing Database Foundation SQL has been drafted for review only and has not been applied in Supabase.
 
 ### Milestone 0 Completed
 
@@ -403,17 +406,19 @@ Admin accounts should be created manually later by the project owner through Sup
 
 The current active task gate is:
 
-> Milestone 2B: Review `docs/database/003_gigs.sql`, run it manually in Supabase only after review, then test client gig create/list/update flows.
+> Review docs/database/004_parsing_foundation.sql manually before applying it in Supabase.
 
 ---
 
 ## Current Next Action Gate
 
-Before moving to resume parsing, gig parsing, matching, recommendations, or AI, complete and verify:
+Before moving to AI matching, embeddings, recommendations, explainability, or dashboards, complete and verify:
 
-> Review `docs/database/003_gigs.sql`, run it manually in Supabase only after review, then test client gig create/list/update flows.
+> Review docs/database/004_parsing_foundation.sql manually, apply it in Supabase only after review, then test parsing persistence policies.
 
-Do not start AI, embeddings, parsing, recommendations, or admin analytics until structured profile and gig flows have been verified against Supabase.
+Split Milestone 3 safely into Milestone 3A skill taxonomy and extraction utilities, Milestone 3B stateless backend parsing endpoints, Milestone 3C parsing database foundation, Milestone 3D resume upload and editable parsed-output UI, Milestone 3E gig description parsing and editable parsed-output UI, and Milestone 3F verification and hardening.
+
+Do not start AI matching, embeddings, recommendations, explainability, or admin analytics until parsing utilities and structured data flows are stable.
 
 ---
 
@@ -636,7 +641,7 @@ Goal:
 
 ### Milestone 2B: Client Gig Posting
 
-Status: **Implemented locally / Pending SQL review and manual Supabase verification**
+Status: **Completed and tested**
 
 Goal:
 
@@ -648,7 +653,7 @@ Goal:
 
 ### Milestone 3: Resume/Gig Parsing
 
-Status: **Planned**
+Status: **Incomplete**
 
 Goal:
 
@@ -657,6 +662,65 @@ Goal:
 - Basic skill extraction
 - Messy gig description parsing
 - Editable parsed output
+
+### Milestone 3A: Skill Taxonomy and Deterministic Extraction Utilities
+
+Status: **Completed and tested**
+
+Goal:
+
+- Curated technical skill taxonomy
+- Text normalization helpers
+- Deterministic skill extraction through aliases
+- No resume upload, PDF parsing, DOCX parsing, frontend UI, database persistence, Supabase calls, embeddings, AI extraction, or matching
+
+### Milestone 3B: Stateless Backend Parsing Endpoints
+
+Status: **Completed and tested**
+
+Goal:
+
+- Backend endpoints that accept raw text and return deterministic parsed output
+- No persistence until the parser contract is reviewed
+
+### Milestone 3C: Parsing Database Foundation
+
+Status: **SQL drafted / Pending manual review and Supabase application/testing**
+
+Goal:
+
+- Safe persistence for parsed resume and gig outputs
+- SQL added only after review
+
+### Milestone 3D: Resume Upload + Editable Parsed-Output UI + Save Flow
+
+Status: **Planned**
+
+Goal:
+
+- Resume upload
+- Parsed-output review UI
+- Save flow for approved structured resume data
+
+### Milestone 3E: Gig Description Parsing + Editable Parsed-Output UI + Save Flow
+
+Status: **Planned**
+
+Goal:
+
+- Messy gig description parsing
+- Parsed-output review UI
+- Save flow for approved structured gig data
+
+### Milestone 3F: Verification and Hardening
+
+Status: **Planned**
+
+Goal:
+
+- Parser edge-case tests
+- Security and data-flow review
+- End-to-end verification before matching begins
 
 ### Milestone 4: Matching Engine
 
@@ -713,18 +777,17 @@ Goal:
 
 ## Near-Term Next Tasks
 
-After local Milestone 2B implementation:
+Begin Milestone 3 in smaller safe steps:
 
-1. Review `docs/database/003_gigs.sql` before running it.
-2. Run SQL in Supabase SQL Editor only after safety review.
-3. Test client gig creation from `/gigs/new`.
-4. Test client gig listing from `/gigs/manage`.
-5. Test client gig editing from `/gigs/:id/edit`.
-6. Test freelancer redirects away from gig posting routes.
-7. Verify RLS blocks clients from accessing or editing another client's gigs.
-8. Commit Milestone 2B work after review.
+1. Review `docs/database/004_parsing_foundation.sql` manually.
+2. Apply the SQL in Supabase only after review.
+3. Test parsing persistence tables and RLS policies.
+4. Milestone 3D: Add resume upload, editable parsed-output UI, and save flow.
+5. Milestone 3E: Add gig description parsing, editable parsed-output UI, and save flow.
+6. Milestone 3F: Verify and harden parsing before matching starts.
+7. Commit each step separately.
 
-Do not begin AI matching before structured profiles and gigs are verified.
+Do not begin AI matching, embeddings, recommendations, explainability, or dashboards before parsing utilities and structured data flows are stable.
 
 ---
 
@@ -1023,16 +1086,16 @@ curl http://127.0.0.1:8000/health
 
 Use one of these prompts in a new chat after adding this file to project sources.
 
-### Review Supabase SQL
+### Review Parser
 
 ```text
-Continue the BE project from the source context. We are at Milestone 2B. Help me review docs/database/003_gigs.sql before I run it.
+Continue the BE project from the source context. We are at Milestone 3C. Help me review docs/database/004_parsing_foundation.sql before I apply it in Supabase.
 ```
 
 ### Create Next Codex Prompt
 
 ```text
-Continue the BE project from the source context. Create the next Codex prompt after Milestone 2B verification.
+Continue the BE project from the source context. Create the next Codex prompt after Milestone 3C SQL review/application/testing.
 ```
 
 ### Explain Architecture for Viva
@@ -1075,12 +1138,26 @@ The project foundation is complete.
 
 Supabase project has been created and email confirmation has been disabled for local/demo testing.
 
-Milestone 1 auth/role routing and Milestone 2A structured profile setup are complete.
+Milestone 1 auth/role routing, Milestone 2A structured profile setup, and Milestone 2B client gig posting are complete and tested.
 
-Milestone 2B client gig posting has been implemented locally, but the SQL has not been manually reviewed/run in Supabase yet.
+The database now includes:
+
+- `user_profiles`
+- `freelancer_profiles`
+- `client_profiles`
+- `gigs`
 
 The current next action is:
 
-> Review `docs/database/003_gigs.sql`, run it manually in Supabase only after review, then test client gig create/list/update flows.
+> Review docs/database/004_parsing_foundation.sql manually before applying it in Supabase.
 
-Do not proceed to AI, matching, parsing, recommendations, or dashboards until profile and gig data flows are verified safely.
+Milestone 3 remains split safely into smaller steps:
+
+- Milestone 3A: Skill taxonomy and extraction utilities
+- Milestone 3B: Stateless backend parsing endpoints
+- Milestone 3C: Parsing database foundation
+- Milestone 3D: Resume upload + editable parsed-output UI + save flow
+- Milestone 3E: Gig description parsing + editable parsed-output UI + save flow
+- Milestone 3F: Verification and hardening
+
+Do not proceed to AI matching, embeddings, recommendations, explainability, or dashboards until parsing utilities and structured data flows are stable.

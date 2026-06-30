@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.api.routes import auth, evaluation, gigs, health, matching, profiles
+from app.api.routes import auth, evaluation, gigs, health, matching, parsing, profiles
 from app.config import settings
 
 app = FastAPI(title=settings.app_name)
@@ -18,5 +18,6 @@ app.include_router(health.router)
 app.include_router(auth.router, prefix="/auth", tags=["auth"])
 app.include_router(profiles.router, prefix="/profiles", tags=["profiles"])
 app.include_router(gigs.router, prefix="/gigs", tags=["gigs"])
+app.include_router(parsing.router, prefix="/parsing", tags=["parsing"])
 app.include_router(matching.router, prefix="/matching", tags=["matching"])
 app.include_router(evaluation.router, prefix="/evaluation", tags=["evaluation"])
