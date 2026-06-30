@@ -11,6 +11,7 @@ import { LandingPage } from "./pages/LandingPage";
 import { LoginPage } from "./pages/LoginPage";
 import { ManageGigsPage } from "./pages/ManageGigsPage";
 import { NewGigPage } from "./pages/NewGigPage";
+import { ResumeParsePage } from "./pages/ResumeParsePage";
 import { SignupPage } from "./pages/SignupPage";
 
 export default function App() {
@@ -33,6 +34,14 @@ export default function App() {
           element={
             <ProtectedRoute allowedRole="freelancer">
               <FreelancerProfilePage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/profile/resume-parse"
+          element={
+            <ProtectedRoute allowedRole="freelancer">
+              <ResumeParsePage />
             </ProtectedRoute>
           }
         />

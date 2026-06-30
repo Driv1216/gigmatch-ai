@@ -1,8 +1,8 @@
 # BE Project Source Context
 
-**Last updated:** 30 June 2026  
-**Current milestone:** Milestone 3C — Parsing Database Foundation  
-**Current status:** Milestone 0, Milestone 1, Milestone 2A, Milestone 2B, Milestone 3A, and Milestone 3B completed and tested; Milestone 3C SQL drafted, pending manual review and Supabase application/testing  
+**Last updated:** 1 July 2026  
+**Current milestone:** Milestone 3D — Resume Text Parsing Review UI + Save Flow  
+**Current status:** Milestone 0, Milestone 1, Milestone 2A, Milestone 2B, Milestone 3A, Milestone 3B, and Milestone 3C completed and tested; Milestone 3D implemented locally and pending manual review  
 **Primary project rule:** This source context overrides old report/PPT/paper content unless the user explicitly says otherwise.  
 **Use rule:** Future chats should treat this file as project memory, not as a task prompt.
 ---
@@ -322,7 +322,8 @@ Milestone 2A Freelancer and Client Profile Setup has been implemented and tested
 Milestone 2B Client Gig Posting has been implemented and tested.
 Milestone 3A Skill Taxonomy and Extraction Utilities has been implemented and tested.
 Milestone 3B Stateless Backend Parsing Endpoints has been implemented and tested.
-Milestone 3C Parsing Database Foundation SQL has been drafted for review only and has not been applied in Supabase.
+Milestone 3C Parsing Database Foundation has been applied in Supabase and tested.
+Milestone 3D Resume Text Parsing Review UI + Save Flow has been implemented locally and is pending manual review.
 
 ### Milestone 0 Completed
 
@@ -406,7 +407,7 @@ Admin accounts should be created manually later by the project owner through Sup
 
 The current active task gate is:
 
-> Review docs/database/004_parsing_foundation.sql manually before applying it in Supabase.
+> Review Milestone 3D — Resume Text Parsing Review UI + Save Flow.
 
 ---
 
@@ -414,9 +415,9 @@ The current active task gate is:
 
 Before moving to AI matching, embeddings, recommendations, explainability, or dashboards, complete and verify:
 
-> Review docs/database/004_parsing_foundation.sql manually, apply it in Supabase only after review, then test parsing persistence policies.
+> Review Milestone 3D — Resume Text Parsing Review UI + Save Flow.
 
-Split Milestone 3 safely into Milestone 3A skill taxonomy and extraction utilities, Milestone 3B stateless backend parsing endpoints, Milestone 3C parsing database foundation, Milestone 3D resume upload and editable parsed-output UI, Milestone 3E gig description parsing and editable parsed-output UI, and Milestone 3F verification and hardening.
+Split Milestone 3 safely into Milestone 3A skill taxonomy and extraction utilities, Milestone 3B stateless backend parsing endpoints, Milestone 3C parsing database foundation, Milestone 3D resume text parsing review UI and save flow, Milestone 3E gig description parsing review UI and save flow, Milestone 3F PDF/DOCX text extraction, and Milestone 3G verification and hardening.
 
 Do not start AI matching, embeddings, recommendations, explainability, or admin analytics until parsing utilities and structured data flows are stable.
 
@@ -685,22 +686,24 @@ Goal:
 
 ### Milestone 3C: Parsing Database Foundation
 
-Status: **SQL drafted / Pending manual review and Supabase application/testing**
+Status: **Completed and tested**
 
 Goal:
 
 - Safe persistence for parsed resume and gig outputs
-- SQL added only after review
+- `resume_parses` and `gig_parses` tables with RLS
 
-### Milestone 3D: Resume Upload + Editable Parsed-Output UI + Save Flow
+### Milestone 3D: Resume Text Parsing Review UI + Save Flow
 
-Status: **Planned**
+Status: **Implemented locally / Pending manual review**
 
 Goal:
 
-- Resume upload
-- Parsed-output review UI
-- Save flow for approved structured resume data
+- Freelancer-only page for pasted resume text
+- Call stateless backend parser
+- Editable parsed-output review UI
+- Save/fetch reviewed output from `resume_parses` through frontend Supabase client and RLS
+- No PDF/DOCX upload yet
 
 ### Milestone 3E: Gig Description Parsing + Editable Parsed-Output UI + Save Flow
 
@@ -708,11 +711,20 @@ Status: **Planned**
 
 Goal:
 
-- Messy gig description parsing
+- Gig description text parsing
 - Parsed-output review UI
 - Save flow for approved structured gig data
 
-### Milestone 3F: Verification and Hardening
+### Milestone 3F: PDF/DOCX Text Extraction
+
+Status: **Planned**
+
+Goal:
+
+- Resume document text extraction after text-paste parsing flows are stable
+- No AI matching or recommendations yet
+
+### Milestone 3G: Verification and Hardening
 
 Status: **Planned**
 
@@ -779,13 +791,11 @@ Goal:
 
 Begin Milestone 3 in smaller safe steps:
 
-1. Review `docs/database/004_parsing_foundation.sql` manually.
-2. Apply the SQL in Supabase only after review.
-3. Test parsing persistence tables and RLS policies.
-4. Milestone 3D: Add resume upload, editable parsed-output UI, and save flow.
-5. Milestone 3E: Add gig description parsing, editable parsed-output UI, and save flow.
-6. Milestone 3F: Verify and harden parsing before matching starts.
-7. Commit each step separately.
+1. Review Milestone 3D: resume text parsing review UI and save/fetch flow.
+2. Milestone 3E: Add gig description parsing review UI and save/fetch flow.
+3. Milestone 3F: Add PDF/DOCX text extraction.
+4. Milestone 3G: Verify and harden parsing before matching starts.
+5. Commit each step separately.
 
 Do not begin AI matching, embeddings, recommendations, explainability, or dashboards before parsing utilities and structured data flows are stable.
 
@@ -1089,13 +1099,13 @@ Use one of these prompts in a new chat after adding this file to project sources
 ### Review Parser
 
 ```text
-Continue the BE project from the source context. We are at Milestone 3C. Help me review docs/database/004_parsing_foundation.sql before I apply it in Supabase.
+Continue the BE project from the source context. We are at Milestone 3D. Help me review and verify the resume text parsing review UI.
 ```
 
 ### Create Next Codex Prompt
 
 ```text
-Continue the BE project from the source context. Create the next Codex prompt after Milestone 3C SQL review/application/testing.
+Continue the BE project from the source context. Create the next Codex prompt for Milestone 3E gig description parsing review UI and save/fetch flow.
 ```
 
 ### Explain Architecture for Viva
@@ -1146,18 +1156,21 @@ The database now includes:
 - `freelancer_profiles`
 - `client_profiles`
 - `gigs`
+- `resume_parses`
+- `gig_parses`
 
 The current next action is:
 
-> Review docs/database/004_parsing_foundation.sql manually before applying it in Supabase.
+> Review Milestone 3D — Resume Text Parsing Review UI + Save Flow.
 
 Milestone 3 remains split safely into smaller steps:
 
 - Milestone 3A: Skill taxonomy and extraction utilities
 - Milestone 3B: Stateless backend parsing endpoints
 - Milestone 3C: Parsing database foundation
-- Milestone 3D: Resume upload + editable parsed-output UI + save flow
-- Milestone 3E: Gig description parsing + editable parsed-output UI + save flow
-- Milestone 3F: Verification and hardening
+- Milestone 3D: Resume text parsing review UI + save flow
+- Milestone 3E: Gig description parsing review UI + save flow
+- Milestone 3F: PDF/DOCX text extraction
+- Milestone 3G: Verification and hardening
 
 Do not proceed to AI matching, embeddings, recommendations, explainability, or dashboards until parsing utilities and structured data flows are stable.

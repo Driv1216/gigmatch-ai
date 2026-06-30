@@ -46,17 +46,31 @@ Validation:
 
 ## Milestone 3C: Parsing Persistence SQL Foundation
 
-Milestone 3C drafts the Supabase/PostgreSQL persistence foundation for reviewed parsed outputs.
+Milestone 3C adds the Supabase/PostgreSQL persistence foundation for reviewed parsed outputs.
 
-The review-only SQL lives in `docs/database/004_parsing_foundation.sql` and defines:
+The SQL lives in `docs/database/004_parsing_foundation.sql` and defines:
 
 - `public.resume_parses` for one current reviewed resume parse per freelancer user.
 - `public.gig_parses` for one current reviewed gig parse per client-owned gig.
 - Owner-only RLS policies for freelancer resume parses and client gig parses.
-- Practical lookup and array GIN indexes for future matching.
+- Practical array GIN indexes for future matching.
 - `updated_at` triggers that reuse the existing `public.set_updated_at()` function.
 
-The SQL has been authored for manual review only. It has not been run, applied in Supabase, or tested against the live database yet.
+Milestone 3C has been manually reviewed, applied in Supabase, and tested.
+
+## Milestone 3D: Resume Text Parsing Review UI
+
+Milestone 3D adds a freelancer-only frontend page at `/profile/resume-parse`.
+
+The page lets a freelancer paste resume text, call the stateless backend parser, review/edit extracted skills, categories, and matched terms, then save the reviewed result to `public.resume_parses` with the frontend Supabase client. Supabase Auth session plus RLS enforce row ownership.
+
+Architecture:
+
+- Parsing uses `POST /parsing/extract-skills`.
+- Save/fetch uses the browser Supabase client and `public.resume_parses`.
+- The UI stores reviewed structured output and `extracted_text_preview` only.
+- Full raw resume text is not stored.
+- `freelancer_profiles` is not updated automatically.
 
 ## Output Contract
 
@@ -96,17 +110,20 @@ The extractor avoids partial-word matches, so `react` matches `React`, but `reac
 
 ## Intentionally Not Implemented
 
-Milestone 3A, Milestone 3B, and the drafted Milestone 3C SQL do not include:
+Milestone 3A through Milestone 3D do not include:
 
 - PDF parsing
 - DOCX parsing
 - Resume upload
-- Applied database persistence
-- Frontend parsed-output UI
+- File upload
+- Storage buckets
+- Backend database write endpoints
+- Backend JWT verification
 - AI extraction
 - Embeddings
 - Matching or recommendations
-- Supabase calls
+- Backend Supabase writes or service-role usage
+- Freelancer profile auto-update
 
 ## How This Prepares Later Parsing
 

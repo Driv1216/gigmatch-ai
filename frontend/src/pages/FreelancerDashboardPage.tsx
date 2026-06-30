@@ -10,8 +10,11 @@ export function FreelancerDashboardPage() {
         <p className="mt-4 max-w-2xl text-base leading-7 text-muted">
           This area is reserved for future resume, skills, and matched gig workflows.
         </p>
-        <div className="mt-8">
+        <div className="mt-8 flex flex-wrap gap-3">
           <Button to="/profile/freelancer">Complete / Edit Smart Profile</Button>
+          <Button to="/profile/resume-parse" variant="secondary">
+            Resume Parser
+          </Button>
         </div>
       </div>
     </PageContainer>

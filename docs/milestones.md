@@ -26,7 +26,7 @@ Build real client gig posting flows without AI matching. The local implementatio
 
 ## Milestone 3: Resume/Gig Parsing
 
-Status: Incomplete. Milestone 3A and Milestone 3B are implemented and tested; Milestone 3C SQL is drafted, pending manual review and Supabase application/testing.
+Status: Incomplete. Milestone 3A, Milestone 3B, and Milestone 3C are complete and tested; Milestone 3D is implemented locally and pending manual review.
 
 Introduce resume parsing, gig parsing, and normalized skill extraction inputs.
 
@@ -44,15 +44,15 @@ Expose backend endpoints that accept raw text and return deterministic parsed sk
 
 ### Milestone 3C: Parsing Database Foundation
 
-Status: SQL drafted; pending manual review and Supabase application/testing.
+Status: Complete.
 
 Add safe database persistence for parsed resume and gig outputs after the stateless parser contract is verified.
 
-### Milestone 3D: Resume Upload + Editable Parsed-Output UI + Save Flow
+### Milestone 3D: Resume Text Parsing Review UI + Save Flow
 
-Status: Planned.
+Status: Implemented locally; pending manual review.
 
-Add resume upload and user review flows after backend parsing and persistence are ready.
+Add a freelancer-only pasted resume text parser, editable parsed-output review UI, and save/fetch flow through the frontend Supabase client and RLS. This milestone does not add PDF/DOCX upload.
 
 ### Milestone 3E: Gig Description Parsing + Editable Parsed-Output UI + Save Flow
 
@@ -60,7 +60,13 @@ Status: Planned.
 
 Add messy gig description parsing and client review flows after the shared parsing foundation is stable.
 
-### Milestone 3F: Verification and Hardening
+### Milestone 3F: PDF/DOCX Text Extraction
+
+Status: Planned.
+
+Add document text extraction after text-paste parsing flows are stable.
+
+### Milestone 3G: Verification and Hardening
 
 Status: Planned.
 
