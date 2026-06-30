@@ -3,7 +3,9 @@ import { AppLayout } from "./components/AppLayout";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import { AdminDashboardPage } from "./pages/AdminDashboardPage";
 import { ClientDashboardPage } from "./pages/ClientDashboardPage";
+import { ClientProfilePage } from "./pages/ClientProfilePage";
 import { FreelancerDashboardPage } from "./pages/FreelancerDashboardPage";
+import { FreelancerProfilePage } from "./pages/FreelancerProfilePage";
 import { LandingPage } from "./pages/LandingPage";
 import { LoginPage } from "./pages/LoginPage";
 import { SignupPage } from "./pages/SignupPage";
@@ -24,10 +26,26 @@ export default function App() {
           }
         />
         <Route
+          path="/profile/freelancer"
+          element={
+            <ProtectedRoute allowedRole="freelancer">
+              <FreelancerProfilePage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
           path="/dashboard/client"
           element={
             <ProtectedRoute allowedRole="client">
               <ClientDashboardPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/profile/client"
+          element={
+            <ProtectedRoute allowedRole="client">
+              <ClientProfilePage />
             </ProtectedRoute>
           }
         />
