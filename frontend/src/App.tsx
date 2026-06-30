@@ -4,10 +4,13 @@ import { ProtectedRoute } from "./components/ProtectedRoute";
 import { AdminDashboardPage } from "./pages/AdminDashboardPage";
 import { ClientDashboardPage } from "./pages/ClientDashboardPage";
 import { ClientProfilePage } from "./pages/ClientProfilePage";
+import { EditGigPage } from "./pages/EditGigPage";
 import { FreelancerDashboardPage } from "./pages/FreelancerDashboardPage";
 import { FreelancerProfilePage } from "./pages/FreelancerProfilePage";
 import { LandingPage } from "./pages/LandingPage";
 import { LoginPage } from "./pages/LoginPage";
+import { ManageGigsPage } from "./pages/ManageGigsPage";
+import { NewGigPage } from "./pages/NewGigPage";
 import { SignupPage } from "./pages/SignupPage";
 
 export default function App() {
@@ -46,6 +49,30 @@ export default function App() {
           element={
             <ProtectedRoute allowedRole="client">
               <ClientProfilePage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/gigs/new"
+          element={
+            <ProtectedRoute allowedRole="client">
+              <NewGigPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/gigs/manage"
+          element={
+            <ProtectedRoute allowedRole="client">
+              <ManageGigsPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/gigs/:id/edit"
+          element={
+            <ProtectedRoute allowedRole="client">
+              <EditGigPage />
             </ProtectedRoute>
           }
         />

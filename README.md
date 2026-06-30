@@ -2,7 +2,7 @@
 
 An AI-powered tech gig discovery and matching platform for freelancers, students, developers, and clients.
 
-This repository currently contains the BE project foundation, Supabase authentication, role-based frontend routing, and structured profile setup for freelancers and clients. AI matching, resume parsing, gig posting, and evaluation dashboards are planned for later milestones.
+This repository currently contains the BE project foundation, Supabase authentication, role-based frontend routing, structured profile setup for freelancers and clients, and client-side gig posting. AI matching, resume parsing, recommendations, and evaluation dashboards are planned for later milestones.
 
 ## Tech Stack
 
@@ -37,7 +37,8 @@ gigmatch-ai/
 4. Open the Supabase SQL Editor.
 5. Paste and run [docs/database/001_auth_profiles.sql](docs/database/001_auth_profiles.sql).
 6. Review, then paste and run [docs/database/002_profiles.sql](docs/database/002_profiles.sql).
-7. Copy the project URL and publishable key from Supabase project settings.
+7. Review, then paste and run [docs/database/003_gigs.sql](docs/database/003_gigs.sql).
+8. Copy the project URL and publishable key from Supabase project settings.
 
 Admin accounts are not created through public signup. The signup UI only allows `freelancer` and `client`. Admin profiles should be created later by the project owner through Supabase SQL or backend service-role logic.
 
@@ -158,7 +159,9 @@ If the profile row is missing, the app shows a clear error and does not create f
 2. Login as a client and try `/dashboard/admin`; the app redirects to `/dashboard/client`.
 3. Login as a freelancer and try `/profile/client`; the app redirects to `/dashboard/freelancer`.
 4. Login as a client and try `/profile/freelancer`; the app redirects to `/dashboard/client`.
-5. Logout and try any dashboard or profile route; the app redirects to `/login`.
+5. Login as a freelancer and try `/gigs/new`; the app redirects to `/dashboard/freelancer`.
+6. Login as a freelancer and try `/gigs/manage`; the app redirects to `/dashboard/freelancer`.
+7. Logout and try any dashboard, profile, or gig route; the app redirects to `/login`.
 
 ## user_profiles Security
 
@@ -219,9 +222,52 @@ To apply the SQL:
 4. Confirm normal authenticated users cannot insert or update rows where `user_id` is another user's id.
 5. Confirm normal authenticated users cannot select another user's profile row.
 
+## Client Gig Posting Setup
+
+[docs/database/003_gigs.sql](docs/database/003_gigs.sql) creates:
+
+- `public.gigs`
+
+The table references `public.user_profiles(id)` through `client_id`, enables RLS, restricts normal clients to their own gigs, prevents freelancers from creating or editing gigs, allows admins to select all gigs, adds practical budget constraints, and indexes client, status, category, and skill array fields.
+
+To apply the SQL:
+
+1. Confirm [docs/database/001_auth_profiles.sql](docs/database/001_auth_profiles.sql) and [docs/database/002_profiles.sql](docs/database/002_profiles.sql) have already been run.
+2. Open the Supabase SQL Editor.
+3. Review [docs/database/003_gigs.sql](docs/database/003_gigs.sql).
+4. Paste the full SQL into the editor and run it.
+5. Keep using only the frontend publishable key in `frontend/.env`; never place the service role or secret key in frontend env vars.
+
+## Test Client Gig Create/List/Update
+
+1. Login as a `client`.
+2. Open `/dashboard/client`.
+3. Click `Post a New Gig`.
+4. Fill in title, description, tech category, and any optional structured fields. For skill and deliverable fields, enter comma-separated values.
+5. Save the gig and confirm the app returns to `/gigs/manage`.
+6. Confirm the manage page lists the gig title, category, status, required skills, deadline, and updated time.
+7. Click `Edit Gig`, update a field, save, and confirm the success message appears.
+8. Return to `/gigs/manage` and confirm the updated values are shown.
+
+## Test Freelancer Cannot Access Gig Posting
+
+1. Login as a `freelancer`.
+2. Try `/gigs/new`; the app should redirect to `/dashboard/freelancer`.
+3. Try `/gigs/manage`; the app should redirect to `/dashboard/freelancer`.
+4. Try a known `/gigs/:id/edit` URL; the app should redirect to `/dashboard/freelancer`.
+5. Confirm no gig posting controls appear on the freelancer dashboard.
+
+## Gig RLS Checks
+
+1. As a client, confirm you can select, insert, and update only rows where `client_id = auth.uid()`.
+2. Confirm a client cannot insert a gig with another user's `client_id`.
+3. Confirm a client cannot update another client's gig.
+4. Confirm a freelancer cannot insert, update, or delete gigs.
+5. Confirm freelancers do not get read access to gigs in Milestone 2B.
+
 ## Current Milestone Status
 
-Milestones 0, 1, and 2A are implemented:
+Milestones 0, 1, 2A, and local 2B implementation are complete:
 
 - Foundation repo structure, frontend, backend, routing, and docs added
 - Supabase auth client configured
@@ -231,13 +277,17 @@ Milestones 0, 1, and 2A are implemented:
 - Navbar login/signup/logout behavior added
 - `freelancer_profiles` and `client_profiles` SQL setup added
 - Freelancer and client profile create/update pages added
+- `gigs` SQL setup added for manual review
+- Client gig create, manage, and edit pages added
 - Backend auth verification stubs added for future work
+
+Milestone 2B still requires manual Supabase SQL review/run and browser verification against the live project database.
 
 ## Planned Future Modules
 
-- Gig posting
 - Resume parsing
 - Gig parsing
+- Freelancer recommendations
 - Skill extraction
 - Embeddings
 - pgvector matching

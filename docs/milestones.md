@@ -20,9 +20,9 @@ Add real structured freelancer and client profile tables, RLS policies, role-gua
 
 ## Milestone 2B: Gig Posting
 
-Status: Planned.
+Status: Implemented locally; pending SQL review and manual Supabase verification.
 
-Build real client gig posting flows without AI matching.
+Build real client gig posting flows without AI matching. The local implementation includes the `gigs` SQL setup file and client-only create, manage, and edit screens.
 
 ## Milestone 3: Resume/Gig Parsing
 
