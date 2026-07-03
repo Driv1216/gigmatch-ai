@@ -126,7 +126,26 @@ Example response:
 }
 ```
 
-This endpoint is stateless. It does not parse skills automatically, call the resume parser, save files, save extracted text, write to `resume_parses`, update `freelancer_profiles`, use Supabase storage, use OCR, perform AI extraction, create embeddings, or run matching/recommendations. A later frontend milestone can use the returned text to fill the existing resume text area for manual review.
+This endpoint is stateless. It does not parse skills automatically, call the resume parser, save files, save extracted text, write to `resume_parses`, update `freelancer_profiles`, use Supabase storage, use OCR, perform AI extraction, create embeddings, or run matching/recommendations.
+
+## Milestone 3F-C: Resume Parser Upload Input Integration
+
+Milestone 3F-C adds PDF/DOCX upload as an optional input method on the existing resume parser page.
+
+The frontend flow is:
+
+```text
+PDF/DOCX upload
+-> call POST /parsing/resume/extract-document
+-> place returned text into the existing resume text textarea
+-> user reviews or edits the text
+-> user manually clicks Extract Skills
+-> existing editable review and save flow continues unchanged
+```
+
+Uploaded files are not stored. Extracted text is not saved automatically. The upload action does not call the parser, write to `resume_parses`, update `freelancer_profiles`, use Supabase storage, perform OCR, create AI output, create embeddings, or run matching/recommendations.
+
+The upload UI validates `.pdf` and `.docx` files up to 5 MB before calling the backend, then surfaces backend validation messages, extraction warnings, and source metadata such as file type, character count, page count, and paragraph count. If the textarea already has content, the user must confirm before extracted document text replaces it. Users can still paste resume text manually exactly as before.
 
 ## Output Contract
 
@@ -166,15 +185,14 @@ The extractor avoids partial-word matches, so `react` matches `React`, but `reac
 
 ## Intentionally Not Implemented
 
-Milestone 3A through Milestone 3F-B do not include:
+Milestone 3A through Milestone 3F-C do not include:
 
-- Frontend resume upload UI
 - Persistent file upload/storage
 - Storage buckets
 - Backend database write endpoints
 - Backend JWT verification
 - OCR
-- Parser calls from document extraction
+- Automatic parser calls from document extraction/upload
 - AI extraction
 - Embeddings
 - Matching or recommendations

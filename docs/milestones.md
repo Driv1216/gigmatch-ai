@@ -26,7 +26,7 @@ Build real client gig posting flows without AI matching. The local implementatio
 
 ## Milestone 3: Resume/Gig Parsing
 
-Status: Incomplete. Milestone 3A, Milestone 3B, Milestone 3C, Milestone 3D, Milestone 3E, Milestone 3F-A, and Milestone 3F-B are complete and tested; Milestone 3F-C is planned next.
+Status: Incomplete. Milestone 3A, Milestone 3B, Milestone 3C, Milestone 3D, Milestone 3E, and Milestone 3F are complete and tested; Milestone 3G is planned next.
 
 Introduce resume parsing, gig parsing, and normalized skill extraction inputs.
 
@@ -62,9 +62,15 @@ Add a client-only existing gig description parser, editable parsed-output review
 
 ### Milestone 3F: PDF/DOCX Text Extraction
 
-Status: Incomplete. Milestone 3F-A and Milestone 3F-B are complete and tested; Milestone 3F-C and 3F-D are planned.
+Status: Complete and tested.
 
 Add document text extraction after text-paste parsing flows are stable.
+
+Includes:
+
+- 3F-A: Document Text Extraction Utilities
+- 3F-B: Stateless Resume Document Extraction Endpoint
+- 3F-C: Resume Parser Upload Input Integration
 
 ### Milestone 3F-A: Document Text Extraction Utilities
 
@@ -80,15 +86,9 @@ Expose a backend endpoint for document text extraction using the completed utili
 
 ### Milestone 3F-C: Resume Parser Upload Input Integration
 
-Status: Planned.
+Status: Complete and tested.
 
 Add document upload as an input method for the existing resume review flow.
-
-### Milestone 3F-D: Document Extraction Verification and Docs
-
-Status: Planned.
-
-Harden document extraction edge cases and document manual verification behavior.
 
 ### Milestone 3G: Verification and Hardening
 

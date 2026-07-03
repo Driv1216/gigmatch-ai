@@ -5,9 +5,11 @@ import { useAuth } from "../context/AuthContext";
 import { arrayToCsv, csvToArray } from "../lib/profiles";
 import {
   buildResumeParseInput,
+  extractResumeDocumentText,
   extractResumeSkills,
   fetchResumeParse,
   saveResumeParse,
+  type ResumeDocumentSource,
   type ResumeParse,
   type SkillExtractionResult,
 } from "../lib/resumeParses";
@@ -28,6 +30,8 @@ const emptyExtraction: SkillExtractionResult = {
 
 const inputClasses =
   "mt-2 w-full rounded-md border border-line bg-white px-4 py-3 text-sm text-ink outline-none transition focus:border-brand focus:ring-2 focus:ring-blue-100";
+const MAX_RESUME_DOCUMENT_BYTES = 5 * 1024 * 1024;
+const SUPPORTED_RESUME_DOCUMENT_EXTENSIONS = [".pdf", ".docx"];
 
 function formFromExtraction(extraction: SkillExtractionResult): ReviewForm {
   return {
@@ -69,13 +73,51 @@ function getErrorMessage(error: unknown, fallback: string) {
   return fallback;
 }
 
+function getFileExtension(fileName: string) {
+  const extensionStart = fileName.lastIndexOf(".");
+  return extensionStart >= 0 ? fileName.slice(extensionStart).toLowerCase() : "";
+}
+
+function validateResumeDocumentFile(file: File | null) {
+  if (!file) {
+    return "Select a PDF or DOCX resume file first.";
+  }
+
+  const extension = getFileExtension(file.name);
+
+  if (!SUPPORTED_RESUME_DOCUMENT_EXTENSIONS.includes(extension)) {
+    return "Upload a PDF or DOCX resume file.";
+  }
+
+  if (file.size > MAX_RESUME_DOCUMENT_BYTES) {
+    return "Resume document is too large. Maximum size is 5 MB.";
+  }
+
+  if (file.size === 0) {
+    return "Resume document file is empty.";
+  }
+
+  return null;
+}
+
+function formatFileSize(sizeBytes: number) {
+  if (sizeBytes < 1024 * 1024) {
+    return `${Math.max(1, Math.round(sizeBytes / 1024))} KB`;
+  }
+
+  return `${(sizeBytes / (1024 * 1024)).toFixed(1)} MB`;
+}
+
 export function ResumeParsePage() {
   const { user } = useAuth();
   const [resumeText, setResumeText] = useState("");
+  const [selectedDocument, setSelectedDocument] = useState<File | null>(null);
+  const [documentSource, setDocumentSource] = useState<ResumeDocumentSource | null>(null);
   const [savedParse, setSavedParse] = useState<ResumeParse | null>(null);
   const [reviewForm, setReviewForm] = useState<ReviewForm>(formFromExtraction(emptyExtraction));
   const [unmatchedKeywords, setUnmatchedKeywords] = useState<string[]>([]);
   const [isLoadingSaved, setIsLoadingSaved] = useState(true);
+  const [isExtractingDocument, setIsExtractingDocument] = useState(false);
   const [isExtracting, setIsExtracting] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -134,6 +176,48 @@ export function ResumeParsePage() {
     setReviewForm((current) => ({ ...current, [key]: value }));
   }
 
+  function handleDocumentChange(file: File | null) {
+    setSelectedDocument(file);
+    setDocumentSource(null);
+    setErrorMessage(null);
+    setSuccessMessage(null);
+  }
+
+  async function handleExtractDocumentText() {
+    const validationMessage = validateResumeDocumentFile(selectedDocument);
+
+    if (validationMessage || !selectedDocument) {
+      setErrorMessage(validationMessage);
+      setSuccessMessage(null);
+      return;
+    }
+
+    if (
+      resumeText.trim() &&
+      !window.confirm("Extracted document text will replace the current resume text. Continue?")
+    ) {
+      return;
+    }
+
+    setIsExtractingDocument(true);
+    setErrorMessage(null);
+    setSuccessMessage(null);
+
+    try {
+      const extraction = await extractResumeDocumentText(selectedDocument);
+      setResumeText(extraction.text);
+      setDocumentSource(extraction.source);
+      setReviewForm(formFromExtraction(emptyExtraction));
+      setUnmatchedKeywords([]);
+      setSuccessMessage("Document text extracted into the resume text box. Review it, then extract skills.");
+    } catch (error) {
+      setDocumentSource(null);
+      setErrorMessage(getErrorMessage(error, "Unable to extract text from this resume document."));
+    } finally {
+      setIsExtractingDocument(false);
+    }
+  }
+
   async function handleExtract() {
     setIsExtracting(true);
     setErrorMessage(null);
@@ -175,6 +259,12 @@ export function ResumeParsePage() {
     }
   }
 
+  function handleClearText() {
+    setResumeText("");
+    setDocumentSource(null);
+    setSuccessMessage(null);
+  }
+
   return (
     <PageContainer>
       <div className="rounded-lg border border-line bg-white p-8 shadow-soft">
@@ -183,8 +273,8 @@ export function ResumeParsePage() {
             <p className="text-sm font-semibold uppercase tracking-wide text-accent">Resume Parsing</p>
             <h1 className="mt-3 text-3xl font-bold tracking-normal text-ink">Resume Text Parser</h1>
             <p className="mt-3 max-w-3xl text-base leading-7 text-muted">
-              Paste resume text to extract technical skills with the deterministic parser. PDF and DOCX upload come later;
-              this version saves only reviewed structured output and a short text preview.
+              Paste resume text or extract text from a PDF/DOCX resume, then review the text before running the
+              deterministic parser.
             </p>
           </div>
           <Button to="/dashboard/freelancer" variant="secondary">
@@ -197,6 +287,80 @@ export function ResumeParsePage() {
         ) : (
           <div className="mt-8 grid gap-6 lg:grid-cols-[minmax(0,1fr)_360px]">
             <div className="space-y-6">
+              <section className="rounded-md border border-line bg-slate-50 p-5">
+                <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+                  <label className="block flex-1">
+                    <span className="text-sm font-semibold text-ink">Resume Document</span>
+                    <input
+                      type="file"
+                      accept=".pdf,.docx"
+                      onChange={(event) => handleDocumentChange(event.target.files?.[0] ?? null)}
+                      className="mt-2 block w-full cursor-pointer rounded-md border border-line bg-white text-sm text-ink file:mr-4 file:min-h-11 file:border-0 file:bg-slate-100 file:px-4 file:py-2.5 file:text-sm file:font-semibold file:text-ink hover:file:bg-slate-200"
+                    />
+                    <p className="mt-2 text-xs leading-5 text-muted">PDF or DOCX, maximum 5 MB.</p>
+                  </label>
+                  <Button
+                    type="button"
+                    variant="secondary"
+                    onClick={handleExtractDocumentText}
+                    disabled={isExtractingDocument}
+                  >
+                    {isExtractingDocument ? "Extracting..." : "Extract Text"}
+                  </Button>
+                </div>
+
+                {selectedDocument ? (
+                  <p className="mt-3 text-sm text-muted">
+                    Selected: <span className="font-medium text-ink">{selectedDocument.name}</span>{" "}
+                    <span>({formatFileSize(selectedDocument.size)})</span>
+                  </p>
+                ) : null}
+
+                {documentSource ? (
+                  <div className="mt-4 rounded-md border border-line bg-white p-4">
+                    <p className="text-xs font-semibold uppercase tracking-wide text-accent">Extracted Source</p>
+                    <dl className="mt-3 grid gap-3 text-sm sm:grid-cols-2">
+                      <div>
+                        <dt className="font-semibold text-ink">File</dt>
+                        <dd className="mt-1 text-muted">{documentSource.file_name}</dd>
+                      </div>
+                      <div>
+                        <dt className="font-semibold text-ink">Type</dt>
+                        <dd className="mt-1 uppercase text-muted">{documentSource.file_type}</dd>
+                      </div>
+                      <div>
+                        <dt className="font-semibold text-ink">Characters</dt>
+                        <dd className="mt-1 text-muted">{documentSource.character_count.toLocaleString()}</dd>
+                      </div>
+                      {documentSource.page_count !== null ? (
+                        <div>
+                          <dt className="font-semibold text-ink">Pages</dt>
+                          <dd className="mt-1 text-muted">{documentSource.page_count}</dd>
+                        </div>
+                      ) : null}
+                      {documentSource.paragraph_count !== null ? (
+                        <div>
+                          <dt className="font-semibold text-ink">Paragraphs</dt>
+                          <dd className="mt-1 text-muted">{documentSource.paragraph_count}</dd>
+                        </div>
+                      ) : null}
+                    </dl>
+                    {documentSource.warnings.length > 0 ? (
+                      <div className="mt-4 space-y-2">
+                        {documentSource.warnings.map((warning) => (
+                          <p
+                            key={warning}
+                            className="rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-sm font-medium text-amber-800"
+                          >
+                            {warning}
+                          </p>
+                        ))}
+                      </div>
+                    ) : null}
+                  </div>
+                ) : null}
+              </section>
+
               <label className="block">
                 <span className="text-sm font-semibold text-ink">Resume Text</span>
                 <textarea
@@ -212,7 +376,7 @@ export function ResumeParsePage() {
                 <Button type="button" onClick={handleExtract} disabled={isExtracting}>
                   {isExtracting ? "Extracting..." : "Extract Skills"}
                 </Button>
-                <Button type="button" variant="secondary" onClick={() => setResumeText("")}>
+                <Button type="button" variant="secondary" onClick={handleClearText}>
                   Clear Text
                 </Button>
               </div>

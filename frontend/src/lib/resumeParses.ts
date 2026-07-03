@@ -30,6 +30,20 @@ export type ResumeParse = {
   updated_at: string;
 };
 
+export type ResumeDocumentSource = {
+  file_name: string;
+  file_type: "pdf" | "docx";
+  character_count: number;
+  page_count: number | null;
+  paragraph_count: number | null;
+  warnings: string[];
+};
+
+export type ResumeDocumentExtractionResult = {
+  text: string;
+  source: ResumeDocumentSource;
+};
+
 export type ResumeParseInput = {
   user_id: string;
   source_kind: "resume_text";
@@ -69,6 +83,49 @@ export function isSkillExtractionResult(value: unknown): value is SkillExtractio
   );
 }
 
+function isResumeDocumentExtractionResult(value: unknown): value is ResumeDocumentExtractionResult {
+  if (!value || typeof value !== "object") {
+    return false;
+  }
+
+  const result = value as Record<string, unknown>;
+  const source = result.source as Record<string, unknown> | undefined;
+
+  return (
+    typeof result.text === "string" &&
+    Boolean(source) &&
+    typeof source === "object" &&
+    typeof source.file_name === "string" &&
+    (source.file_type === "pdf" || source.file_type === "docx") &&
+    typeof source.character_count === "number" &&
+    (typeof source.page_count === "number" || source.page_count === null) &&
+    (typeof source.paragraph_count === "number" || source.paragraph_count === null) &&
+    isStringArray(source.warnings)
+  );
+}
+
+function messageFromApiError(data: unknown, fallback: string) {
+  if (!data || typeof data !== "object" || !("detail" in data)) {
+    return fallback;
+  }
+
+  const detail = (data as { detail: unknown }).detail;
+
+  if (typeof detail === "string") {
+    return detail;
+  }
+
+  if (Array.isArray(detail) && detail.length > 0) {
+    const firstDetail = detail[0];
+
+    if (firstDetail && typeof firstDetail === "object" && "msg" in firstDetail && typeof firstDetail.msg === "string") {
+      return firstDetail.msg;
+    }
+  }
+
+  return fallback;
+}
+
 export async function extractResumeSkills(text: string): Promise<SkillExtractionResult> {
   const response = await fetch(`${apiBaseUrl}/parsing/extract-skills`, {
     method: "POST",
@@ -86,6 +143,32 @@ export async function extractResumeSkills(text: string): Promise<SkillExtraction
 
   if (!isSkillExtractionResult(data)) {
     throw new Error("The parser returned an unexpected response.");
+  }
+
+  return data;
+}
+
+export async function extractResumeDocumentText(file: File): Promise<ResumeDocumentExtractionResult> {
+  const formData = new FormData();
+  formData.append("file", file);
+
+  const response = await fetch(`${apiBaseUrl}/parsing/resume/extract-document`, {
+    method: "POST",
+    body: formData,
+  });
+
+  const data: unknown = await response.json().catch(() => null);
+
+  if (!response.ok) {
+    throw new Error(messageFromApiError(data, "Unable to extract text from this resume document."));
+  }
+
+  if (!isResumeDocumentExtractionResult(data)) {
+    throw new Error("The document extractor returned an unexpected response.");
+  }
+
+  if (!data.text.trim()) {
+    throw new Error("The document did not contain readable text. Please paste your resume text manually.");
   }
 
   return data;

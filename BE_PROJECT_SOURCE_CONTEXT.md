@@ -1,8 +1,8 @@
 # BE Project Source Context
 
 **Last updated:** 3 July 2026  
-**Current milestone:** Milestone 3F-C — Resume Parser Upload Input Integration  
-**Current status:** Milestone 0, Milestone 1, Milestone 2A, Milestone 2B, Milestone 3A, Milestone 3B, Milestone 3C, Milestone 3D, Milestone 3E, Milestone 3F-A, and Milestone 3F-B completed and tested; Milestone 3F-C is the next planned implementation step  
+**Current milestone:** Milestone 3G — Verification and Hardening  
+**Current status:** Milestone 0, Milestone 1, Milestone 2A, Milestone 2B, Milestone 3A, Milestone 3B, Milestone 3C, Milestone 3D, Milestone 3E, and Milestone 3F completed and tested; Milestone 3G is the next planned implementation step  
 **Primary project rule:** This source context overrides old report/PPT/paper content unless the user explicitly says otherwise.  
 **Use rule:** Future chats should treat this file as project memory, not as a task prompt.
 ---
@@ -327,6 +327,8 @@ Milestone 3D Resume Text Parsing Review UI + Save Flow has been completed and te
 Milestone 3E Gig Description Parsing Review UI + Save Flow has been completed and tested.
 Milestone 3F-A Document Text Extraction Utilities has been completed and tested with real PyMuPDF and python-docx dependencies.
 Milestone 3F-B Stateless Resume Document Extraction Endpoint has been completed and tested.
+Milestone 3F-C Resume Parser Upload Input Integration has been completed and tested.
+Milestone 3F PDF/DOCX Text Extraction has been completed and tested.
 
 ### Milestone 0 Completed
 
@@ -410,7 +412,7 @@ Admin accounts should be created manually later by the project owner through Sup
 
 The current active task gate is:
 
-> Milestone 3F-C — Resume Parser Upload Input Integration.
+> Milestone 3G — Verification and Hardening.
 
 ---
 
@@ -418,9 +420,9 @@ The current active task gate is:
 
 Before moving to AI matching, embeddings, recommendations, explainability, or dashboards, complete and verify:
 
-> Milestone 3F-C — Resume Parser Upload Input Integration.
+> Milestone 3G — Verification and Hardening.
 
-Split Milestone 3 safely into Milestone 3A skill taxonomy and extraction utilities, Milestone 3B stateless backend parsing endpoints, Milestone 3C parsing database foundation, Milestone 3D resume text parsing review UI and save flow, Milestone 3E gig description parsing review UI and save flow, Milestone 3F-A document text extraction utilities, Milestone 3F-B stateless resume document extraction endpoint, Milestone 3F-C resume parser upload input integration, Milestone 3F-D document extraction verification and docs, and Milestone 3G verification and hardening.
+Split Milestone 3 safely into Milestone 3A skill taxonomy and extraction utilities, Milestone 3B stateless backend parsing endpoints, Milestone 3C parsing database foundation, Milestone 3D resume text parsing review UI and save flow, Milestone 3E gig description parsing review UI and save flow, Milestone 3F PDF/DOCX text extraction, and Milestone 3G verification and hardening.
 
 Do not start AI matching, embeddings, recommendations, explainability, or admin analytics until parsing utilities and structured data flows are stable.
 
@@ -722,7 +724,7 @@ Goal:
 
 ### Milestone 3F: PDF/DOCX Text Extraction
 
-Status: **Incomplete**
+Status: **Completed and tested**
 
 Goal:
 
@@ -750,21 +752,12 @@ Goal:
 
 ### Milestone 3F-C: Resume Parser Upload Input Integration
 
-Status: **Planned**
+Status: **Completed and tested**
 
 Goal:
 
 - Add document upload as an input method for existing resume text review flow
 - No storage buckets until explicitly designed
-
-### Milestone 3F-D: Document Extraction Verification and Docs
-
-Status: **Planned**
-
-Goal:
-
-- Verify extraction behavior across useful document edge cases
-- Document limitations and manual fallback behavior
 
 ### Milestone 3G: Verification and Hardening
 
@@ -833,10 +826,8 @@ Goal:
 
 Begin Milestone 3 in smaller safe steps:
 
-1. Milestone 3F-C: Add resume parser upload input integration.
-2. Milestone 3F-D: Verify document extraction and docs.
-3. Milestone 3G: Verify and harden parsing before matching starts.
-4. Commit each step separately.
+1. Milestone 3G: Verify and harden parsing before matching starts.
+2. Commit each step separately.
 
 Do not begin AI matching, embeddings, recommendations, explainability, or dashboards before parsing utilities and structured data flows are stable.
 
@@ -1140,13 +1131,13 @@ Use one of these prompts in a new chat after adding this file to project sources
 ### Review Parser
 
 ```text
-Continue the BE project from the source context. We are starting Milestone 3F-C. Help me implement resume parser upload input integration.
+Continue the BE project from the source context. We are starting Milestone 3G. Help me verify and harden the full parsing pipeline before matching.
 ```
 
 ### Create Next Codex Prompt
 
 ```text
-Continue the BE project from the source context. Create the next Codex prompt for Milestone 3F-C resume parser upload input integration.
+Continue the BE project from the source context. Create the next Codex prompt for Milestone 3G verification and hardening.
 ```
 
 ### Explain Architecture for Viva
@@ -1202,7 +1193,7 @@ The database now includes:
 
 The current next action is:
 
-> Milestone 3F-C — Resume Parser Upload Input Integration.
+> Milestone 3G — Verification and Hardening.
 
 Milestone 3 remains split safely into smaller steps:
 
@@ -1211,10 +1202,7 @@ Milestone 3 remains split safely into smaller steps:
 - Milestone 3C: Parsing database foundation
 - Milestone 3D: Resume text parsing review UI + save flow
 - Milestone 3E: Gig description parsing review UI + save flow
-- Milestone 3F-A: Document text extraction utilities
-- Milestone 3F-B: Stateless resume document extraction endpoint
-- Milestone 3F-C: Resume parser upload input integration
-- Milestone 3F-D: Document extraction verification and docs
+- Milestone 3F: PDF/DOCX text extraction
 - Milestone 3G: Verification and hardening
 
 Do not proceed to AI matching, embeddings, recommendations, explainability, or dashboards until parsing utilities and structured data flows are stable.
