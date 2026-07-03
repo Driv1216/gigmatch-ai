@@ -306,7 +306,7 @@ The page calls `POST /parsing/extract-skills` for deterministic parsing and save
 
 ## Current Milestone Status
 
-Milestones 0, 1, 2A, 2B, 3A, 3B, 3C, and 3D are complete and tested. Milestone 3E is implemented locally and pending manual review:
+Milestones 0, 1, 2A, 2B, 3A, 3B, 3C, 3D, 3E, 3F-A, and 3F-B are complete and tested. Milestone 3F-C resume parser upload input integration is planned next:
 
 - Foundation repo structure, frontend, backend, routing, and docs added
 - Supabase auth client configured
@@ -323,9 +323,11 @@ Milestones 0, 1, 2A, 2B, 3A, 3B, 3C, and 3D are complete and tested. Milestone 3
 - `resume_parses` and `gig_parses` persistence foundation added
 - Resume text parsing review UI and save/fetch flow added
 - Gig description parsing review UI and save/fetch flow added
+- Backend PDF/DOCX text extraction utilities added
+- Stateless resume document text extraction endpoint added
 - Backend auth verification stubs added for future work
 
-Milestone 3 overall remains incomplete until PDF/DOCX text extraction, verification/hardening, and later matching work are completed.
+Milestone 3 overall remains incomplete until the remaining PDF/DOCX upload integration work, verification/hardening, and later matching work are completed.
 
 ## Planned Future Modules
 

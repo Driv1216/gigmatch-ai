@@ -2,7 +2,7 @@
 
 ## Milestone 0: Foundation
 
-Status: Complete.
+Status: Complete and tested.
 
 Create the monorepo structure, React + Vite + TypeScript frontend, FastAPI backend, basic routing, placeholder pages, placeholder backend routers, and initial documentation.
 
@@ -26,7 +26,7 @@ Build real client gig posting flows without AI matching. The local implementatio
 
 ## Milestone 3: Resume/Gig Parsing
 
-Status: Incomplete. Milestone 3A, Milestone 3B, Milestone 3C, and Milestone 3D are complete and tested; Milestone 3E is implemented locally and pending manual review.
+Status: Incomplete. Milestone 3A, Milestone 3B, Milestone 3C, Milestone 3D, Milestone 3E, Milestone 3F-A, and Milestone 3F-B are complete and tested; Milestone 3F-C is planned next.
 
 Introduce resume parsing, gig parsing, and normalized skill extraction inputs.
 
@@ -56,15 +56,39 @@ Add a freelancer-only pasted resume text parser, editable parsed-output review U
 
 ### Milestone 3E: Gig Description Parsing Review UI + Save Flow
 
-Status: Implemented locally; pending manual review.
+Status: Complete.
 
 Add a client-only existing gig description parser, editable parsed-output review UI, and save/fetch flow through the frontend Supabase client and RLS. This milestone does not add AI matching or recommendations.
 
 ### Milestone 3F: PDF/DOCX Text Extraction
 
-Status: Planned.
+Status: Incomplete. Milestone 3F-A and Milestone 3F-B are complete and tested; Milestone 3F-C and 3F-D are planned.
 
 Add document text extraction after text-paste parsing flows are stable.
+
+### Milestone 3F-A: Document Text Extraction Utilities
+
+Status: Complete and tested.
+
+Add backend-only utilities that extract plain text and metadata from PDF/DOCX bytes or paths. This step does not add upload routes, frontend upload UI, storage, parser calls, database writes, OCR, AI extraction, embeddings, matching, or recommendations.
+
+### Milestone 3F-B: Stateless Resume Document Extraction Endpoint
+
+Status: Complete and tested.
+
+Expose a backend endpoint for document text extraction using the completed utility layer.
+
+### Milestone 3F-C: Resume Parser Upload Input Integration
+
+Status: Planned.
+
+Add document upload as an input method for the existing resume review flow.
+
+### Milestone 3F-D: Document Extraction Verification and Docs
+
+Status: Planned.
+
+Harden document extraction edge cases and document manual verification behavior.
 
 ### Milestone 3G: Verification and Hardening
 

@@ -86,6 +86,48 @@ Architecture:
 - The parser pre-fills extracted skills as required skills; clients manually separate required/preferred skills.
 - Seniority and deliverables stay manually editable and are not AI-inferred.
 
+## Milestone 3F-A: Document Text Extraction Utilities
+
+Milestone 3F-A adds backend-only utilities for extracting plain text from PDF and DOCX documents.
+
+The utility lives in `backend/app/services/document_text_extractor.py` and supports:
+
+- Text-based PDF extraction.
+- DOCX paragraph extraction.
+- File extension validation for `.pdf` and `.docx`.
+- Metadata including file type, character count, warnings, page count for PDFs, and paragraph count for DOCX files.
+- A clear warning for scanned or image-based PDFs when readable text cannot be extracted.
+
+This milestone does not add upload routes, frontend upload controls, file storage, OCR, parser calls, database writes, or AI extraction. Extracted text will later be used to fill the existing resume text review flow.
+
+## Milestone 3F-B: Stateless Resume Document Extraction Endpoint
+
+Milestone 3F-B adds a backend-only multipart upload endpoint for extracting resume document text:
+
+```text
+POST /parsing/resume/extract-document
+```
+
+The endpoint accepts exactly one `.pdf` or `.docx` file up to 5 MB, extracts plain text through `backend/app/services/document_text_extractor.py`, and returns the extracted text plus source metadata and warnings.
+
+Example response:
+
+```json
+{
+  "text": "Resume text...",
+  "source": {
+    "file_name": "resume.pdf",
+    "file_type": "pdf",
+    "character_count": 8421,
+    "page_count": 2,
+    "paragraph_count": null,
+    "warnings": []
+  }
+}
+```
+
+This endpoint is stateless. It does not parse skills automatically, call the resume parser, save files, save extracted text, write to `resume_parses`, update `freelancer_profiles`, use Supabase storage, use OCR, perform AI extraction, create embeddings, or run matching/recommendations. A later frontend milestone can use the returned text to fill the existing resume text area for manual review.
+
 ## Output Contract
 
 ```json
@@ -124,15 +166,15 @@ The extractor avoids partial-word matches, so `react` matches `React`, but `reac
 
 ## Intentionally Not Implemented
 
-Milestone 3A through Milestone 3E do not include:
+Milestone 3A through Milestone 3F-B do not include:
 
-- PDF parsing
-- DOCX parsing
-- Resume upload
-- File upload
+- Frontend resume upload UI
+- Persistent file upload/storage
 - Storage buckets
 - Backend database write endpoints
 - Backend JWT verification
+- OCR
+- Parser calls from document extraction
 - AI extraction
 - Embeddings
 - Matching or recommendations
@@ -149,4 +191,4 @@ Future resume and gig parsers can feed extracted plain text into the same determ
 - The taxonomy is a practical starter list, not a complete global skill ontology.
 - The extractor only finds known aliases from the taxonomy.
 - It does not infer seniority, years of experience, proficiency, project context, or semantic similarity.
-- It does not parse files or persist parsed results.
+- Document extraction does not infer skills, store files, or persist parsed results.
