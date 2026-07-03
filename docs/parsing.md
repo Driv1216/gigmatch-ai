@@ -72,6 +72,20 @@ Architecture:
 - Full raw resume text is not stored.
 - `freelancer_profiles` is not updated automatically.
 
+## Milestone 3E: Gig Description Parsing Review UI
+
+Milestone 3E adds a client-only frontend page at `/gigs/:id/parse`.
+
+The page lets a client review an existing gig title/description, call the stateless backend parser, review/edit required skills, preferred skills, categories, matched terms, deliverables, and seniority level, then save the reviewed result to `public.gig_parses` with the frontend Supabase client. Supabase Auth session plus RLS enforce gig ownership through `public.gigs.client_id`.
+
+Architecture:
+
+- Parsing uses `POST /parsing/extract-skills`.
+- Save/fetch uses the browser Supabase client and `public.gig_parses`.
+- The original `gigs` row is not updated automatically.
+- The parser pre-fills extracted skills as required skills; clients manually separate required/preferred skills.
+- Seniority and deliverables stay manually editable and are not AI-inferred.
+
 ## Output Contract
 
 ```json
@@ -110,7 +124,7 @@ The extractor avoids partial-word matches, so `react` matches `React`, but `reac
 
 ## Intentionally Not Implemented
 
-Milestone 3A through Milestone 3D do not include:
+Milestone 3A through Milestone 3E do not include:
 
 - PDF parsing
 - DOCX parsing
@@ -124,6 +138,7 @@ Milestone 3A through Milestone 3D do not include:
 - Matching or recommendations
 - Backend Supabase writes or service-role usage
 - Freelancer profile auto-update
+- Original gig auto-update
 
 ## How This Prepares Later Parsing
 

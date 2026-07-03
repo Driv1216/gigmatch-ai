@@ -7,6 +7,7 @@ import { ClientProfilePage } from "./pages/ClientProfilePage";
 import { EditGigPage } from "./pages/EditGigPage";
 import { FreelancerDashboardPage } from "./pages/FreelancerDashboardPage";
 import { FreelancerProfilePage } from "./pages/FreelancerProfilePage";
+import { GigParsePage } from "./pages/GigParsePage";
 import { LandingPage } from "./pages/LandingPage";
 import { LoginPage } from "./pages/LoginPage";
 import { ManageGigsPage } from "./pages/ManageGigsPage";
@@ -82,6 +83,14 @@ export default function App() {
           element={
             <ProtectedRoute allowedRole="client">
               <EditGigPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/gigs/:id/parse"
+          element={
+            <ProtectedRoute allowedRole="client">
+              <GigParsePage />
             </ProtectedRoute>
           }
         />

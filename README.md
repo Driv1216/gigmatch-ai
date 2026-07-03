@@ -275,7 +275,7 @@ To apply the SQL:
 - `public.resume_parses`
 - `public.gig_parses`
 
-Both tables enable RLS. Freelancers can access only their own resume parse row, and clients can access only parse rows for gigs they own. The current frontend uses `resume_parses` for reviewed pasted-text resume extraction.
+Both tables enable RLS. Freelancers can access only their own resume parse row, and clients can access only parse rows for gigs they own. The current frontend uses `resume_parses` for reviewed pasted-text resume extraction and `gig_parses` for reviewed existing-gig requirement extraction.
 
 ## Test Resume Text Parser
 
@@ -290,9 +290,23 @@ Both tables enable RLS. Freelancers can access only their own resume parse row, 
 
 The page calls `POST /parsing/extract-skills` for deterministic parsing and saves reviewed output directly to `public.resume_parses` through the frontend Supabase client and RLS. It does not upload PDF/DOCX files, store full raw resume text, update `freelancer_profiles`, or use AI extraction.
 
+## Test Gig Requirement Parser
+
+1. Start the backend and frontend.
+2. Login as a `client`.
+3. Open `/gigs/manage`.
+4. Click `Parse Requirements` on an existing gig.
+5. Confirm the gig title and description appear.
+6. Click `Extract Requirements`.
+7. Review or edit required skills, preferred skills, categories, matched terms, seniority, and deliverables.
+8. Save the reviewed result and confirm the success message appears.
+9. Refresh `/gigs/:id/parse` and confirm the saved result loads again.
+
+The page calls `POST /parsing/extract-skills` for deterministic parsing and saves reviewed output directly to `public.gig_parses` through the frontend Supabase client and RLS. It does not mutate the original `gigs` row, use AI extraction, or create matching/recommendation output.
+
 ## Current Milestone Status
 
-Milestones 0, 1, 2A, 2B, 3A, 3B, and 3C are complete and tested. Milestone 3D is implemented locally and pending manual review:
+Milestones 0, 1, 2A, 2B, 3A, 3B, 3C, and 3D are complete and tested. Milestone 3E is implemented locally and pending manual review:
 
 - Foundation repo structure, frontend, backend, routing, and docs added
 - Supabase auth client configured
@@ -308,13 +322,13 @@ Milestones 0, 1, 2A, 2B, 3A, 3B, and 3C are complete and tested. Milestone 3D is
 - Stateless backend parsing endpoint added
 - `resume_parses` and `gig_parses` persistence foundation added
 - Resume text parsing review UI and save/fetch flow added
+- Gig description parsing review UI and save/fetch flow added
 - Backend auth verification stubs added for future work
 
-Milestone 3 overall remains incomplete until gig parsing UI, PDF/DOCX text extraction, verification/hardening, and later matching work are completed.
+Milestone 3 overall remains incomplete until PDF/DOCX text extraction, verification/hardening, and later matching work are completed.
 
 ## Planned Future Modules
 
-- Gig parsing review UI
 - PDF/DOCX text extraction
 - Freelancer recommendations
 - Embeddings

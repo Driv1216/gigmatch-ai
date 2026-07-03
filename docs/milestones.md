@@ -26,7 +26,7 @@ Build real client gig posting flows without AI matching. The local implementatio
 
 ## Milestone 3: Resume/Gig Parsing
 
-Status: Incomplete. Milestone 3A, Milestone 3B, and Milestone 3C are complete and tested; Milestone 3D is implemented locally and pending manual review.
+Status: Incomplete. Milestone 3A, Milestone 3B, Milestone 3C, and Milestone 3D are complete and tested; Milestone 3E is implemented locally and pending manual review.
 
 Introduce resume parsing, gig parsing, and normalized skill extraction inputs.
 
@@ -50,15 +50,15 @@ Add safe database persistence for parsed resume and gig outputs after the statel
 
 ### Milestone 3D: Resume Text Parsing Review UI + Save Flow
 
-Status: Implemented locally; pending manual review.
+Status: Complete.
 
 Add a freelancer-only pasted resume text parser, editable parsed-output review UI, and save/fetch flow through the frontend Supabase client and RLS. This milestone does not add PDF/DOCX upload.
 
-### Milestone 3E: Gig Description Parsing + Editable Parsed-Output UI + Save Flow
+### Milestone 3E: Gig Description Parsing Review UI + Save Flow
 
-Status: Planned.
+Status: Implemented locally; pending manual review.
 
-Add messy gig description parsing and client review flows after the shared parsing foundation is stable.
+Add a client-only existing gig description parser, editable parsed-output review UI, and save/fetch flow through the frontend Supabase client and RLS. This milestone does not add AI matching or recommendations.
 
 ### Milestone 3F: PDF/DOCX Text Extraction
 

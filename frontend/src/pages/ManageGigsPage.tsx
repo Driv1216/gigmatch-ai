@@ -117,9 +117,14 @@ export function ManageGigsPage() {
                     <p className="mt-2 text-sm leading-6 text-muted">Deadline: {formatDate(gig.deadline)}</p>
                     <p className="mt-2 text-xs font-medium text-muted">Updated {formatUpdatedAt(gig.updated_at)}</p>
                   </div>
-                  <Button to={`/gigs/${gig.id}/edit`} variant="secondary">
-                    Edit Gig
-                  </Button>
+                  <div className="flex flex-wrap gap-3">
+                    <Button to={`/gigs/${gig.id}/parse`} variant="secondary">
+                      Parse Requirements
+                    </Button>
+                    <Button to={`/gigs/${gig.id}/edit`} variant="secondary">
+                      Edit Gig
+                    </Button>
+                  </div>
                 </div>
               </article>
             ))}
