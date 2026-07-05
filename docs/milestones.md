@@ -156,9 +156,31 @@ No APIs, JWT auth, Supabase access, database queries or writes, frontend recomme
 
 ### Milestone 4F: Auth-Safe Bidirectional Backend Matching APIs
 
-Status: Planned next.
+Status: Split into 4F-A and 4F-B.
 
 Expose the completed backend matching engines through authenticated, role-safe backend APIs without leaking cross-owner data.
+
+### Milestone 4F-A: Auth-Safe Matching Data Access Layer
+
+Status: Complete and tested.
+
+Backend auth-safe matching data access implemented for future matching APIs. This verifies authenticated users before matching data is loaded, uses `user_profiles.role` as the trusted role source, recognizes admin without granting automatic matching bypass, reads existing Supabase tables only, performs read-only data access, enforces owner-based freelancer/client access, prevents clients from loading another client's gig, selects latest reviewed/saved parse rows using schema-supported `status`, `updated_at`, and `created_at` columns, and converts database rows into existing normalized matching entities.
+
+No final matching API routes, 4E ranker calls, frontend UI, explanations, skill-gap recommendations, admin analytics, evaluation metrics, pgvector, FAISS, database writes, or saved match results yet.
+
+### Milestone 4F-B: Bidirectional Backend Matching API Routes
+
+Status: Complete and tested.
+
+Authenticated freelancer-to-gigs and client-gig-to-freelancers backend matching routes implemented. This exposes compact hybrid recommendation envelopes through `GET /matching/recommended-gigs` and `GET /matching/gigs/{gig_id}/recommended-freelancers`, using the completed 4F-A data access layer and 4E hybrid ranker with role, token, ownership, and limit validation.
+
+No frontend recommendation UI, explanations, skill-gap recommendations, admin analytics, evaluation metrics, pgvector, FAISS, database writes, or saved match results yet.
+
+### Milestone 4G: Matching Verification and Docs Closure
+
+Status: Planned next.
+
+Verify the completed matching API behavior, document expected setup and smoke-test flows, and close the Milestone 4 backend matching implementation before moving to explainability.
 
 ## Milestone 5: Explainability and Skill Gap
 
