@@ -2,7 +2,7 @@
 
 An AI-powered tech gig discovery and matching platform for freelancers, students, developers, and clients.
 
-This repository currently contains the BE project foundation, Supabase authentication, role-based frontend routing, structured profile setup for freelancers and clients, client-side gig posting, deterministic skill extraction, parsing persistence tables, and a text-based resume parsing review flow. AI matching, file-based resume parsing, recommendations, and evaluation dashboards are planned for later milestones.
+This repository currently contains the BE project foundation, Supabase authentication, role-based frontend routing, structured profile setup for freelancers and clients, client-side gig posting, deterministic skill extraction, parsing persistence, document text extraction, and verified backend matching APIs. Frontend recommendation UI, explainability, skill-gap recommendations, evaluation dashboards, and production-scale retrieval are planned for later milestones.
 
 ## Tech Stack
 
@@ -304,9 +304,20 @@ The page calls `POST /parsing/extract-skills` for deterministic parsing and save
 
 The page calls `POST /parsing/extract-skills` for deterministic parsing and saves reviewed output directly to `public.gig_parses` through the frontend Supabase client and RLS. It does not mutate the original `gigs` row, use AI extraction, or create matching/recommendation output.
 
+## Backend Matching APIs
+
+Milestone 4 backend matching is complete and tested. The backend now supports normalized matching entities, keyword scoring, semantic similarity, hybrid ranking, auth-safe data access, and two authenticated matching routes:
+
+- `GET /matching/recommended-gigs`
+- `GET /matching/gigs/{gig_id}/recommended-freelancers`
+
+Both routes require a bearer token, enforce trusted roles from `user_profiles`, validate `limit` from `1` to `50`, and return compact hybrid recommendation envelopes. Details, privacy boundaries, manual smoke steps, and known limitations are documented in [docs/matching.md](docs/matching.md).
+
+Milestone 4 does not add frontend recommendation UI, natural-language explanations, skill-gap recommendations, admin analytics, ranking metrics, pgvector/FAISS retrieval, saved match history, or behavioral feedback learning.
+
 ## Current Milestone Status
 
-Milestones 0, 1, 2A, 2B, 3A, 3B, 3C, 3D, 3E, and 3F are complete and tested. Milestone 3G verification and hardening is planned next:
+Milestones 0, 1, 2A, 2B, 3, and 4 are complete and tested. Milestone 5 — Explainability and Skill Gap — is planned next:
 
 - Foundation repo structure, frontend, backend, routing, and docs added
 - Supabase auth client configured
@@ -326,16 +337,16 @@ Milestones 0, 1, 2A, 2B, 3A, 3B, 3C, 3D, 3E, and 3F are complete and tested. Mil
 - Backend PDF/DOCX text extraction utilities added
 - Stateless resume document text extraction endpoint added
 - Resume parser PDF/DOCX upload input integration added
-- Backend auth verification stubs added for future work
+- Parser verification and security/data-flow checklist completed
+- Backend matching contracts, builders, keyword scoring, semantic scoring, hybrid ranking, auth-safe data access, and matching API routes added
+- Matching verification and docs closure completed
 
-Milestone 3 overall remains incomplete until parser verification/hardening is completed. Matching, embeddings, recommendations, explainability, and admin analytics remain planned for later milestones.
+Explainability, skill-gap recommendations, frontend recommendation UI, admin analytics, ranking metrics, pgvector/FAISS retrieval, saved match history, and behavioral feedback learning remain planned for later milestones.
 
 ## Planned Future Modules
 
-- PDF/DOCX text extraction
-- Freelancer recommendations
-- Embeddings
+- Frontend recommendation UI
+- Match explanations
+- Skill-gap recommendations
 - pgvector matching
-- Hybrid ranking
-- Explainability
 - Evaluation dashboard

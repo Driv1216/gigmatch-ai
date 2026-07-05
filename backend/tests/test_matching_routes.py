@@ -122,6 +122,27 @@ class MatchingRouteTests(unittest.TestCase):
         self.assertEqual(status, 422)
         self.assertIn("detail", data)
 
+    def test_matching_routes_are_registered(self):
+        paths = {getattr(route, "path", "") for route in app.routes}
+
+        self.assertIn("/matching/recommended-gigs", paths)
+        self.assertIn("/matching/gigs/{gig_id}/recommended-freelancers", paths)
+
+    def test_auth_failure_happens_before_embedding_provider_configuration(self):
+        provider_calls: list[str] = []
+
+        def provider_factory():
+            provider_calls.append("called")
+            raise AssertionError("Embedding provider should not load before auth succeeds.")
+
+        app.dependency_overrides[matching_routes.get_embedding_provider_factory] = lambda: provider_factory
+
+        status, data = get_json("/matching/recommended-gigs")
+
+        self.assertEqual(status, 401)
+        self.assertEqual(provider_calls, [])
+        self.assertNotIn("embedding", json.dumps(data).lower())
+
     def test_recommended_gigs_requires_valid_freelancer_auth(self):
         status, _ = get_json("/matching/recommended-gigs")
         self.assertEqual(status, 401)
@@ -223,6 +244,54 @@ class MatchingRouteTests(unittest.TestCase):
         self.assertEqual(status, 422)
         self.assertIn("detail", data)
 
+    def test_empty_candidate_lists_return_safe_empty_envelopes(self):
+        freelancer_data = matching_routes.prepare_freelancer_matching_data(
+            "Bearer token",
+            FakeAuthVerifier("freelancer-1"),
+            self.repo,
+        )
+        empty_freelancer_data = FreelancerMatchingData(
+            auth_context=freelancer_data.auth_context,
+            freelancer=freelancer_data.freelancer,
+            candidate_gigs=(),
+        )
+
+        self.auth_verifier = FakeAuthVerifier("client-1")
+        client_data = matching_routes.prepare_client_gig_matching_data(
+            "Bearer token",
+            "gig-1",
+            FakeAuthVerifier("client-1"),
+            self.repo,
+        )
+        empty_client_data = ClientGigMatchingData(
+            auth_context=client_data.auth_context,
+            gig=client_data.gig,
+            candidate_freelancers=(),
+        )
+
+        with patch.object(
+            matching_routes,
+            "prepare_freelancer_matching_data",
+            return_value=empty_freelancer_data,
+        ):
+            status, data = get_json("/matching/recommended-gigs", {"authorization": "Bearer token"})
+
+        self.assertEqual(status, 200)
+        self.assertEqual(data, {"items": [], "count": 0, "limit": 10, "ranking_method": "hybrid"})
+
+        with patch.object(
+            matching_routes,
+            "prepare_client_gig_matching_data",
+            return_value=empty_client_data,
+        ):
+            status, data = get_json(
+                "/matching/gigs/gig-1/recommended-freelancers",
+                {"authorization": "Bearer token"},
+            )
+
+        self.assertEqual(status, 200)
+        self.assertEqual(data, {"items": [], "count": 0, "limit": 10, "ranking_method": "hybrid"})
+
     def test_recommended_freelancers_requires_valid_client_auth_and_owned_gig(self):
         status, _ = get_json("/matching/gigs/gig-1/recommended-freelancers")
         self.assertEqual(status, 401)
@@ -313,6 +382,20 @@ class MatchingRouteTests(unittest.TestCase):
 
             self.assertEqual(status, expected_status)
             self.assertEqual(data["detail"], str(error))
+
+    def test_service_role_details_do_not_leak_in_error_payloads(self):
+        sensitive_text = "sensitive_service_key_should_not_appear"
+
+        with patch.object(
+            matching_routes,
+            "prepare_freelancer_matching_data",
+            side_effect=ForbiddenRoleError("forbidden"),
+        ):
+            status, data = get_json("/matching/recommended-gigs", {"authorization": "Bearer token"})
+
+        self.assertEqual(status, 403)
+        self.assertNotIn(sensitive_text, json.dumps(data))
+        self.assertNotIn("service", json.dumps(data).lower())
 
     def test_routes_use_fakes_without_loading_live_model_or_supabase(self):
         status, _ = get_json("/matching/recommended-gigs", {"authorization": "Bearer token"})

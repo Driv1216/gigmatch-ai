@@ -1,8 +1,8 @@
 # BE Project Source Context
 
 **Last updated:** 5 July 2026  
-**Current milestone:** Milestone 4E — Hybrid Ranking Engine  
-**Current status:** Milestone 0, Milestone 1, Milestone 2A, Milestone 2B, Milestone 3, and Milestone 4A-4D are complete and tested; Milestone 4E is the next implementation step  
+**Current milestone:** Milestone 5 — Explainability and Skill Gap  
+**Current status:** Milestone 0, Milestone 1, Milestone 2A, Milestone 2B, Milestone 3, and Milestone 4A-4G are complete and tested; Milestone 4 backend matching is closed, and Milestone 5 is the next implementation step  
 **Primary project rule:** This source context overrides old report/PPT/paper content unless the user explicitly says otherwise.  
 **Use rule:** Future chats should treat this file as project memory, not as a task prompt.
 ---
@@ -336,6 +336,10 @@ Milestone 4A Matching Contract and Normalized Entity Builders has been completed
 Milestone 4B Keyword Baseline Scoring and Ranking has been completed and tested.
 Milestone 4C Semantic Text Builder + Embedding Provider Interface has been completed and tested.
 Milestone 4D Runtime Semantic Similarity Engine has been completed and tested.
+Milestone 4E Hybrid Ranking Engine has been completed and tested.
+Milestone 4F-A Auth-Safe Matching Data Access Layer has been completed and tested.
+Milestone 4F-B Bidirectional Backend Matching API Routes has been completed and tested.
+Milestone 4G Matching Verification and Docs Closure has been completed and tested.
 
 ### Milestone 0 Completed
 
@@ -419,26 +423,17 @@ Admin accounts should be created manually later by the project owner through Sup
 
 The current active task gate is:
 
-> Milestone 4E — Hybrid Ranking Engine.
+> Milestone 5 — Explainability and Skill Gap.
 
 ---
 
 ## Current Next Action Gate
 
-Milestone 3 parsing is complete and verified. Milestone 4A-4D are complete and tested. The next implementation step is:
+Milestone 3 parsing and Milestone 4 backend matching are complete and verified. The next implementation step is:
 
-> Milestone 4E — Hybrid Ranking Engine.
+> Milestone 5 — Explainability and Skill Gap.
 
-Continue Milestone 4 carefully in smaller backend-first steps. The matching contract, keyword baseline, semantic preparation layer, and runtime semantic ranker are complete; 4E should combine inspectable keyword and semantic scores into a hybrid ranking engine.
-
-Milestone 4 should introduce matching only within the agreed scope:
-
-- Keyword baseline matching: complete and tested
-- Semantic embedding similarity: complete and tested
-- Hybrid ranking: next
-- Bidirectional matching APIs
-
-Do not jump ahead to explainability dashboards, admin analytics, fake evaluation metrics, or Milestone 5/6 features until the Milestone 4 matching foundation is implemented and tested.
+Milestone 5 should build user-facing explanation and missing-skill functionality on top of the verified backend matching outputs. Keep it separate from admin analytics, fake evaluation metrics, pgvector/FAISS retrieval, saved match history, behavioral feedback learning, and Milestone 6 dashboard work unless a later task explicitly scopes those in.
 
 ---
 
@@ -785,18 +780,21 @@ Goal:
 
 ### Milestone 4: Matching Engine
 
-Status: **In progress**
+Status: **Completed and tested**
 
 Goal:
 
-- Keyword baseline: complete and tested
-- Semantic embedding similarity: complete and tested
-- Hybrid ranking: next
-- Bidirectional matching
+- Normalized matching entities
+- Keyword baseline scoring and ranking
+- Semantic text/provider interface and runtime semantic similarity
+- Hybrid ranking
+- Auth-safe data access
+- Bidirectional backend matching API routes
+- Verification and docs closure
 
 ### Milestone 5: Explainability and Skill Gap
 
-Status: **Planned**
+Status: **Planned next**
 
 Goal:
 
@@ -838,15 +836,14 @@ Goal:
 
 ## Near-Term Next Tasks
 
-Continue Milestone 4 in smaller safe steps:
+Begin Milestone 5 in smaller safe steps:
 
-1. Implement Milestone 4E Hybrid Ranking Engine over existing keyword and semantic score outputs.
-2. Keep 4E backend-only and pure: no APIs, Supabase queries/writes, UI, explanations, or evaluation dashboards.
-3. Preserve inspectable keyword and semantic score components inside hybrid results.
-4. Add focused backend unit tests and run the established backend unittest suite.
-5. Commit each milestone step separately.
+1. Design the explanation contract over existing matching results without changing the verified Milestone 4 route privacy boundary accidentally.
+2. Add focused tests before exposing any user-facing explanation or skill-gap wording.
+3. Keep admin analytics, ranking metrics, fake production claims, pgvector/FAISS retrieval, saved match history, and behavioral feedback learning out of Milestone 5 unless explicitly scoped later.
+4. Commit each milestone step separately.
 
-Do not begin explainability dashboards, admin analytics, fake evaluation metrics, or Milestone 5/6 features before the Milestone 4 matching engine is stable.
+Do not begin admin analytics, fake evaluation metrics, Milestone 6 dashboard features, or production-scale claims during Milestone 5.
 
 ---
 
@@ -1210,7 +1207,7 @@ The database now includes:
 
 The current next action is:
 
-> Milestone 4E — Hybrid Ranking Engine.
+> Milestone 5 — Explainability and Skill Gap.
 
 Milestone 3 is complete and was split safely into smaller steps:
 
@@ -1228,7 +1225,9 @@ Milestone 4 backend foundation progress:
 - Milestone 4B: Keyword baseline scoring and ranking — complete and tested
 - Milestone 4C: Semantic text builders and embedding provider interface — complete and tested
 - Milestone 4D: Runtime semantic similarity engine — complete and tested
-- Milestone 4E: Hybrid ranking engine — next
-- Later: Bidirectional matching APIs
+- Milestone 4E: Hybrid ranking engine — complete and tested
+- Milestone 4F-A: Auth-safe matching data access — complete and tested
+- Milestone 4F-B: Bidirectional backend matching API routes — complete and tested
+- Milestone 4G: Matching verification and docs closure — complete and tested
 
-Do not proceed to explainability dashboards, admin analytics, fake evaluation metrics, or Milestone 5/6 features until the matching engine is stable.
+Milestone 4 is closed. Do not proceed to admin analytics, fake evaluation metrics, or Milestone 6 features during Milestone 5 unless explicitly scoped later.

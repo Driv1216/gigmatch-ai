@@ -110,9 +110,11 @@ Document the current parsing data flows, static security/data-flow review, requi
 
 ## Milestone 4: Matching Engine
 
-Status: Current / next implementation phase.
+Status: Complete and tested.
 
-Add embeddings, pgvector semantic search, hybrid ranking, and matching APIs.
+Backend matching foundation implemented and verified. This includes normalized matching entities, keyword scoring, semantic text/provider interfaces, runtime semantic similarity, hybrid ranking, auth-safe data access, bidirectional backend matching API routes, and verification/docs closure.
+
+No frontend recommendation UI, explainability, skill-gap recommendations, admin analytics, ranking metrics, pgvector, FAISS, saved match history, behavioral feedback learning, or production-scale retrieval claims yet.
 
 ### Milestone 4A: Matching Contract and Normalized Entity Builders
 
@@ -156,7 +158,7 @@ No APIs, JWT auth, Supabase access, database queries or writes, frontend recomme
 
 ### Milestone 4F: Auth-Safe Bidirectional Backend Matching APIs
 
-Status: Split into 4F-A and 4F-B.
+Status: Complete and tested.
 
 Expose the completed backend matching engines through authenticated, role-safe backend APIs without leaking cross-owner data.
 
@@ -178,13 +180,13 @@ No frontend recommendation UI, explanations, skill-gap recommendations, admin an
 
 ### Milestone 4G: Matching Verification and Docs Closure
 
-Status: Planned next.
+Status: Complete and tested.
 
-Verify the completed matching API behavior, document expected setup and smoke-test flows, and close the Milestone 4 backend matching implementation before moving to explainability.
+Completed backend matching verification and documentation closure. This confirms the matching API routes are registered, role and ownership gates hold, auth failures are handled before provider configuration errors, `limit` validation is enforced, empty candidate lists return safe envelopes, normal unit tests use fakes without live Supabase or real model loading, opt-in Supabase smoke tests remain skipped by default, and documentation captures the implemented flow, route contracts, privacy boundary, manual smoke checklist, limitations, and next milestone.
 
 ## Milestone 5: Explainability and Skill Gap
 
-Status: Planned.
+Status: Planned next.
 
 Explain why gigs match a freelancer and identify missing or weak skills.
 
