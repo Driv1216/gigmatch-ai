@@ -1,7 +1,18 @@
 """Internal matching contracts, builders, and scoring/preparation utilities."""
 
 from app.matching.builders import build_freelancer_match_profile, build_gig_match_profile
-from app.matching.contracts import FreelancerMatchProfile, GigMatchProfile, NormalizedSkill
+from app.matching.contracts import (
+    ExplanationReason,
+    ExplanationReasonCode,
+    FreelancerMatchProfile,
+    GigMatchProfile,
+    MatchExplanation,
+    NormalizedSkill,
+    ScoreExplanation,
+    SkillEvidence,
+    SkillGapSeverity,
+    SkillGapSummary,
+)
 from app.matching.data_access import (
     AuthContext,
     ClientGigMatchingData,
@@ -56,6 +67,8 @@ __all__ = [
     "AuthContext",
     "ClientGigMatchingData",
     "ClientOwnedGigsData",
+    "ExplanationReason",
+    "ExplanationReasonCode",
     "ForbiddenRoleError",
     "FreelancerMatchingData",
     "HybridMatchResult",
@@ -64,12 +77,17 @@ __all__ = [
     "KeywordMatchResult",
     "KeywordScoreBreakdown",
     "MatchingRepository",
+    "MatchExplanation",
     "MissingProfileError",
     "NormalizedSkill",
     "ResourceNotFoundError",
     "ResourceOwnershipError",
     "SemanticMatchResult",
     "SemanticScoreBreakdown",
+    "ScoreExplanation",
+    "SkillEvidence",
+    "SkillGapSeverity",
+    "SkillGapSummary",
     "UnsupportedRoleError",
     "DeterministicFakeEmbeddingProvider",
     "EmbeddingProvider",

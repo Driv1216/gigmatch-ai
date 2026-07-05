@@ -186,9 +186,17 @@ Completed backend matching verification and documentation closure. This confirms
 
 ## Milestone 5: Explainability and Skill Gap
 
-Status: Planned next.
+Status: In progress.
 
 Explain why gigs match a freelancer and identify missing or weak skills.
+
+### Milestone 5A: Backend Explanation and Skill-Gap Contract
+
+Status: Complete and tested.
+
+Backend-only explanation and skill-gap contract models/enums implemented for future explainability work. This includes deterministic evidence-based reason codes, compact score explanation shape, skill evidence, skill-gap severity vocabulary, skill-gap summaries, and neutral match explanation shells that support both freelancer-to-gig and gig-to-freelancer use cases.
+
+No API response changes, frontend explanation UI, explanation text generation, skill-gap calculation logic, admin evaluation dashboard, ranking metrics, ranking formula changes, database writes, or database migrations yet.
 
 ## Milestone 6: Admin Evaluation Dashboard
 

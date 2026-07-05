@@ -1,6 +1,6 @@
 # Backend Matching
 
-Milestone 4 closes the backend matching foundation. It is backend-only: no frontend recommendation UI, natural-language explanations, skill-gap recommendations, admin analytics, ranking metrics, vector database retrieval, saved match history, or behavioral learning are implemented yet.
+Milestone 4 closes the backend matching foundation. Milestone 5A adds a backend-only explanation and skill-gap contract for future explainability work. There is still no frontend recommendation UI, natural-language explanation generation, skill-gap calculation logic, admin analytics, ranking metrics, vector database retrieval, saved match history, or behavioral learning implemented yet.
 
 ## Implemented Flow
 
@@ -12,6 +12,7 @@ Milestone 4 closes the backend matching foundation. It is backend-only: no front
 - 4F-A: auth-safe matching data access using verified Supabase tokens, trusted `user_profiles.role`, ownership checks, and read-only table access.
 - 4F-B: authenticated bidirectional backend matching API routes.
 - 4G: verification and documentation closure.
+- 5A: backend-only explanation and skill-gap contract models/enums for future explanation data.
 
 The default hybrid formula is:
 
@@ -20,6 +21,8 @@ hybrid_score = (0.55 * keyword_score) + (0.45 * semantic_score)
 ```
 
 The API response exposes compact score components only: `hybrid_score`, `keyword_score`, and `semantic_score`. Detailed internal scoring components remain backend internals for tests and future explainability work.
+
+Milestone 5A does not change API responses or ranking behavior. It defines serializable backend contracts for reason codes, compact score evidence, skill evidence, skill-gap summaries, and neutral match explanations that can support both freelancer-to-gig and gig-to-freelancer explanation flows later.
 
 ## Routes
 
@@ -144,6 +147,7 @@ cd backend
 ./.venv/bin/python -m unittest tests.test_semantic_matching
 ./.venv/bin/python -m unittest tests.test_semantic_ranker
 ./.venv/bin/python -m unittest tests.test_hybrid_matching
+./.venv/bin/python -m unittest tests.test_matching_explanation_contracts
 ./.venv/bin/python -m unittest tests.test_matching_data_access
 ./.venv/bin/python -m unittest tests.test_matching_routes
 ./.venv/bin/python -m unittest discover -s tests
@@ -197,6 +201,9 @@ curl -H "Authorization: Bearer <TOKEN>" \
 
 - No frontend recommendation UI yet.
 - No natural-language match explanations yet.
+- No matching API response explanation fields yet.
+- No explanation text generation yet.
+- No skill-gap calculation logic yet.
 - No skill-gap recommendations yet.
 - No admin evaluation dashboard yet.
 - No ranking metrics yet.
