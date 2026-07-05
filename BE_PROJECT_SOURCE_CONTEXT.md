@@ -1,8 +1,8 @@
 # BE Project Source Context
 
-**Last updated:** 3 July 2026  
-**Current milestone:** Milestone 3G — Verification and Hardening  
-**Current status:** Milestone 0, Milestone 1, Milestone 2A, Milestone 2B, Milestone 3A, Milestone 3B, Milestone 3C, Milestone 3D, Milestone 3E, and Milestone 3F completed and tested; Milestone 3G is the next planned implementation step  
+**Last updated:** 5 July 2026  
+**Current milestone:** Milestone 4E — Hybrid Ranking Engine  
+**Current status:** Milestone 0, Milestone 1, Milestone 2A, Milestone 2B, Milestone 3, and Milestone 4A-4D are complete and tested; Milestone 4E is the next implementation step  
 **Primary project rule:** This source context overrides old report/PPT/paper content unless the user explicitly says otherwise.  
 **Use rule:** Future chats should treat this file as project memory, not as a task prompt.
 ---
@@ -329,6 +329,13 @@ Milestone 3F-A Document Text Extraction Utilities has been completed and tested 
 Milestone 3F-B Stateless Resume Document Extraction Endpoint has been completed and tested.
 Milestone 3F-C Resume Parser Upload Input Integration has been completed and tested.
 Milestone 3F PDF/DOCX Text Extraction has been completed and tested.
+Milestone 3G-A Parser and Document Extraction Regression Hardening has been completed and tested.
+Milestone 3G-B Security/Data-Flow Review + End-to-End Verification Checklist has been completed after manual verification confirmation.
+Milestone 3 Resume/Gig Parsing is complete.
+Milestone 4A Matching Contract and Normalized Entity Builders has been completed and tested.
+Milestone 4B Keyword Baseline Scoring and Ranking has been completed and tested.
+Milestone 4C Semantic Text Builder + Embedding Provider Interface has been completed and tested.
+Milestone 4D Runtime Semantic Similarity Engine has been completed and tested.
 
 ### Milestone 0 Completed
 
@@ -412,19 +419,26 @@ Admin accounts should be created manually later by the project owner through Sup
 
 The current active task gate is:
 
-> Milestone 3G — Verification and Hardening.
+> Milestone 4E — Hybrid Ranking Engine.
 
 ---
 
 ## Current Next Action Gate
 
-Before moving to AI matching, embeddings, recommendations, explainability, or dashboards, complete and verify:
+Milestone 3 parsing is complete and verified. Milestone 4A-4D are complete and tested. The next implementation step is:
 
-> Milestone 3G — Verification and Hardening.
+> Milestone 4E — Hybrid Ranking Engine.
 
-Split Milestone 3 safely into Milestone 3A skill taxonomy and extraction utilities, Milestone 3B stateless backend parsing endpoints, Milestone 3C parsing database foundation, Milestone 3D resume text parsing review UI and save flow, Milestone 3E gig description parsing review UI and save flow, Milestone 3F PDF/DOCX text extraction, and Milestone 3G verification and hardening.
+Continue Milestone 4 carefully in smaller backend-first steps. The matching contract, keyword baseline, semantic preparation layer, and runtime semantic ranker are complete; 4E should combine inspectable keyword and semantic scores into a hybrid ranking engine.
 
-Do not start AI matching, embeddings, recommendations, explainability, or admin analytics until parsing utilities and structured data flows are stable.
+Milestone 4 should introduce matching only within the agreed scope:
+
+- Keyword baseline matching: complete and tested
+- Semantic embedding similarity: complete and tested
+- Hybrid ranking: next
+- Bidirectional matching APIs
+
+Do not jump ahead to explainability dashboards, admin analytics, fake evaluation metrics, or Milestone 5/6 features until the Milestone 4 matching foundation is implemented and tested.
 
 ---
 
@@ -659,7 +673,7 @@ Goal:
 
 ### Milestone 3: Resume/Gig Parsing
 
-Status: **Incomplete**
+Status: **Completed and tested**
 
 Goal:
 
@@ -761,7 +775,7 @@ Goal:
 
 ### Milestone 3G: Verification and Hardening
 
-Status: **Planned**
+Status: **Completed**
 
 Goal:
 
@@ -771,13 +785,13 @@ Goal:
 
 ### Milestone 4: Matching Engine
 
-Status: **Planned**
+Status: **In progress**
 
 Goal:
 
-- Keyword baseline
-- Semantic embedding similarity
-- Hybrid ranking
+- Keyword baseline: complete and tested
+- Semantic embedding similarity: complete and tested
+- Hybrid ranking: next
 - Bidirectional matching
 
 ### Milestone 5: Explainability and Skill Gap
@@ -824,12 +838,15 @@ Goal:
 
 ## Near-Term Next Tasks
 
-Begin Milestone 3 in smaller safe steps:
+Continue Milestone 4 in smaller safe steps:
 
-1. Milestone 3G: Verify and harden parsing before matching starts.
-2. Commit each step separately.
+1. Implement Milestone 4E Hybrid Ranking Engine over existing keyword and semantic score outputs.
+2. Keep 4E backend-only and pure: no APIs, Supabase queries/writes, UI, explanations, or evaluation dashboards.
+3. Preserve inspectable keyword and semantic score components inside hybrid results.
+4. Add focused backend unit tests and run the established backend unittest suite.
+5. Commit each milestone step separately.
 
-Do not begin AI matching, embeddings, recommendations, explainability, or dashboards before parsing utilities and structured data flows are stable.
+Do not begin explainability dashboards, admin analytics, fake evaluation metrics, or Milestone 5/6 features before the Milestone 4 matching engine is stable.
 
 ---
 
@@ -1128,16 +1145,16 @@ curl http://127.0.0.1:8000/health
 
 Use one of these prompts in a new chat after adding this file to project sources.
 
-### Review Parser
+### Start Matching
 
 ```text
-Continue the BE project from the source context. We are starting Milestone 3G. Help me verify and harden the full parsing pipeline before matching.
+Continue the BE project from the source context. We are starting Milestone 4. Help me plan and implement the matching engine safely, beginning with a backend keyword baseline and a clear scoring contract.
 ```
 
 ### Create Next Codex Prompt
 
 ```text
-Continue the BE project from the source context. Create the next Codex prompt for Milestone 3G verification and hardening.
+Continue the BE project from the source context. Create the next Codex prompt for Milestone 4 matching engine implementation.
 ```
 
 ### Explain Architecture for Viva
@@ -1193,9 +1210,9 @@ The database now includes:
 
 The current next action is:
 
-> Milestone 3G — Verification and Hardening.
+> Milestone 4E — Hybrid Ranking Engine.
 
-Milestone 3 remains split safely into smaller steps:
+Milestone 3 is complete and was split safely into smaller steps:
 
 - Milestone 3A: Skill taxonomy and extraction utilities
 - Milestone 3B: Stateless backend parsing endpoints
@@ -1205,4 +1222,13 @@ Milestone 3 remains split safely into smaller steps:
 - Milestone 3F: PDF/DOCX text extraction
 - Milestone 3G: Verification and hardening
 
-Do not proceed to AI matching, embeddings, recommendations, explainability, or dashboards until parsing utilities and structured data flows are stable.
+Milestone 4 backend foundation progress:
+
+- Milestone 4A: Matching contract and normalized entity builders — complete and tested
+- Milestone 4B: Keyword baseline scoring and ranking — complete and tested
+- Milestone 4C: Semantic text builders and embedding provider interface — complete and tested
+- Milestone 4D: Runtime semantic similarity engine — complete and tested
+- Milestone 4E: Hybrid ranking engine — next
+- Later: Bidirectional matching APIs
+
+Do not proceed to explainability dashboards, admin analytics, fake evaluation metrics, or Milestone 5/6 features until the matching engine is stable.
