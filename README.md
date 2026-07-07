@@ -2,7 +2,7 @@
 
 An AI-powered tech gig discovery and matching platform for freelancers, students, developers, and clients.
 
-This repository currently contains the BE project foundation, Supabase authentication, role-based frontend routing, structured profile setup for freelancers and clients, client-side gig posting, deterministic skill extraction, parsing persistence, document text extraction, and verified backend matching APIs. Frontend recommendation UI, explainability, skill-gap recommendations, evaluation dashboards, and production-scale retrieval are planned for later milestones.
+This repository currently contains the BE project foundation, Supabase authentication, role-based frontend routing, structured profile setup for freelancers and clients, client-side gig posting, deterministic skill extraction, parsing persistence, document text extraction, verified backend matching APIs, frontend recommendation/explanation UI, and a seeded internal admin evaluation console. Production-scale retrieval, saved match history, marketplace operations, deployment, and black book materials are planned for later milestones.
 
 ## Tech Stack
 
@@ -306,18 +306,18 @@ The page calls `POST /parsing/extract-skills` for deterministic parsing and save
 
 ## Backend Matching APIs
 
-Milestone 4 backend matching is complete and tested. The backend now supports normalized matching entities, keyword scoring, semantic similarity, hybrid ranking, auth-safe data access, and two authenticated matching routes:
+Milestone 4 backend matching is complete and tested. The backend supports normalized matching entities, keyword scoring, semantic similarity, hybrid ranking, auth-safe data access, and two authenticated matching routes:
 
 - `GET /matching/recommended-gigs`
 - `GET /matching/gigs/{gig_id}/recommended-freelancers`
 
 Both routes require a bearer token, enforce trusted roles from `user_profiles`, validate `limit` from `1` to `50`, and return compact hybrid recommendation envelopes. Details, privacy boundaries, manual smoke steps, and known limitations are documented in [docs/matching.md](docs/matching.md).
 
-Milestone 4 does not add frontend recommendation UI, natural-language explanations, skill-gap recommendations, admin analytics, ranking metrics, pgvector/FAISS retrieval, saved match history, or behavioral feedback learning.
+Milestones 5 and 6 add frontend recommendation/explanation UI and seeded internal evaluation visibility. The project still does not add production-scale retrieval, pgvector/FAISS retrieval, saved match history, behavioral feedback learning, marketplace operations, or production-scale metric claims.
 
 ## Current Milestone Status
 
-Milestones 0, 1, 2A, 2B, 3, and 4 are complete and tested. Milestone 5 — Explainability and Skill Gap — is planned next:
+Milestones 0 through 6 are complete and tested. Milestone 7 — Deployment and Black Book — is planned next:
 
 - Foundation repo structure, frontend, backend, routing, and docs added
 - Supabase auth client configured
@@ -340,13 +340,17 @@ Milestones 0, 1, 2A, 2B, 3, and 4 are complete and tested. Milestone 5 — Expla
 - Parser verification and security/data-flow checklist completed
 - Backend matching contracts, builders, keyword scoring, semantic scoring, hybrid ranking, auth-safe data access, and matching API routes added
 - Matching verification and docs closure completed
+- Milestone 5 explainability and skill-gap flow completed
+- Frontend freelancer/client recommendation UI completed
+- Milestone 6 seeded evaluation contracts, metrics, runner, admin API, and internal admin evaluation console completed
+- Milestone 6 verification and docs closure completed
 
-Explainability, skill-gap recommendations, frontend recommendation UI, admin analytics, ranking metrics, pgvector/FAISS retrieval, saved match history, and behavioral feedback learning remain planned for later milestones.
+Production-scale evaluation, final analytics dashboard design, pgvector/FAISS retrieval, saved match history, behavioral feedback learning, deployment, and black book materials remain planned or out of scope.
 
 ## Planned Future Modules
 
-- Frontend recommendation UI
-- Match explanations
-- Skill-gap recommendations
-- pgvector matching
-- Evaluation dashboard
+- Deployment configuration
+- Black book documentation materials
+- Final admin analytics dashboard design
+- pgvector matching, if explicitly scoped later
+- Saved match history, if explicitly scoped later

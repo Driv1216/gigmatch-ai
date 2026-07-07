@@ -23,6 +23,11 @@ from app.matching.data_access import (
     prepare_client_gig_matching_data,
     prepare_freelancer_matching_data,
 )
+from app.matching.explanations import (
+    build_match_explanation_evidence,
+    with_explanation_text,
+    with_skill_gap_summary,
+)
 from app.matching.hybrid import (
     HybridMatchResult,
     rank_freelancers_for_gig_hybrid,
@@ -42,6 +47,7 @@ class RecommendedGigItem(BaseModel):
     hybrid_score: float
     keyword_score: float
     semantic_score: float
+    explanation: dict
 
 
 class RecommendedFreelancerItem(BaseModel):
@@ -52,6 +58,7 @@ class RecommendedFreelancerItem(BaseModel):
     hybrid_score: float
     keyword_score: float
     semantic_score: float
+    explanation: dict
 
 
 class RecommendedGigsEnvelope(BaseModel):
@@ -115,7 +122,7 @@ def recommended_gigs(
 
     gigs_by_id = {gig.gig_id: gig for gig in data.candidate_gigs}
     items = [
-        _serialize_gig_result(result, gigs_by_id[result.candidate_id])
+        _serialize_gig_result(result, data.freelancer, gigs_by_id[result.candidate_id])
         for result in ranked_results[:limit]
         if result.candidate_id in gigs_by_id
     ]
@@ -144,7 +151,7 @@ def recommended_freelancers_for_gig(
 
     freelancers_by_id = {freelancer.freelancer_id: freelancer for freelancer in data.candidate_freelancers}
     items = [
-        _serialize_freelancer_result(result, freelancers_by_id[result.candidate_id])
+        _serialize_freelancer_result(result, freelancers_by_id[result.candidate_id], data.gig)
         for result in ranked_results[:limit]
         if result.candidate_id in freelancers_by_id
     ]
@@ -170,7 +177,11 @@ def _matching_http_exception(error: Exception) -> HTTPException:
     return HTTPException(status_code=403, detail=str(error))
 
 
-def _serialize_gig_result(result: HybridMatchResult, gig: GigMatchProfile) -> RecommendedGigItem:
+def _serialize_gig_result(
+    result: HybridMatchResult,
+    freelancer: FreelancerMatchProfile,
+    gig: GigMatchProfile,
+) -> RecommendedGigItem:
     return RecommendedGigItem(
         gig_id=gig.gig_id,
         title=gig.title,
@@ -180,12 +191,14 @@ def _serialize_gig_result(result: HybridMatchResult, gig: GigMatchProfile) -> Re
         hybrid_score=result.hybrid_score,
         keyword_score=result.keyword_score,
         semantic_score=result.semantic_score,
+        explanation=_serialize_explanation(freelancer, gig, result, "freelancer"),
     )
 
 
 def _serialize_freelancer_result(
     result: HybridMatchResult,
     freelancer: FreelancerMatchProfile,
+    gig: GigMatchProfile,
 ) -> RecommendedFreelancerItem:
     return RecommendedFreelancerItem(
         freelancer_id=freelancer.freelancer_id,
@@ -195,4 +208,68 @@ def _serialize_freelancer_result(
         hybrid_score=result.hybrid_score,
         keyword_score=result.keyword_score,
         semantic_score=result.semantic_score,
+        explanation=_serialize_explanation(freelancer, gig, result, "gig"),
     )
+
+
+def _serialize_explanation(
+    freelancer: FreelancerMatchProfile,
+    gig: GigMatchProfile,
+    result: HybridMatchResult,
+    subject_type: Literal["freelancer", "gig"],
+) -> dict:
+    explanation = build_match_explanation_evidence(
+        freelancer=freelancer,
+        gig=gig,
+        result=result,
+        subject_type=subject_type,
+    )
+    explanation = with_skill_gap_summary(explanation)
+    explanation = with_explanation_text(explanation)
+    return {
+        "summary": explanation.summary,
+        "subject_id": explanation.subject_id,
+        "subject_type": explanation.subject_type,
+        "candidate_id": explanation.candidate_id,
+        "candidate_type": explanation.candidate_type,
+        "rank": explanation.rank,
+        "reasons": [
+            {
+                "code": reason.code.value,
+                "skill_names": list(reason.skill_names),
+                "score_name": reason.score_name,
+                "score_value": reason.score_value,
+            }
+            for reason in explanation.reasons
+        ],
+        "score": {
+            "hybrid_score": explanation.score.hybrid_score,
+            "keyword_score": explanation.score.keyword_score,
+            "semantic_score": explanation.score.semantic_score,
+            "keyword_weight": explanation.score.keyword_weight,
+            "semantic_weight": explanation.score.semantic_weight,
+            "required_skill_coverage": explanation.score.required_skill_coverage,
+            "preferred_skill_coverage": explanation.score.preferred_skill_coverage,
+            "category_alignment": explanation.score.category_alignment,
+            "missing_required_skill_penalty": explanation.score.missing_required_skill_penalty,
+        },
+        "skill_gap": {
+            "severity": explanation.skill_gap.severity.value,
+            "matched_required_skills": _serialize_skill_evidence(explanation.skill_gap.matched_required_skills),
+            "matched_preferred_skills": _serialize_skill_evidence(explanation.skill_gap.matched_preferred_skills),
+            "missing_required_skills": _serialize_skill_evidence(explanation.skill_gap.missing_required_skills),
+            "missing_preferred_skills": _serialize_skill_evidence(explanation.skill_gap.missing_preferred_skills),
+            "focus_skills": _serialize_skill_evidence(explanation.skill_gap.focus_skills),
+        },
+    }
+
+
+def _serialize_skill_evidence(skills) -> list[dict]:
+    return [
+        {
+            "skill_name": skill.skill_name,
+            "normalized_name": skill.normalized_name,
+            "category": skill.category,
+        }
+        for skill in skills
+    ]

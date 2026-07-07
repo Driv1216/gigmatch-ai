@@ -13,6 +13,19 @@ from app.parsing.text_normalizer import normalize_lookup_term, normalize_text
 
 _TAXONOMY_PATH = Path(__file__).with_name("skills_taxonomy.json")
 _SKILL_BOUNDARY = r"[a-z0-9+#]"
+_AMBIGUOUS_ALIAS_EXCLUSIONS: dict[str, tuple[re.Pattern[str], ...]] = {
+    "flask": (re.compile(r"\bflask\s+of\b"),),
+    "go": (re.compile(r"\blet\s+us\s+go\b"), re.compile(r"\bgo\s+now\b")),
+    "next": (
+        re.compile(r"\bnext\s+(day|week|month|year|quarter|sprint|time)\b"),
+    ),
+    "node": (
+        re.compile(r"\bnode\s+in\s+(a\s+)?graph\b"),
+    ),
+    "react": (
+        re.compile(r"\breact\s+(quickly\s+)?to\b"),
+    ),
+}
 
 
 @dataclass(frozen=True)
@@ -78,10 +91,24 @@ def _spans_overlap(left: SkillMatch, right: SkillMatch) -> bool:
     return left.start < right.end and right.start < left.end
 
 
+def _is_ambiguous_false_positive(normalized_text: str, match: re.Match[str], alias: str) -> bool:
+    exclusion_patterns = _AMBIGUOUS_ALIAS_EXCLUSIONS.get(alias, ())
+    if not exclusion_patterns:
+        return False
+
+    context_start = max(0, match.start() - 16)
+    context_end = min(len(normalized_text), match.end() + 32)
+    context = normalized_text[context_start:context_end]
+    return any(pattern.search(context) for pattern in exclusion_patterns)
+
+
 def _collect_matches(normalized_text: str) -> list[SkillMatch]:
     candidates: list[SkillMatch] = []
     for pattern, entry, alias, taxonomy_index in _compiled_aliases():
         for match in pattern.finditer(normalized_text):
+            if _is_ambiguous_false_positive(normalized_text, match, alias):
+                continue
+
             candidates.append(
                 SkillMatch(
                     start=match.start(),

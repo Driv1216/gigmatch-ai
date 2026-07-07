@@ -129,6 +129,64 @@ class ParsingRouteTests(unittest.TestCase):
             {"skills", "categories", "matched_terms", "unmatched_keywords", "confidence"},
         )
 
+    def test_endpoint_schema_stays_stable_for_mixed_aliases(self):
+        status, data = post_json(
+            "/parsing/extract-skills",
+            {"text": "React.js, JS, TS, Postgres, Mongo, TailwindCSS, K8s, GCP, DotNet, Golang, ML, AI, NLP, LLM"},
+        )
+
+        self.assertEqual(status, 200)
+        self.assertEqual(
+            data,
+            {
+                "skills": [
+                    "React",
+                    "JavaScript",
+                    "TypeScript",
+                    "PostgreSQL",
+                    "MongoDB",
+                    "Tailwind CSS",
+                    "Kubernetes",
+                    "Google Cloud",
+                    ".NET",
+                    "Go",
+                    "Machine Learning",
+                    "Artificial Intelligence",
+                    "Natural Language Processing",
+                    "Large Language Models",
+                ],
+                "categories": ["frontend", "database", "devops", "cloud", "backend", "ai_ml"],
+                "matched_terms": [
+                    "react.js",
+                    "js",
+                    "ts",
+                    "postgres",
+                    "mongo",
+                    "tailwindcss",
+                    "k8s",
+                    "gcp",
+                    "dotnet",
+                    "golang",
+                    "ml",
+                    "ai",
+                    "nlp",
+                    "llm",
+                ],
+                "unmatched_keywords": [],
+                "confidence": "deterministic",
+            },
+        )
+
+    def test_endpoint_avoids_common_ambiguous_false_positives(self):
+        status, data = post_json(
+            "/parsing/extract-skills",
+            {"text": "I react quickly to feedback. Let us go now. A flask of water sits on the node in a graph next week."},
+        )
+
+        self.assertEqual(status, 200)
+        self.assertEqual(data["skills"], [])
+        self.assertEqual(data["matched_terms"], [])
+
     def test_rejects_non_string_text(self):
         status, data = post_json("/parsing/extract-skills", {"text": 123})
 

@@ -29,6 +29,13 @@ from app.matching.data_access import (
     prepare_client_owned_gig_profiles,
     prepare_freelancer_matching_data,
 )
+from app.matching.explanations import (
+    build_explanation_text,
+    build_match_explanation_evidence,
+    build_skill_gap_summary,
+    with_explanation_text,
+    with_skill_gap_summary,
+)
 from app.matching.hybrid import (
     HybridMatchResult,
     HybridRankingConfig,
@@ -99,6 +106,11 @@ __all__ = [
     "build_gig_embedding_text",
     "combine_hybrid_score",
     "cosine_similarity",
+    "build_explanation_text",
+    "build_match_explanation_evidence",
+    "build_skill_gap_summary",
+    "with_explanation_text",
+    "with_skill_gap_summary",
     "prepare_client_gig_matching_data",
     "prepare_client_owned_gig_profiles",
     "prepare_freelancer_matching_data",

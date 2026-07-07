@@ -21,6 +21,33 @@ from app.matching.data_access import (
 from app.matching.semantic import DeterministicFakeEmbeddingProvider
 from tests.test_matching_data_access import FakeAuthVerifier, make_repo
 
+FORBIDDEN_EXPLANATION_FRAGMENTS = (
+    "raw_resume_text",
+    "raw_gig_description",
+    "parsed_json",
+    "email",
+    "auth",
+    "supabase",
+    "service_role",
+    "debug",
+    "trace",
+    "embedding_text",
+    "embedding_vector",
+    "provider_name",
+    "database_row",
+)
+UNSAFE_EXPLANATION_FRAGMENTS = (
+    "you are missing",
+    "candidate is missing",
+    "best",
+    "perfect",
+    "reliable",
+    "guaranteed",
+    "fair",
+    "unbiased",
+    "likely to succeed",
+)
+
 
 def get_json(path: str, headers: dict[str, str] | None = None) -> tuple[int, dict[str, Any]]:
     return asyncio.run(_get_json(path, headers or {}))
@@ -99,13 +126,13 @@ class MatchingRouteTests(unittest.TestCase):
                 "hybrid_score",
                 "keyword_score",
                 "semantic_score",
+                "explanation",
             },
         )
+        self.assert_recommendation_item_has_safe_explanation(data["items"][0], "freelancer", "gig")
         public_json = json.dumps(data)
         self.assertNotIn("description", public_json)
         self.assertNotIn("client_id", public_json)
-        self.assertNotIn("matched_required_skills", public_json)
-        self.assertNotIn("missing_required_skills", public_json)
         self.assertNotIn("embedding_text", public_json)
 
     def test_recommended_gigs_limit_is_respected(self):
@@ -210,14 +237,14 @@ class MatchingRouteTests(unittest.TestCase):
                 "hybrid_score",
                 "keyword_score",
                 "semantic_score",
+                "explanation",
             },
         )
+        self.assert_recommendation_item_has_safe_explanation(data["items"][0], "gig", "freelancer")
         public_json = json.dumps(data)
         self.assertNotIn("raw_resume_text", public_json)
         self.assertNotIn("bio", public_json)
         self.assertNotIn("project_links", public_json)
-        self.assertNotIn("matched_required_skills", public_json)
-        self.assertNotIn("missing_required_skills", public_json)
         self.assertNotIn("embedding_text", public_json)
 
     def test_recommended_freelancers_limit_is_respected(self):
@@ -291,6 +318,41 @@ class MatchingRouteTests(unittest.TestCase):
 
         self.assertEqual(status, 200)
         self.assertEqual(data, {"items": [], "count": 0, "limit": 10, "ranking_method": "hybrid"})
+
+    def test_recommended_gig_explanation_is_deterministic_and_scores_are_unchanged(self):
+        status, first = get_json("/matching/recommended-gigs", {"authorization": "Bearer token"})
+        status_again, second = get_json("/matching/recommended-gigs", {"authorization": "Bearer token"})
+
+        self.assertEqual(status, 200)
+        self.assertEqual(status_again, 200)
+        self.assertEqual(
+            [(item["gig_id"], item["rank"], item["hybrid_score"], item["keyword_score"], item["semantic_score"]) for item in first["items"]],
+            [(item["gig_id"], item["rank"], item["hybrid_score"], item["keyword_score"], item["semantic_score"]) for item in second["items"]],
+        )
+        self.assertEqual(first["items"][0]["explanation"], second["items"][0]["explanation"])
+        explanation = first["items"][0]["explanation"]
+        self.assertIn("summary", explanation)
+        self.assertIn("score", explanation)
+        self.assertIn("skill_gap", explanation)
+        self.assertEqual(explanation["score"]["hybrid_score"], first["items"][0]["hybrid_score"])
+        self.assertEqual(explanation["score"]["keyword_score"], first["items"][0]["keyword_score"])
+        self.assertEqual(explanation["score"]["semantic_score"], first["items"][0]["semantic_score"])
+
+    def test_recommended_freelancer_explanation_includes_skill_gap_summary(self):
+        self.auth_verifier = FakeAuthVerifier("client-1")
+
+        status, data = get_json(
+            "/matching/gigs/gig-1/recommended-freelancers",
+            {"authorization": "Bearer token"},
+        )
+
+        self.assertEqual(status, 200)
+        explanation = data["items"][0]["explanation"]
+        self.assertIsInstance(explanation["summary"], str)
+        self.assertIn(explanation["skill_gap"]["severity"], {"none", "low", "medium", "high"})
+        self.assertIn("matched_required_skills", explanation["skill_gap"])
+        self.assertIn("missing_required_skills", explanation["skill_gap"])
+        self.assertIn("focus_skills", explanation["skill_gap"])
 
     def test_recommended_freelancers_requires_valid_client_auth_and_owned_gig(self):
         status, _ = get_json("/matching/gigs/gig-1/recommended-freelancers")
@@ -403,6 +465,29 @@ class MatchingRouteTests(unittest.TestCase):
         self.assertEqual(status, 200)
         self.assertGreater(len(self.repo.calls), 0)
         self.assertNotIn("sentence_transformers", sys.modules)
+
+    def assert_recommendation_item_has_safe_explanation(
+        self,
+        item: dict[str, Any],
+        subject_type: str,
+        candidate_type: str,
+    ) -> None:
+        explanation = item["explanation"]
+
+        self.assertIsInstance(explanation["summary"], str)
+        self.assertEqual(explanation["subject_type"], subject_type)
+        self.assertEqual(explanation["candidate_type"], candidate_type)
+        self.assertEqual(explanation["rank"], item["rank"])
+        self.assertEqual(explanation["score"]["hybrid_score"], item["hybrid_score"])
+        self.assertEqual(explanation["score"]["keyword_score"], item["keyword_score"])
+        self.assertEqual(explanation["score"]["semantic_score"], item["semantic_score"])
+        self.assertIn("severity", explanation["skill_gap"])
+        self.assertIn("reasons", explanation)
+
+        public_json = json.dumps(explanation).lower()
+        for fragment in FORBIDDEN_EXPLANATION_FRAGMENTS + UNSAFE_EXPLANATION_FRAGMENTS:
+            with self.subTest(fragment=fragment):
+                self.assertNotIn(fragment, public_json)
 
 
 if __name__ == "__main__":

@@ -1,6 +1,7 @@
 import unittest
 import zipfile
 from io import BytesIO
+from xml.sax.saxutils import escape
 
 from app.services.document_text_extractor import (
     SCANNED_PDF_WARNING,
@@ -59,7 +60,7 @@ def make_test_docx(paragraphs: list[str]) -> bytes:
         '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
         '<w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">'
         "<w:body>"
-        + "".join(f"<w:p><w:r><w:t>{paragraph}</w:t></w:r></w:p>" for paragraph in paragraphs)
+        + "".join(f"<w:p><w:r><w:t>{escape(paragraph)}</w:t></w:r></w:p>" for paragraph in paragraphs)
         + "</w:body></w:document>"
     )
 
@@ -135,3 +136,35 @@ class DocumentTextExtractorTests(unittest.TestCase):
         self.assertEqual(result.metadata.page_count, 1)
         self.assertEqual(result.text, "")
         self.assertIn(SCANNED_PDF_WARNING, result.metadata.warnings)
+
+    def test_near_empty_docx_returns_safe_empty_result_with_warning(self):
+        result = extract_text_from_docx_bytes(make_test_docx(["", "   "]))
+
+        self.assertEqual(result.metadata.file_type, "docx")
+        self.assertEqual(result.metadata.paragraph_count, 2)
+        self.assertEqual(result.text, "")
+        self.assertIn("did not contain readable paragraph text", result.metadata.warnings[0])
+
+    def test_docx_with_unicode_and_special_characters_extracts_text(self):
+        result = extract_text_from_document_bytes(
+            make_test_docx(["Café résumé: C++, C#, .NET, R&D, São Paulo"]),
+            "resume.docx",
+        )
+
+        self.assertIn("Café résumé", result.text)
+        self.assertIn("C++, C#, .NET, R&D, São Paulo", result.text)
+        self.assertEqual(result.metadata.warnings, [])
+
+    def test_pdf_with_special_characters_extracts_text(self):
+        result = extract_text_from_document_bytes(make_test_pdf("Cafe resume: C++ C# .NET"), "resume.pdf")
+
+        self.assertIn("Cafe resume", result.text)
+        self.assertIn("C++ C# .NET", result.text)
+
+    def test_docx_with_repeated_long_text_extracts_without_truncation(self):
+        repeated_text = "React FastAPI PostgreSQL " * 200
+
+        result = extract_text_from_document_bytes(make_test_docx([repeated_text]), "resume.docx")
+
+        self.assertEqual(result.text, repeated_text.strip())
+        self.assertEqual(result.metadata.character_count, len(result.text))

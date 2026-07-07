@@ -65,3 +65,83 @@ class SkillExtractorTests(unittest.TestCase):
                 "confidence": "deterministic",
             },
         )
+
+    def test_requested_aliases_normalize_to_canonical_skills(self):
+        cases = [
+            ("React", "React"),
+            ("React.js", "React"),
+            ("Node", "Node.js"),
+            ("Node.js", "Node.js"),
+            ("Next", "Next.js"),
+            ("Next.js", "Next.js"),
+            ("JavaScript", "JavaScript"),
+            ("JS", "JavaScript"),
+            ("TypeScript", "TypeScript"),
+            ("TS", "TypeScript"),
+            ("PostgreSQL", "PostgreSQL"),
+            ("Postgres", "PostgreSQL"),
+            ("MongoDB", "MongoDB"),
+            ("Mongo", "MongoDB"),
+            ("Tailwind CSS", "Tailwind CSS"),
+            ("TailwindCSS", "Tailwind CSS"),
+            ("FastAPI", "FastAPI"),
+            ("Flask", "Flask"),
+            ("Django", "Django"),
+            ("Docker", "Docker"),
+            ("Kubernetes", "Kubernetes"),
+            ("K8s", "Kubernetes"),
+            ("AWS", "AWS"),
+            ("GCP", "Google Cloud"),
+            ("Azure", "Azure"),
+            ("C++", "C++"),
+            ("C#", "C#"),
+            (".NET", ".NET"),
+            ("DotNet", ".NET"),
+            ("Go", "Go"),
+            ("Golang", "Go"),
+            ("Python", "Python"),
+            ("Machine Learning", "Machine Learning"),
+            ("ML", "Machine Learning"),
+            ("Artificial Intelligence", "Artificial Intelligence"),
+            ("AI", "Artificial Intelligence"),
+            ("NLP", "Natural Language Processing"),
+            ("LLM", "Large Language Models"),
+        ]
+
+        for alias, canonical in cases:
+            with self.subTest(alias=alias):
+                result = extract_skills(f"Experience with {alias}.")
+                self.assertEqual(result["skills"], [canonical])
+
+    def test_alias_duplicates_are_removed_with_deterministic_first_seen_order(self):
+        result = extract_skills("JS, JavaScript, TS, TypeScript, Mongo, MongoDB, AI, artificial intelligence.")
+
+        self.assertEqual(
+            result["skills"],
+            ["JavaScript", "TypeScript", "MongoDB", "Artificial Intelligence"],
+        )
+        self.assertEqual(
+            result["matched_terms"],
+            ["js", "javascript", "ts", "typescript", "mongo", "mongodb", "ai", "artificial intelligence"],
+        )
+
+    def test_whitespace_punctuation_and_mixed_casing_do_not_crash_or_hide_aliases(self):
+        result = extract_skills("  ReAcT!!!\n\tNODE.JS;;; tailwindCSS / K8S ???  ")
+
+        self.assertEqual(result["skills"], ["React", "Node.js", "Tailwind CSS", "Kubernetes"])
+
+    def test_common_language_phrases_do_not_create_ambiguous_skill_false_positives(self):
+        cases = [
+            ("I react quickly to feedback", "React"),
+            ("Let us go now", "Go"),
+            ("This is a flask of water", "Flask"),
+            ("Rust on metal", "Rust"),
+            ("C grade", "C"),
+            ("R&D work", "R"),
+            ("node in a graph", "Node.js"),
+            ("next week", "Next.js"),
+        ]
+
+        for text, skill in cases:
+            with self.subTest(text=text):
+                self.assertNotIn(skill, extract_skills(text)["skills"])

@@ -185,6 +185,16 @@
     "category": "ai_ml"
   },
   {
+    "canonical": "Artificial Intelligence",
+    "aliases": ["artificial intelligence", "ai"],
+    "category": "ai_ml"
+  },
+  {
+    "canonical": "Large Language Models",
+    "aliases": ["large language model", "large language models", "llm", "llms"],
+    "category": "ai_ml"
+  },
+  {
     "canonical": "Deep Learning",
     "aliases": ["deep learning", "dl"],
     "category": "ai_ml"

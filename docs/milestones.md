@@ -186,7 +186,7 @@ Completed backend matching verification and documentation closure. This confirms
 
 ## Milestone 5: Explainability and Skill Gap
 
-Status: In progress.
+Status: Complete and tested.
 
 Explain why gigs match a freelancer and identify missing or weak skills.
 
@@ -198,11 +198,139 @@ Backend-only explanation and skill-gap contract models/enums implemented for fut
 
 No API response changes, frontend explanation UI, explanation text generation, skill-gap calculation logic, admin evaluation dashboard, ranking metrics, ranking formula changes, database writes, or database migrations yet.
 
+### Milestone 5B: Explanation Evidence Builder
+
+Status: Complete and tested.
+
+Backend-only explanation evidence builder implemented over existing normalized matching profiles and hybrid matching results. This produces deterministic structured evidence for matched required skills, matched preferred skills, missing required skills, missing preferred skills, compact score evidence, and evidence-supported reason codes while remaining neutral for both freelancer-to-gig and gig-to-freelancer flows.
+
+No API response changes, frontend explanation UI, natural-language explanation text, skill-gap severity/focus calculation, admin evaluation dashboard, ranking metrics, ranking formula changes, database writes, or database migrations yet.
+
+### Milestone 5C: Skill Gap Summary Builder
+
+Status: Complete and tested.
+
+Backend-only deterministic skill-gap summary builder implemented over existing 5B missing-skill evidence. This assigns missing-skill severity using the existing `SkillGapSeverity` contract, preserves raw matched and missing skill evidence, prioritizes missing required skills before missing preferred skills, removes duplicate focus skills, and keeps focus skills compact without inventing non-missing skills.
+
+No API response changes, frontend explanation UI, natural-language explanation text, LLM explanations, admin evaluation dashboard, ranking metrics, ranking formula changes, database writes, or database migrations yet.
+
+### Milestone 5D: Deterministic Explanation Text Builder
+
+Status: Complete and tested.
+
+Backend-only deterministic explanation text builder implemented over existing 5B/5C structured evidence. This adds a minimal optional `summary` field to the existing `MatchExplanation` contract and renders short template-based text for matched skills, missing skills, compact score availability, skill-gap severity, focus skills, and evidence-backed alignment reasons.
+
+No API response changes, frontend explanation UI, LLM explanations, admin evaluation dashboard, ranking metrics, ranking formula changes, database writes, or database migrations yet.
+
+### Milestone 5E: Matching API Explanation Extension
+
+Status: Complete and tested.
+
+Existing matching API result items now include an additive `explanation` object built from the 5B evidence builder, 5C skill-gap summary builder, and 5D deterministic text builder. Existing result fields, ordering, score values, route names, auth gates, ownership checks, and empty-envelope behavior are preserved.
+
+No frontend explanation UI, LLM explanations, admin evaluation dashboard, ranking metrics, ranking formula changes, database writes, or database migrations yet.
+
+### Milestone 5F-A: Frontend Explanation Types, Response Helpers, and Shared UI Components
+
+Status: Complete and tested.
+
+Frontend-only explanation foundations implemented. This adds TypeScript types that mirror the backend `explanation` response object, null-safe display helpers for severity labels, reason labels, score formatting, and reusable presentational components for summary text, matched/missing skills, focus skills, skill-gap severity, score evidence, and human-readable reason details.
+
+No recommendation page integration, route-level recommendation fetching, backend contract changes, ranking/scoring changes, database writes, LLM explanations, admin evaluation dashboard, or evaluation metrics yet.
+
+### Milestone 5F-B: Freelancer Recommended Gigs Explanation UI
+
+Status: Complete and tested.
+
+The freelancer dashboard now loads `GET /matching/recommended-gigs` with the current Supabase access token, renders backend-ranked recommended gigs in API order, and reuses the shared 5F-A explanation panel for summary, matched and missing skills, skill-gap severity, focus skills, score evidence, and secondary reason details.
+
+No client recommended freelancers UI, backend contract changes, ranking/scoring changes, database writes, saved match history, bidding/apply/chat/contract/payment flows, LLM explanations, admin evaluation dashboard, or evaluation metrics yet.
+
+### Milestone 5F-C: Client Recommended Freelancers Explanation UI
+
+Status: Complete and tested.
+
+The client gig management screen now lets clients select one of their owned gigs, loads `GET /matching/gigs/{gig_id}/recommended-freelancers` with the current Supabase access token, renders backend-ranked recommended freelancers in API order, and reuses the shared 5F-A explanation panel for client-facing match explanations.
+
+No Milestone 5G verification/docs closure, backend contract changes, ranking/scoring changes, database writes, saved match history, apply/bid/chat/contract/payment flows, LLM explanations, admin evaluation dashboard, or evaluation metrics yet.
+
+### Milestone 5G: End-to-End Verification and Docs Closure
+
+Status: Complete and tested.
+
+Completed Milestone 5 verification and documentation closure. This confirms the backend explanation object is exposed through both matching routes, frontend recommendation UIs render backend-provided explanations through shared components, recommendation order is preserved from the backend response, automated frontend build/lint checks pass, focused backend matching/explanation tests pass, privacy boundaries are documented, and manual smoke-test checklists are captured for freelancer and client flows.
+
+No Milestone 6 admin evaluation dashboard, ranking metrics, fake improvement metrics, backend behavior changes, ranking/scoring changes, database writes, saved match history, apply/bid/chat/contract/payment flows, behavioral learning, pgvector/FAISS, or LLM explanations were added.
+
 ## Milestone 6: Admin Evaluation Dashboard
 
-Status: Planned.
+Status: Complete and tested.
 
 Create evaluation workflows, metrics, test datasets, and admin review screens.
+
+### Milestone 6A: Evaluation Dataset, Relevance Label Contract, and Seeded Fixtures
+
+Status: Complete and tested.
+
+Backend-only evaluation fixture contract implemented for future matching evaluation work. This adds small deterministic seeded evaluation fixtures, explicit query directions (`freelancer_to_gigs` and `gig_to_freelancers`), a 0-2 relevance label scale, label-source tracking, query-level complete-judgment-set flags, fixture loading, and validation for duplicate ids, invalid labels, missing candidates, and incomplete complete-judgment sets.
+
+Seeded fixtures are transparent local/demo fixtures only. They are not production-scale evaluation, do not calculate Precision@K, Recall@K, NDCG, MAP, timing metrics, or improvement claims, and do not run keyword, semantic, or hybrid rankers yet.
+
+No admin dashboard UI, new API routes, frontend files, database migrations, Supabase writes, ranking formula changes, new dependencies, or fake evaluation metrics were added.
+
+### Milestone 6B: Pure Metric Calculation Utilities
+
+Status: Complete and tested.
+
+Backend-only pure metric utilities implemented for evaluation math over ranked candidate ids and explicit 6A relevance judgments. This adds a safe `MetricResult` envelope and calculations for Precision@K, Recall@K, NDCG@K, single-query Average Precision, and MAP from valid AP results.
+
+Metric utilities return unavailable results with clear reasons instead of silently treating unjudged candidates as not relevant. Recall@K and Average Precision require complete judgment sets; Average Precision and MAP require at least one relevant candidate per included query. NDCG@K uses the 0-2 graded relevance scale directly and returns `0.0` when IDCG is zero because all judged candidates are not relevant.
+
+No keyword, semantic, or hybrid rankers, evaluation runner, ranking comparison builder, admin API, dashboard UI, database migrations, Supabase reads/writes, route changes, ranking formula changes, or metric improvement claims were added.
+
+### Milestone 6C: Evaluation Runner and Ranking Comparison Builder
+
+Status: Complete and tested.
+
+Backend-only evaluation runner implemented over the existing 6A fixtures, 6B metric utilities, and internal matching rankers. For each fixture query, the runner ranks the same candidate pool separately with keyword, semantic, and hybrid strategies, calculates per-strategy Precision@K, Recall@K, NDCG@K, and Average Precision where valid, and returns structured rank comparison rows showing each candidate's rank across strategies.
+
+The runner accepts an injected embedding provider so tests use deterministic embeddings and do not instantiate heavy sentence-transformer models. Aggregate results are honest: MAP is calculated from available AP values through the 6B helper, and mean Precision@K, Recall@K, and NDCG@K average only available query-level values with included/excluded counts.
+
+No FastAPI routes, admin API, dashboard UI, frontend files, database migrations, Supabase reads/writes, route calls, new dependencies, production benchmark claims, or improvement claims were added.
+
+### Milestone 6D: Admin-Only Evaluation API
+
+Status: Complete and tested.
+
+Backend-only admin evaluation API implemented at `GET /evaluation/matching`. The endpoint verifies the bearer token, loads the trusted role from `user_profiles.role`, allows only admin users, loads seeded evaluation fixtures, delegates ranking and metric work to the 6C evaluation runner, and returns the structured evaluation summary with factual metadata and limitations.
+
+The route supports repeated positive `top_k` query values such as `?top_k=1&top_k=3`, deduplicates them in request order, and rejects invalid values with a clear 400 response. Missing or invalid auth returns 401; valid non-admin roles return 403.
+
+No frontend UI, dashboard-specific chart data, inline metric calculation, inline ranker calls, Supabase evaluation-data reads/writes, database migrations, new dependencies, public admin signup, service-role exposure, production benchmark claims, or improvement claims were added.
+
+### Milestone 6E: Admin Evaluation Console UI
+
+Status: Complete and tested.
+
+Frontend admin evaluation console implemented in the existing protected admin dashboard flow. The console calls the real `GET /evaluation/matching` 6D endpoint using the current Supabase access token, renders the backend-provided seeded evaluation summary, and shows dataset summary, top-K values, aggregate strategy metrics, unavailable metric reasons, query-level strategy comparisons, per-candidate ranking comparison rows, limitations, loading/error/empty states, and refresh/retry actions.
+
+The implementation is intentionally modular and upgrade-friendly: typed evaluation response models and API helper live under `frontend/src/lib`, while reusable evaluation display sections live under `frontend/src/components/admin/evaluation`. The admin page composes these pieces and does not calculate metrics, rank candidates, hardcode evaluation numbers, or create fake chart data.
+
+This is a technical admin evaluation console for internal visibility and viva/demo proof, not the final team-approved analytics dashboard design.
+
+No backend API changes, new routes, database migrations, Supabase writes, new frontend dependencies, frontend metric calculations, fake improvement claims, production-scale claims, chart builders, manual labeling UI, or Milestone 6F closure work were added.
+
+### Milestone 6F: Verification, Limitations, and Docs Closure
+
+Status: Complete and tested.
+
+Milestone 6 closure verification completed. Backend evaluation tests, selected matching/auth regression tests, full backend unittest discovery, frontend production build, and frontend lint all pass. Full backend discovery emits dependency deprecation warnings only; no test failures were observed.
+
+Documentation and source context were updated to reflect that Milestone 6A through 6F are complete. Milestone 6 remains honest about scope: it uses seeded local/demo evaluation fixtures, calculates metrics only from explicit labels, shows unavailable metric reasons when metrics are not valid, and exposes an internal admin evaluation console rather than a final team-approved analytics dashboard.
+
+Manual browser smoke was not run during closure because verified local admin/freelancer/client test accounts and end-to-end local Supabase credentials were not available in this session. Automated route tests cover admin access, non-admin denial, invalid auth denial, invalid `top_k`, delegation to the 6C runner, and response privacy checks.
+
+No Milestone 7 work, deployment configuration, black book generation, new product features, new metrics, new fixtures, new API routes, frontend redesign, database migrations, Supabase writes, fake improvement claims, production-scale claims, or matching behavior changes were added.
 
 ## Milestone 7: Deployment and Black Book
 

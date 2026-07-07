@@ -128,6 +128,7 @@ class SkillGapSummary:
 class MatchExplanation:
     """Serializable explanation shell for an already-ranked match."""
 
+    summary: str | None = None
     subject_id: str | None = None
     subject_type: Literal["freelancer", "gig"] | None = None
     candidate_id: str | None = None

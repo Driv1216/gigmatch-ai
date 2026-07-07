@@ -79,6 +79,7 @@ class MatchingExplanationContractTests(unittest.TestCase):
 
     def test_match_explanation_objects_serialize_safely(self):
         explanation = MatchExplanation(
+            summary="Required skill matches: Python.",
             subject_id="freelancer-1",
             subject_type="freelancer",
             candidate_id="gig-1",
@@ -117,6 +118,7 @@ class MatchingExplanationContractTests(unittest.TestCase):
         data = _json_round_trip(explanation)
 
         self.assertEqual(data["subject_type"], "freelancer")
+        self.assertEqual(data["summary"], "Required skill matches: Python.")
         self.assertEqual(data["candidate_type"], "gig")
         self.assertEqual(data["reasons"][0]["code"], "required_skill_match")
         self.assertEqual(data["score"]["hybrid_score"], 0.92)
@@ -126,6 +128,7 @@ class MatchingExplanationContractTests(unittest.TestCase):
         data = _json_round_trip(MatchExplanation())
 
         self.assertIsNone(data["subject_id"])
+        self.assertIsNone(data["summary"])
         self.assertIsNone(data["candidate_id"])
         self.assertEqual(data["reasons"], [])
         self.assertIsNone(data["score"]["hybrid_score"])

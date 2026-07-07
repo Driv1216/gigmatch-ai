@@ -238,6 +238,17 @@ class ResumeDocumentExtractionEndpointTests(unittest.TestCase):
         self.assertEqual(status, 400)
         self.assertIn("Unsupported document type", data["detail"])
 
+    def test_wrong_extension_is_rejected_even_with_pdf_content(self):
+        status, data = post_multipart_file(
+            "/parsing/resume/extract-document",
+            file_name="resume.txt",
+            file_bytes=make_test_pdf("Actually a PDF"),
+            content_type="application/pdf",
+        )
+
+        self.assertEqual(status, 400)
+        self.assertIn("Unsupported document type", data["detail"])
+
     def test_multiple_uploaded_files_are_rejected(self):
         status, data = post_two_multipart_files("/parsing/resume/extract-document")
 
@@ -304,6 +315,17 @@ class ResumeDocumentExtractionEndpointTests(unittest.TestCase):
 
         self.assertEqual(status, 400)
         self.assertEqual(data["detail"], SCANNED_PDF_WARNING)
+
+    def test_near_empty_docx_is_rejected_with_safe_message(self):
+        status, data = post_multipart_file(
+            "/parsing/resume/extract-document",
+            file_name="resume.docx",
+            file_bytes=make_test_docx(["", "   "]),
+            content_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        )
+
+        self.assertEqual(status, 400)
+        self.assertIn("did not contain readable paragraph text", data["detail"])
 
     def test_endpoint_does_not_call_skill_parser(self):
         with patch("app.api.routes.parsing.extract_skills", side_effect=AssertionError("parser called")):

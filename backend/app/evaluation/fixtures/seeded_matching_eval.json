@@ -1,0 +1,162 @@
+{
+  "fixture_id": "seeded_matching_eval_001",
+  "description": "Small deterministic seeded evaluation fixtures used to validate the evaluation data contract.",
+  "queries": [
+    {
+      "query_id": "freelancer_query_backend_api_001",
+      "query_type": "freelancer_to_gigs",
+      "query_entity": {
+        "user_id": "freelancer_seed_backend_api",
+        "display_name": "Seeded Backend API Freelancer",
+        "headline": "Python and FastAPI backend developer",
+        "bio": "Builds production APIs with PostgreSQL and Docker.",
+        "primary_role": "Backend Developer",
+        "experience_level": "intermediate",
+        "tech_categories": ["backend", "database"],
+        "skills": ["Python", "FastAPI", "PostgreSQL", "Docker"],
+        "tools": ["GitHub Actions"],
+        "projects": ["REST API for operations workflow automation"]
+      },
+      "candidate_entities": [
+        {
+          "id": "gig_seed_backend_api_001",
+          "client_id": "client_seed_001",
+          "title": "Build a FastAPI reporting backend",
+          "description": "Create authenticated reporting endpoints backed by PostgreSQL.",
+          "tech_category": "backend",
+          "required_skills": ["Python", "FastAPI", "PostgreSQL"],
+          "preferred_skills": ["Docker"],
+          "difficulty_level": "intermediate",
+          "seniority_needed": "intermediate",
+          "deliverables": ["API endpoints", "Database schema notes"],
+          "status": "open"
+        },
+        {
+          "id": "gig_seed_frontend_ui_001",
+          "client_id": "client_seed_002",
+          "title": "Polish a React landing page",
+          "description": "Improve responsive layout and component styling for a marketing page.",
+          "tech_category": "frontend",
+          "required_skills": ["React", "TypeScript"],
+          "preferred_skills": ["Figma"],
+          "difficulty_level": "junior",
+          "seniority_needed": "junior",
+          "deliverables": ["Responsive UI"],
+          "status": "open"
+        },
+        {
+          "id": "gig_seed_data_cleanup_001",
+          "client_id": "client_seed_003",
+          "title": "Clean import scripts for CSV data",
+          "description": "Refactor Python scripts that validate and load operational CSV files.",
+          "tech_category": "data",
+          "required_skills": ["Python"],
+          "preferred_skills": ["PostgreSQL"],
+          "difficulty_level": "junior",
+          "seniority_needed": "junior",
+          "deliverables": ["Validated import script"],
+          "status": "open"
+        }
+      ],
+      "judgments": [
+        {
+          "candidate_id": "gig_seed_backend_api_001",
+          "relevance_label": 2,
+          "label_source": "seeded_fixture",
+          "notes": "Strong seeded match because backend API, Python, FastAPI, PostgreSQL, and Docker needs overlap."
+        },
+        {
+          "candidate_id": "gig_seed_frontend_ui_001",
+          "relevance_label": 0,
+          "label_source": "seeded_fixture",
+          "notes": "Seeded non-match because the gig is primarily frontend React work."
+        },
+        {
+          "candidate_id": "gig_seed_data_cleanup_001",
+          "relevance_label": 1,
+          "label_source": "seeded_fixture",
+          "notes": "Partial seeded match because Python and PostgreSQL overlap, but the work is data scripting rather than backend APIs."
+        }
+      ],
+      "is_complete_judgment_set": true,
+      "notes": "Seeded local fixture, not production evaluation."
+    },
+    {
+      "query_id": "gig_query_backend_api_001",
+      "query_type": "gig_to_freelancers",
+      "query_entity": {
+        "id": "gig_seed_backend_api_002",
+        "client_id": "client_seed_004",
+        "title": "Create internal FastAPI service",
+        "description": "Build service endpoints, validation, and PostgreSQL persistence.",
+        "tech_category": "backend",
+        "required_skills": ["Python", "FastAPI", "PostgreSQL"],
+        "preferred_skills": ["Docker"],
+        "difficulty_level": "intermediate",
+        "seniority_needed": "intermediate",
+        "deliverables": ["Backend service", "Readme"],
+        "status": "open"
+      },
+      "candidate_entities": [
+        {
+          "user_id": "freelancer_seed_backend_001",
+          "display_name": "Seeded Backend Freelancer",
+          "headline": "FastAPI backend engineer",
+          "bio": "Builds Python APIs with PostgreSQL.",
+          "primary_role": "Backend Developer",
+          "experience_level": "intermediate",
+          "tech_categories": ["backend"],
+          "skills": ["Python", "FastAPI", "PostgreSQL", "Docker"],
+          "tools": ["GitHub Actions"],
+          "projects": ["Internal service API"]
+        },
+        {
+          "user_id": "freelancer_seed_frontend_001",
+          "display_name": "Seeded Frontend Freelancer",
+          "headline": "React UI developer",
+          "bio": "Builds component-driven interfaces.",
+          "primary_role": "Frontend Developer",
+          "experience_level": "intermediate",
+          "tech_categories": ["frontend"],
+          "skills": ["React", "TypeScript", "Figma"],
+          "tools": ["Vite"],
+          "projects": ["Dashboard UI"]
+        },
+        {
+          "user_id": "freelancer_seed_python_001",
+          "display_name": "Seeded Python Freelancer",
+          "headline": "Python automation developer",
+          "bio": "Writes scripts and light data tooling.",
+          "primary_role": "Automation Developer",
+          "experience_level": "junior",
+          "tech_categories": ["data"],
+          "skills": ["Python", "PostgreSQL"],
+          "tools": ["Pandas"],
+          "projects": ["CSV import utilities"]
+        }
+      ],
+      "judgments": [
+        {
+          "candidate_id": "freelancer_seed_backend_001",
+          "relevance_label": 2,
+          "label_source": "seeded_fixture",
+          "notes": "Strong seeded match because required backend skills and role align."
+        },
+        {
+          "candidate_id": "freelancer_seed_frontend_001",
+          "relevance_label": 0,
+          "label_source": "seeded_fixture",
+          "notes": "Seeded non-match because the candidate is focused on frontend UI skills."
+        },
+        {
+          "candidate_id": "freelancer_seed_python_001",
+          "relevance_label": 1,
+          "label_source": "seeded_fixture",
+          "notes": "Partial seeded match because Python and PostgreSQL overlap without FastAPI/backend-service depth."
+        }
+      ],
+      "is_complete_judgment_set": true,
+      "notes": "Seeded local fixture, not production evaluation."
+    }
+  ]
+}
