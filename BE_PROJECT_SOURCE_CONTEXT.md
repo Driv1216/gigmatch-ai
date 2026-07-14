@@ -1,8 +1,7 @@
 # BE Project Source Context
 
-**Last updated:** 7 July 2026  
-**Current milestone:** Milestone 6 — Admin Evaluation Dashboard complete and tested  
-**Current status:** Milestone 0 through Milestone 6 are complete. Milestone 7 — Deployment and Black Book is next.  
+**Last updated:** 15 July 2026  
+**Current status:** The repository now moves forward according to product priorities, verified implementation state, and deployment readiness.  
 **Primary project rule:** This source context overrides old report/PPT/paper content unless the user explicitly says otherwise.  
 **Use rule:** Future chats should treat this file as project memory, not as a task prompt.
 
@@ -25,36 +24,23 @@ This project is intended to be a serious, product-grade, deployed AI SaaS-style 
 
 ---
 
-## Completed Milestone Status
+## Implemented Product State
 
-- Milestone 0 — Foundation: complete
-- Milestone 1 — Supabase Auth and Role Routing: complete
-- Milestone 2A — Freelancer and Client Profile Setup: complete
-- Milestone 2B — Gig Posting: complete
-- Milestone 3 — Resume/Gig Parsing: complete
-- Milestone 4 — Matching Engine: complete
-- Milestone 5 — Explainability and Skill Gap: complete
-- Milestone 6 — Admin Evaluation Dashboard: complete
-- Milestone 7 — Deployment and Black Book: planned next
+The repository currently includes:
 
-Milestone 6 is closed only as a seeded, internal evaluation workflow. It is not a production-scale benchmark and is not the final team-approved analytics dashboard design.
+- React/Vite frontend and FastAPI backend foundations
+- Supabase authentication and role-based routing
+- Freelancer and client profile setup
+- Client gig creation and management
+- Resume and gig parsing with reviewed structured persistence
+- Keyword, semantic, and hybrid matching
+- Match explanations and skill-gap summaries
+- Seeded evaluation fixtures and ranking metrics
+- Admin-only evaluation API and internal evaluation console
 
----
+The evaluation implementation includes backend contracts, seeded local/demo fixtures, pure metric utilities, and a backend runner that separately compares keyword, semantic, and hybrid rankings over the same candidate pools. It is exposed through the admin-only `GET /evaluation/matching` endpoint and the internal admin console at `/dashboard/admin`.
 
-## Milestone 6 Completion Summary
-
-Milestone 6 completed:
-
-- 6A — Evaluation Dataset, Relevance Label Contract, and Seeded Fixtures
-- 6B — Pure Metric Calculation Utilities
-- 6C — Evaluation Runner and Ranking Comparison Builder
-- 6D — Admin-Only Evaluation API
-- 6E — Admin Evaluation Console UI
-- 6F — Verification, Limitations, and Docs Closure
-
-Milestone 6 added backend-only evaluation contracts, seeded local/demo fixtures, pure metric utilities, a backend runner that separately compares keyword, semantic, and hybrid rankings over the same candidate pools, an admin-only `GET /evaluation/matching` endpoint, and an internal admin evaluation console at `/dashboard/admin`.
-
-The admin evaluation console calls the real 6D endpoint with the current Supabase access token, renders backend-provided evaluation data, shows unavailable metric reasons, and does not calculate metrics in the frontend.
+The admin evaluation console calls the real evaluation endpoint with the current Supabase access token, renders backend-provided evaluation data, shows unavailable metric reasons, and does not calculate metrics in the frontend.
 
 ---
 
@@ -97,13 +83,13 @@ npm run lint
 
 Result: both passed. Vite emitted the existing non-blocking chunk-size warning during build.
 
-Manual browser smoke was not run during Milestone 6F because verified local admin/freelancer/client accounts and end-to-end local Supabase credentials were not available in this session. Do not claim manual browser smoke has passed until it is actually performed.
+Manual browser smoke has not been verified with local admin, freelancer, and client accounts in an end-to-end Supabase session. Do not claim manual browser smoke has passed until it is actually performed.
 
 ---
 
 ## Current Evaluation Scope
 
-Milestone 6 uses seeded local/demo fixtures only.
+Evaluation uses seeded local/demo fixtures only.
 
 Evaluation metrics are calculated only from explicit relevance labels:
 
@@ -113,7 +99,7 @@ Evaluation metrics are calculated only from explicit relevance labels:
 
 Unavailable metrics are returned and rendered honestly when judgments are incomplete or a metric is not mathematically valid. Unavailable metrics are not silently treated as zero.
 
-The 6D API is admin-only and uses the trusted `user_profiles.role` lookup. Public signup does not create admin accounts.
+The evaluation API is admin-only and uses the trusted `user_profiles.role` lookup. Public signup does not create admin accounts.
 
 ---
 
@@ -163,7 +149,7 @@ Old report/PPT/paper claims such as 500,000 freelancer profiles, 120,000 job des
 
 ## Known Limitations
 
-- Manual browser smoke for Milestone 6 remains pending.
+- End-to-end manual browser smoke remains pending.
 - Evaluation fixtures are small seeded local/demo data, not production benchmarks.
 - The admin evaluation console is internal and technical, not final dashboard design.
 - No production-scale ranking metric claims.
@@ -175,8 +161,10 @@ Old report/PPT/paper claims such as 500,000 freelancer profiles, 120,000 job des
 
 ---
 
-## Current Next Action
+## Current Next Priorities
 
-Milestone 7 — Deployment and Black Book.
-
-Before Milestone 7, run manual browser smoke with real local admin/freelancer/client accounts and document the result honestly. Do not turn seeded evaluation output into production-scale claims in deployment, report, PPT, or black book materials.
+- Run end-to-end browser smoke with real local admin, freelancer, and client accounts and record the result honestly.
+- Make the core marketplace workflow complete: gig discovery, gig details, applications, applicant review, and application status management.
+- Improve the frontend around real product workflows.
+- Prepare and verify production deployment.
+- Keep report, presentation, and black book claims aligned with verified implementation evidence. Do not present seeded evaluation output as production-scale results.

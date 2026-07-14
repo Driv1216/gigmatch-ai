@@ -332,8 +332,32 @@ Manual browser smoke was not run during closure because verified local admin/fre
 
 No Milestone 7 work, deployment configuration, black book generation, new product features, new metrics, new fixtures, new API routes, frontend redesign, database migrations, Supabase writes, fake improvement claims, production-scale claims, or matching behavior changes were added.
 
-## Milestone 7: Deployment and Black Book
+## Milestone 7: Application-to-Engagement Workflow
 
-Status: Planned.
+Status: In progress. Milestone 7A is complete and tested; Milestone 7 as a whole is not complete.
 
-Prepare deployment, project report materials, diagrams, screenshots, and black book documentation.
+Implement the locked marketplace workflow in the staged 7A-7K sequence recorded in
+`milestone-7-product-spec.md`. Deployment and academic documentation remain later
+product priorities and must describe only verified implementation state.
+
+### Milestone 7A: Marketplace Domain Contracts and State Machines
+
+Status: Complete and tested.
+
+Backend-only, pure marketplace contracts and state machines now define orthogonal gig
+state, application and immutable application-version contracts, internal-shortlist
+eligibility, selection requests, engagements, structured commercial terms, reason
+contracts, ranking fallback metadata, policy values, sanitised response primitives, and
+narrow cross-aggregate effects. The package has no FastAPI, Supabase, persistence,
+network, authentication, configuration, or frontend dependency.
+
+No database migrations, RLS policies, persistence services, API routes, frontend UI,
+Q&A storage, selection transaction, engagement persistence, contact exchange, payment
+processing, contract management, or chat was added.
+
+### Milestone 7B: Database Foundation, Versioning, RLS and Constraints
+
+Status: Not started.
+
+This is the next implementation boundary. See the locked Milestone 7 product
+specification for its exact scope.
