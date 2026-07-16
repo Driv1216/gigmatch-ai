@@ -334,7 +334,7 @@ No Milestone 7 work, deployment configuration, black book generation, new produc
 
 ## Milestone 7: Application-to-Engagement Workflow
 
-Status: In progress. Milestone 7A is complete and tested; Milestone 7 as a whole is not complete.
+Status: In progress. Milestones 7A and 7B are complete and tested; Milestone 7 as a whole is not complete.
 
 Implement the locked marketplace workflow in the staged 7A-7K sequence recorded in
 `milestone-7-product-spec.md`. Deployment and academic documentation remain later
@@ -357,7 +357,20 @@ processing, contract management, or chat was added.
 
 ### Milestone 7B: Database Foundation, Versioning, RLS and Constraints
 
+Status: Complete and tested.
+
+The secure marketplace persistence foundation now includes orthogonal gig state,
+display/material gig-version pointers, immutable gig and application versions,
+applications, selection requests, engagements, essential append-only events,
+composite and partial-unique invariants, RLS, direct-write lockdown, and a
+backend-only atomic selection-confirmation function. Real local Supabase migration,
+constraint, RLS, rollback, privilege, and independent-session concurrency tests pass.
+
+Application and applicant-review workflows are not exposed through APIs or UI.
+See `docs/verification/milestone-7b-closure.md` for the exact verification record.
+
+### Milestone 7C: Gig Discovery, Gig Detail and Ranking Reliability
+
 Status: Not started.
 
-This is the next implementation boundary. See the locked Milestone 7 product
-specification for its exact scope.
+This is the next implementation boundary. Milestone 7 remains in progress.
