@@ -1,11 +1,12 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { GigForm, getParsedBudgets, type GigFormValues } from "../components/GigForm";
+import { GigForm, getParsedBudgets, snapshotFromGigForm, type GigFormValues } from "../components/GigForm";
 import { Button } from "../components/Button";
 import { PageContainer } from "../components/PageContainer";
 import { useAuth } from "../context/AuthContext";
 import { createGig, type GigInput } from "../lib/gigs";
 import { csvToArray } from "../lib/profiles";
+import { managementErrorMessage, publishManagedGig } from "../lib/gigManagement";
 
 function inputFromValues(values: GigFormValues, clientId: string): GigInput {
   const { budgetMin, budgetMax } = getParsedBudgets(values);
@@ -23,8 +24,8 @@ function inputFromValues(values: GigFormValues, clientId: string): GigInput {
     seniority_needed: values.seniorityNeeded || null,
     deliverables: csvToArray(values.deliverables),
     work_mode: values.workMode || null,
-    deadline: values.deadline || null,
-    status: values.status,
+    deadline: values.deadline ? new Date(values.deadline).toISOString() : null,
+    status: "draft",
   };
 }
 
@@ -33,6 +34,7 @@ export function NewGigPage() {
   const { user } = useAuth();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [savedDraft, setSavedDraft] = useState<{ id: string; current_gig_version_id: string } | null>(null);
 
   async function handleSubmit(values: GigFormValues) {
     if (!user) {
@@ -43,10 +45,12 @@ export function NewGigPage() {
     setErrorMessage(null);
 
     try {
-      await createGig(inputFromValues(values, user.id));
+      const draft = savedDraft ?? await createGig(inputFromValues(values, user.id));
+      setSavedDraft(draft);
+      await publishManagedGig(draft.id, draft.current_gig_version_id, snapshotFromGigForm(values));
       navigate("/gigs/manage");
     } catch (error) {
-      setErrorMessage(error instanceof Error ? error.message : "Unable to create gig.");
+      setErrorMessage(managementErrorMessage(error));
       setIsSubmitting(false);
     }
   }
@@ -72,8 +76,8 @@ export function NewGigPage() {
 
         <GigForm
           isSubmitting={isSubmitting}
-          submitLabel="Create Gig"
-          submittingLabel="Creating..."
+          submitLabel="Publish Gig"
+          submittingLabel="Publishing..."
           onSubmit={handleSubmit}
         />
       </div>

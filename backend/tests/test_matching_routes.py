@@ -19,6 +19,8 @@ from app.matching.data_access import (
     UnsupportedRoleError,
 )
 from app.matching.semantic import DeterministicFakeEmbeddingProvider
+from app.matching.semantic import SemanticRankingUnavailableError
+from app.marketplace.ranking import SemanticUnavailableReason
 from tests.test_matching_data_access import FakeAuthVerifier, make_repo
 
 FORBIDDEN_EXPLANATION_FRAGMENTS = (
@@ -110,7 +112,14 @@ class MatchingRouteTests(unittest.TestCase):
         status, data = get_json("/matching/recommended-gigs", {"authorization": "Bearer token"})
 
         self.assertEqual(status, 200)
-        self.assertEqual(data["ranking_method"], "hybrid")
+        self.assertEqual(
+            data["ranking_context"],
+            {
+                "ranking_mode": "hybrid",
+                "semantic_status": "available",
+                "semantic_unavailable_reason": None,
+            },
+        )
         self.assertEqual(data["limit"], 10)
         self.assertEqual(data["count"], len(data["items"]))
         self.assertGreater(data["count"], 0)
@@ -123,6 +132,10 @@ class MatchingRouteTests(unittest.TestCase):
                 "category",
                 "status",
                 "rank",
+                "ranking_mode",
+                "ranking_score",
+                "semantic_status",
+                "semantic_unavailable_reason",
                 "hybrid_score",
                 "keyword_score",
                 "semantic_score",
@@ -222,7 +235,7 @@ class MatchingRouteTests(unittest.TestCase):
         )
 
         self.assertEqual(status, 200)
-        self.assertEqual(data["ranking_method"], "hybrid")
+        self.assertEqual(data["ranking_context"]["ranking_mode"], "hybrid")
         self.assertEqual(data["limit"], 10)
         self.assertEqual(data["count"], len(data["items"]))
         self.assertGreater(data["count"], 0)
@@ -234,6 +247,10 @@ class MatchingRouteTests(unittest.TestCase):
                 "headline",
                 "primary_role",
                 "rank",
+                "ranking_mode",
+                "ranking_score",
+                "semantic_status",
+                "semantic_unavailable_reason",
                 "hybrid_score",
                 "keyword_score",
                 "semantic_score",
@@ -304,7 +321,10 @@ class MatchingRouteTests(unittest.TestCase):
             status, data = get_json("/matching/recommended-gigs", {"authorization": "Bearer token"})
 
         self.assertEqual(status, 200)
-        self.assertEqual(data, {"items": [], "count": 0, "limit": 10, "ranking_method": "hybrid"})
+        self.assertEqual(data["items"], [])
+        self.assertEqual(data["count"], 0)
+        self.assertEqual(data["limit"], 10)
+        self.assertEqual(data["ranking_context"]["ranking_mode"], "hybrid")
 
         with patch.object(
             matching_routes,
@@ -317,7 +337,115 @@ class MatchingRouteTests(unittest.TestCase):
             )
 
         self.assertEqual(status, 200)
-        self.assertEqual(data, {"items": [], "count": 0, "limit": 10, "ranking_method": "hybrid"})
+        self.assertEqual(data["items"], [])
+        self.assertEqual(data["count"], 0)
+        self.assertEqual(data["ranking_context"]["ranking_mode"], "hybrid")
+
+    def test_recognized_semantic_unavailability_returns_honest_keyword_fallback(self):
+        def unavailable_provider():
+            raise SemanticRankingUnavailableError(
+                SemanticUnavailableReason.EMBEDDING_PROVIDER_NOT_CONFIGURED
+            )
+
+        app.dependency_overrides[matching_routes.get_embedding_provider_factory] = lambda: unavailable_provider
+
+        status, data = get_json("/matching/recommended-gigs", {"authorization": "Bearer token"})
+
+        self.assertEqual(status, 200)
+        self.assertEqual(
+            data["ranking_context"],
+            {
+                "ranking_mode": "keyword_fallback",
+                "semantic_status": "unavailable",
+                "semantic_unavailable_reason": "embedding_provider_not_configured",
+            },
+        )
+        self.assertGreater(len(data["items"]), 0)
+        for item in data["items"]:
+            self.assertEqual(item["ranking_mode"], "keyword_fallback")
+            self.assertEqual(item["ranking_score"], item["keyword_score"])
+            self.assertIsNone(item["semantic_score"])
+            self.assertIsNone(item["hybrid_score"])
+            self.assertIsNone(item["explanation"]["score"]["semantic_score"])
+            self.assertIsNone(item["explanation"]["score"]["hybrid_score"])
+
+    def test_empty_fallback_response_still_reports_ranking_context(self):
+        prepared = matching_routes.prepare_freelancer_matching_data(
+            "Bearer token", FakeAuthVerifier("freelancer-1"), self.repo
+        )
+        prepared = FreelancerMatchingData(prepared.auth_context, prepared.freelancer, ())
+
+        def unavailable_provider():
+            raise SemanticRankingUnavailableError(
+                SemanticUnavailableReason.EMBEDDING_PROVIDER_UNAVAILABLE
+            )
+
+        app.dependency_overrides[matching_routes.get_embedding_provider_factory] = lambda: unavailable_provider
+        with patch.object(matching_routes, "prepare_freelancer_matching_data", return_value=prepared):
+            status, data = get_json("/matching/recommended-gigs", {"authorization": "Bearer token"})
+
+        self.assertEqual(status, 200)
+        self.assertEqual(data["items"], [])
+        self.assertEqual(data["ranking_context"]["ranking_mode"], "keyword_fallback")
+        self.assertEqual(data["ranking_context"]["semantic_unavailable_reason"], "embedding_provider_unavailable")
+
+    def test_keyword_ranker_and_unexpected_failures_do_not_become_fallback_responses(self):
+        def unavailable_provider():
+            raise SemanticRankingUnavailableError(
+                SemanticUnavailableReason.EMBEDDING_GENERATION_FAILED
+            )
+
+        app.dependency_overrides[matching_routes.get_embedding_provider_factory] = lambda: unavailable_provider
+        with patch.object(
+            matching_routes,
+            "rank_gigs_for_freelancer",
+            side_effect=RuntimeError("keyword failure"),
+        ), self.assertRaisesRegex(RuntimeError, "keyword failure"):
+            get_json("/matching/recommended-gigs", {"authorization": "Bearer token"})
+
+        app.dependency_overrides[matching_routes.get_embedding_provider_factory] = (
+            lambda: lambda: DeterministicFakeEmbeddingProvider()
+        )
+        with patch.object(
+            matching_routes,
+            "rank_gigs_for_freelancer_hybrid",
+            side_effect=RuntimeError("unexpected ranking failure"),
+        ), self.assertRaisesRegex(RuntimeError, "unexpected ranking failure"):
+            get_json("/matching/recommended-gigs", {"authorization": "Bearer token"})
+
+    def test_invalid_embedding_output_uses_safe_typed_fallback_reason(self):
+        class InvalidProvider:
+            def encode(self, _text: str) -> list[float]:
+                return []
+
+            def encode_batch(self, texts: list[str]) -> list[list[float]]:
+                return [[] for _ in texts]
+
+        app.dependency_overrides[matching_routes.get_embedding_provider_factory] = lambda: lambda: InvalidProvider()
+
+        status, data = get_json("/matching/recommended-gigs", {"authorization": "Bearer token"})
+
+        self.assertEqual(status, 200)
+        self.assertEqual(data["ranking_context"]["ranking_mode"], "keyword_fallback")
+        self.assertEqual(data["ranking_context"]["semantic_unavailable_reason"], "invalid_embedding_output")
+        self.assertNotIn("must not be empty", json.dumps(data))
+
+    def test_database_failure_remains_a_real_error_and_never_loads_semantic_provider(self):
+        provider_calls: list[str] = []
+
+        def provider_factory():
+            provider_calls.append("called")
+            return DeterministicFakeEmbeddingProvider()
+
+        app.dependency_overrides[matching_routes.get_embedding_provider_factory] = lambda: provider_factory
+        with patch.object(
+            matching_routes,
+            "prepare_freelancer_matching_data",
+            side_effect=RuntimeError("database failure"),
+        ), self.assertRaisesRegex(RuntimeError, "database failure"):
+            get_json("/matching/recommended-gigs", {"authorization": "Bearer token"})
+
+        self.assertEqual(provider_calls, [])
 
     def test_recommended_gig_explanation_is_deterministic_and_scores_are_unchanged(self):
         status, first = get_json("/matching/recommended-gigs", {"authorization": "Bearer token"})
@@ -481,6 +609,7 @@ class MatchingRouteTests(unittest.TestCase):
         self.assertEqual(explanation["score"]["hybrid_score"], item["hybrid_score"])
         self.assertEqual(explanation["score"]["keyword_score"], item["keyword_score"])
         self.assertEqual(explanation["score"]["semantic_score"], item["semantic_score"])
+        self.assertEqual(item["ranking_score"], item["hybrid_score"])
         self.assertIn("severity", explanation["skill_gap"])
         self.assertIn("reasons", explanation)
 

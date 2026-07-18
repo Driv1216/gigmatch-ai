@@ -11,7 +11,20 @@ import math
 from typing import Protocol
 
 from app.matching.contracts import FreelancerMatchProfile, GigMatchProfile, NormalizedSkill
+from app.marketplace.ranking import SemanticUnavailableReason
 from app.parsing.text_normalizer import normalize_lookup_term
+
+
+class SemanticRankingUnavailableError(Exception):
+    """Typed semantic-only failure carrying a safe 7A reason code."""
+
+    def __init__(self, reason: SemanticUnavailableReason, internal_message: str | None = None) -> None:
+        self.reason = reason
+        super().__init__(internal_message or reason.value)
+
+
+class InvalidEmbeddingOutputError(SemanticRankingUnavailableError, ValueError):
+    """Raised when a provider returns an unusable embedding value."""
 
 
 class EmbeddingProvider(Protocol):
@@ -59,17 +72,32 @@ class SentenceTransformerEmbeddingProvider:
         try:
             from sentence_transformers import SentenceTransformer
         except ImportError as error:
-            raise RuntimeError(
-                "sentence-transformers is not installed. Install it before using "
-                "SentenceTransformerEmbeddingProvider, or use another EmbeddingProvider."
+            raise SemanticRankingUnavailableError(
+                SemanticUnavailableReason.EMBEDDING_PROVIDER_UNAVAILABLE
             ) from error
 
         self.model_name = model_name
-        self._model = SentenceTransformer(model_name)
+        try:
+            self._model = SentenceTransformer(model_name)
+        except (OSError, RuntimeError, TimeoutError) as error:
+            raise SemanticRankingUnavailableError(
+                SemanticUnavailableReason.EMBEDDING_PROVIDER_UNAVAILABLE
+            ) from error
 
     def encode(self, text: str) -> list[float]:
-        vector = self._model.encode(text)
-        return _vector_to_list(vector)
+        try:
+            vector = self._model.encode(text)
+            return _vector_to_list(vector)
+        except SemanticRankingUnavailableError:
+            raise
+        except (OSError, RuntimeError, TimeoutError) as error:
+            raise SemanticRankingUnavailableError(
+                SemanticUnavailableReason.EMBEDDING_GENERATION_FAILED
+            ) from error
+        except (TypeError, ValueError) as error:
+            raise InvalidEmbeddingOutputError(
+                SemanticUnavailableReason.INVALID_EMBEDDING_OUTPUT
+            ) from error
 
     def encode_batch(self, texts: list[str]) -> list[list[float]]:
         vectors = self._model.encode(texts)

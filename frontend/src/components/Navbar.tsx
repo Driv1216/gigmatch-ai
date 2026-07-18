@@ -25,6 +25,19 @@ export function Navbar() {
         <div className="flex items-center gap-2">
           {role ? (
             <>
+              {role === "freelancer" ? (
+                <NavLink
+                  to="/gigs"
+                  className={({ isActive }) =>
+                    [
+                      "rounded-md px-3 py-2 text-sm font-medium transition",
+                      isActive ? "bg-slate-100 text-ink" : "text-muted hover:bg-slate-50 hover:text-ink",
+                    ].join(" ")
+                  }
+                >
+                  Open Gigs
+                </NavLink>
+              ) : null}
               <NavLink
                 to={dashboardPathForRole(role)}
                 className={({ isActive }) =>

@@ -5,11 +5,12 @@ import { dashboardPathForRole, type UserRole } from "../lib/auth";
 import { PageContainer } from "./PageContainer";
 
 type ProtectedRouteProps = {
-  allowedRole: UserRole;
+  allowedRole?: UserRole;
+  allowedRoles?: UserRole[];
   children: ReactNode;
 };
 
-export function ProtectedRoute({ allowedRole, children }: ProtectedRouteProps) {
+export function ProtectedRoute({ allowedRole, allowedRoles, children }: ProtectedRouteProps) {
   const { user, profile, role, loading, profileError } = useAuth();
 
   if (loading) {
@@ -37,7 +38,8 @@ export function ProtectedRoute({ allowedRole, children }: ProtectedRouteProps) {
     );
   }
 
-  if (role !== allowedRole) {
+  const permittedRoles = allowedRoles ?? (allowedRole ? [allowedRole] : []);
+  if (permittedRoles.length > 0 && !permittedRoles.includes(role)) {
     return <Navigate to={dashboardPathForRole(role)} replace />;
   }
 

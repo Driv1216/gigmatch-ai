@@ -18,6 +18,7 @@ from app.matching.contracts import (
     SkillGapSummary,
 )
 from app.matching.hybrid import HybridMatchResult
+from app.matching.keyword import KeywordMatchResult
 
 MatchSubjectType = Literal["freelancer", "gig"]
 DEFAULT_MAX_FOCUS_SKILLS = 5
@@ -27,7 +28,7 @@ def build_match_explanation_evidence(
     *,
     freelancer: FreelancerMatchProfile,
     gig: GigMatchProfile,
-    result: HybridMatchResult,
+    result: HybridMatchResult | KeywordMatchResult,
     subject_type: MatchSubjectType,
 ) -> MatchExplanation:
     """Build safe structured explanation evidence for an already-ranked match."""
@@ -216,7 +217,15 @@ def _has_reason(explanation: MatchExplanation, code: ExplanationReasonCode) -> b
     return any(reason.code == code for reason in explanation.reasons)
 
 
-def _build_score_explanation(result: HybridMatchResult) -> ScoreExplanation:
+def _build_score_explanation(result: HybridMatchResult | KeywordMatchResult) -> ScoreExplanation:
+    if isinstance(result, KeywordMatchResult):
+        return ScoreExplanation(
+            keyword_score=result.keyword_score,
+            required_skill_coverage=result.required_skill_coverage,
+            preferred_skill_coverage=result.preferred_skill_coverage,
+            category_alignment=result.category_alignment,
+            missing_required_skill_penalty=result.missing_required_skill_penalty,
+        )
     return ScoreExplanation(
         hybrid_score=result.hybrid_score,
         keyword_score=result.keyword_score,

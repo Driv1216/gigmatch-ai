@@ -33,9 +33,31 @@ from app.matching.hybrid import (
     rank_freelancers_for_gig_hybrid,
     rank_gigs_for_freelancer_hybrid,
 )
-from app.matching.semantic import EmbeddingProvider, SentenceTransformerEmbeddingProvider
+from app.matching.keyword import (
+    KeywordMatchResult,
+    rank_freelancers_for_gig,
+    rank_gigs_for_freelancer,
+)
+from app.matching.semantic import (
+    EmbeddingProvider,
+    SemanticRankingUnavailableError,
+    SentenceTransformerEmbeddingProvider,
+)
+from app.marketplace.ranking import (
+    RankingMetadata,
+    RankingMode,
+    SemanticStatus,
+    SemanticUnavailableReason,
+)
 
 router = APIRouter()
+RankedResult = HybridMatchResult | KeywordMatchResult
+
+
+class RankingContext(BaseModel):
+    ranking_mode: RankingMode
+    semantic_status: SemanticStatus
+    semantic_unavailable_reason: SemanticUnavailableReason | None = None
 
 
 class RecommendedGigItem(BaseModel):
@@ -44,9 +66,13 @@ class RecommendedGigItem(BaseModel):
     category: str | None
     status: str | None
     rank: int
-    hybrid_score: float
+    ranking_mode: RankingMode
+    ranking_score: float
+    semantic_status: SemanticStatus
+    semantic_unavailable_reason: SemanticUnavailableReason | None
+    hybrid_score: float | None
     keyword_score: float
-    semantic_score: float
+    semantic_score: float | None
     explanation: dict
 
 
@@ -55,24 +81,28 @@ class RecommendedFreelancerItem(BaseModel):
     headline: str | None
     primary_role: str | None
     rank: int
-    hybrid_score: float
+    ranking_mode: RankingMode
+    ranking_score: float
+    semantic_status: SemanticStatus
+    semantic_unavailable_reason: SemanticUnavailableReason | None
+    hybrid_score: float | None
     keyword_score: float
-    semantic_score: float
+    semantic_score: float | None
     explanation: dict
 
 
 class RecommendedGigsEnvelope(BaseModel):
+    ranking_context: RankingContext
     items: list[RecommendedGigItem]
     count: int
     limit: int
-    ranking_method: Literal["hybrid"]
 
 
 class RecommendedFreelancersEnvelope(BaseModel):
+    ranking_context: RankingContext
     items: list[RecommendedFreelancerItem]
     count: int
     limit: int
-    ranking_method: Literal["hybrid"]
 
 
 def get_auth_verifier() -> AuthVerifier:
@@ -85,11 +115,10 @@ def get_matching_repository() -> MatchingRepository:
 
 def get_embedding_provider() -> EmbeddingProvider:
     if not settings.embedding_model_name:
-        raise HTTPException(status_code=503, detail="Matching embedding provider is not configured.")
-    try:
-        return SentenceTransformerEmbeddingProvider(settings.embedding_model_name)
-    except RuntimeError as error:
-        raise HTTPException(status_code=503, detail=str(error)) from error
+        raise SemanticRankingUnavailableError(
+            SemanticUnavailableReason.EMBEDDING_PROVIDER_NOT_CONFIGURED
+        )
+    return SentenceTransformerEmbeddingProvider(settings.embedding_model_name)
 
 
 def get_embedding_provider_factory() -> Callable[[], EmbeddingProvider]:
@@ -111,22 +140,21 @@ def recommended_gigs(
 ) -> RecommendedGigsEnvelope:
     try:
         data = prepare_freelancer_matching_data(authorization, auth_verifier, repository)
-        embedding_provider = embedding_provider_factory()
-        ranked_results = rank_gigs_for_freelancer_hybrid(
-            data.freelancer,
-            list(data.candidate_gigs),
-            embedding_provider,
-        )
     except _MATCHING_ERROR_TYPES as error:
         raise _matching_http_exception(error) from error
 
+    context, ranked_results = _rank_gigs_with_fallback(
+        data.freelancer,
+        list(data.candidate_gigs),
+        embedding_provider_factory,
+    )
     gigs_by_id = {gig.gig_id: gig for gig in data.candidate_gigs}
     items = [
-        _serialize_gig_result(result, data.freelancer, gigs_by_id[result.candidate_id])
+        _serialize_gig_result(result, data.freelancer, gigs_by_id[result.candidate_id], context)
         for result in ranked_results[:limit]
         if result.candidate_id in gigs_by_id
     ]
-    return RecommendedGigsEnvelope(items=items, count=len(items), limit=limit, ranking_method="hybrid")
+    return RecommendedGigsEnvelope(ranking_context=context, items=items, count=len(items), limit=limit)
 
 
 @router.get("/gigs/{gig_id}/recommended-freelancers", response_model=RecommendedFreelancersEnvelope)
@@ -140,22 +168,21 @@ def recommended_freelancers_for_gig(
 ) -> RecommendedFreelancersEnvelope:
     try:
         data = prepare_client_gig_matching_data(authorization, gig_id, auth_verifier, repository)
-        embedding_provider = embedding_provider_factory()
-        ranked_results = rank_freelancers_for_gig_hybrid(
-            data.gig,
-            list(data.candidate_freelancers),
-            embedding_provider,
-        )
     except _MATCHING_ERROR_TYPES as error:
         raise _matching_http_exception(error) from error
 
+    context, ranked_results = _rank_freelancers_with_fallback(
+        data.gig,
+        list(data.candidate_freelancers),
+        embedding_provider_factory,
+    )
     freelancers_by_id = {freelancer.freelancer_id: freelancer for freelancer in data.candidate_freelancers}
     items = [
-        _serialize_freelancer_result(result, freelancers_by_id[result.candidate_id], data.gig)
+        _serialize_freelancer_result(result, freelancers_by_id[result.candidate_id], data.gig, context)
         for result in ranked_results[:limit]
         if result.candidate_id in freelancers_by_id
     ]
-    return RecommendedFreelancersEnvelope(items=items, count=len(items), limit=limit, ranking_method="hybrid")
+    return RecommendedFreelancersEnvelope(ranking_context=context, items=items, count=len(items), limit=limit)
 
 
 _MATCHING_ERROR_TYPES = (
@@ -177,37 +204,111 @@ def _matching_http_exception(error: Exception) -> HTTPException:
     return HTTPException(status_code=403, detail=str(error))
 
 
+def _rank_gigs_with_fallback(
+    freelancer: FreelancerMatchProfile,
+    gigs: list[GigMatchProfile],
+    provider_factory: Callable[[], EmbeddingProvider],
+) -> tuple[RankingContext, list[RankedResult]]:
+    try:
+        provider = provider_factory()
+        ranked: list[RankedResult] = rank_gigs_for_freelancer_hybrid(freelancer, gigs, provider)
+    except SemanticRankingUnavailableError as error:
+        ranked = list(rank_gigs_for_freelancer(freelancer, gigs))
+        return _fallback_context(error.reason), ranked
+    return _hybrid_context(), ranked
+
+
+def _rank_freelancers_with_fallback(
+    gig: GigMatchProfile,
+    freelancers: list[FreelancerMatchProfile],
+    provider_factory: Callable[[], EmbeddingProvider],
+) -> tuple[RankingContext, list[RankedResult]]:
+    try:
+        provider = provider_factory()
+        ranked: list[RankedResult] = rank_freelancers_for_gig_hybrid(gig, freelancers, provider)
+    except SemanticRankingUnavailableError as error:
+        ranked = list(rank_freelancers_for_gig(gig, freelancers))
+        return _fallback_context(error.reason), ranked
+    return _hybrid_context(), ranked
+
+
+def _hybrid_context() -> RankingContext:
+    return RankingContext(
+        ranking_mode=RankingMode.HYBRID,
+        semantic_status=SemanticStatus.AVAILABLE,
+    )
+
+
+def _fallback_context(reason: SemanticUnavailableReason) -> RankingContext:
+    return RankingContext(
+        ranking_mode=RankingMode.KEYWORD_FALLBACK,
+        semantic_status=SemanticStatus.UNAVAILABLE,
+        semantic_unavailable_reason=reason,
+    )
+
+
+def _metadata(result: RankedResult, context: RankingContext) -> RankingMetadata:
+    if isinstance(result, HybridMatchResult):
+        return RankingMetadata(
+            ranking_mode=RankingMode.HYBRID,
+            semantic_status=SemanticStatus.AVAILABLE,
+            ranking_score=result.hybrid_score,
+            keyword_score=result.keyword_score,
+            semantic_score=result.semantic_score,
+            hybrid_score=result.hybrid_score,
+        )
+    return RankingMetadata(
+        ranking_mode=RankingMode.KEYWORD_FALLBACK,
+        semantic_status=SemanticStatus.UNAVAILABLE,
+        semantic_unavailable_reason=context.semantic_unavailable_reason,
+        ranking_score=result.keyword_score,
+        keyword_score=result.keyword_score,
+    )
+
+
 def _serialize_gig_result(
-    result: HybridMatchResult,
+    result: RankedResult,
     freelancer: FreelancerMatchProfile,
     gig: GigMatchProfile,
+    context: RankingContext,
 ) -> RecommendedGigItem:
+    metadata = _metadata(result, context)
     return RecommendedGigItem(
         gig_id=gig.gig_id,
         title=gig.title,
         category=gig.category,
         status=gig.status,
         rank=result.rank,
-        hybrid_score=result.hybrid_score,
-        keyword_score=result.keyword_score,
-        semantic_score=result.semantic_score,
+        ranking_mode=metadata.ranking_mode,
+        ranking_score=metadata.ranking_score,
+        semantic_status=metadata.semantic_status,
+        semantic_unavailable_reason=metadata.semantic_unavailable_reason,
+        hybrid_score=metadata.hybrid_score,
+        keyword_score=metadata.keyword_score or 0.0,
+        semantic_score=metadata.semantic_score,
         explanation=_serialize_explanation(freelancer, gig, result, "freelancer"),
     )
 
 
 def _serialize_freelancer_result(
-    result: HybridMatchResult,
+    result: RankedResult,
     freelancer: FreelancerMatchProfile,
     gig: GigMatchProfile,
+    context: RankingContext,
 ) -> RecommendedFreelancerItem:
+    metadata = _metadata(result, context)
     return RecommendedFreelancerItem(
         freelancer_id=freelancer.freelancer_id,
         headline=freelancer.headline,
         primary_role=freelancer.primary_role,
         rank=result.rank,
-        hybrid_score=result.hybrid_score,
-        keyword_score=result.keyword_score,
-        semantic_score=result.semantic_score,
+        ranking_mode=metadata.ranking_mode,
+        ranking_score=metadata.ranking_score,
+        semantic_status=metadata.semantic_status,
+        semantic_unavailable_reason=metadata.semantic_unavailable_reason,
+        hybrid_score=metadata.hybrid_score,
+        keyword_score=metadata.keyword_score or 0.0,
+        semantic_score=metadata.semantic_score,
         explanation=_serialize_explanation(freelancer, gig, result, "gig"),
     )
 
@@ -215,7 +316,7 @@ def _serialize_freelancer_result(
 def _serialize_explanation(
     freelancer: FreelancerMatchProfile,
     gig: GigMatchProfile,
-    result: HybridMatchResult,
+    result: RankedResult,
     subject_type: Literal["freelancer", "gig"],
 ) -> dict:
     explanation = build_match_explanation_evidence(

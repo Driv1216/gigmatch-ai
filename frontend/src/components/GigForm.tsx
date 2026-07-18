@@ -1,7 +1,7 @@
 /* eslint-disable react-refresh/only-export-components */
 import { useState, type FormEvent } from "react";
-import { arrayToCsv } from "../lib/profiles";
-import type { DifficultyLevel, Gig, GigStatus, SeniorityNeeded, WorkMode } from "../lib/gigs";
+import { arrayToCsv, csvToArray } from "../lib/profiles";
+import type { DifficultyLevel, Gig, SeniorityNeeded, WorkMode } from "../lib/gigs";
 import { Button } from "./Button";
 
 export type GigFormValues = {
@@ -17,7 +17,10 @@ export type GigFormValues = {
   deliverables: string;
   workMode: "" | WorkMode;
   deadline: string;
-  status: GigStatus;
+  projectDeadline: string;
+  currency: string;
+  budgetFlexibility: string;
+  locationRequirements: string;
 };
 
 type GigFormProps = {
@@ -41,7 +44,10 @@ export const emptyGigForm: GigFormValues = {
   deliverables: "",
   workMode: "",
   deadline: "",
-  status: "draft",
+  projectDeadline: "",
+  currency: "USD",
+  budgetFlexibility: "negotiable",
+  locationRequirements: "",
 };
 
 const inputClasses =
@@ -61,7 +67,10 @@ export function formFromGig(gig: Gig): GigFormValues {
     deliverables: arrayToCsv(gig.deliverables),
     workMode: gig.work_mode ?? "",
     deadline: gig.deadline ?? "",
-    status: gig.status,
+    projectDeadline: "",
+    currency: "USD",
+    budgetFlexibility: "negotiable",
+    locationRequirements: "",
   };
 }
 
@@ -102,14 +111,82 @@ function validateGigForm(values: GigFormValues) {
     errors.push("Tech category is required.");
   }
 
+  if (!values.currency.match(/^[A-Za-z]{3}$/)) errors.push("Currency must be a three-letter code.");
+  if (!values.deadline) errors.push("A timezone-aware application deadline is required.");
+  if (values.deadline && new Date(values.deadline).getTime() <= Date.now()) errors.push("Application deadline must be in the future.");
+  if (values.projectDeadline && new Date(values.projectDeadline).getTime() <= new Date(values.deadline).getTime()) {
+    errors.push("Project deadline must be later than the application deadline.");
+  }
+  if (csvToArray(values.requiredSkills).length === 0) errors.push("At least one required skill is required.");
+  if (csvToArray(values.deliverables).length === 0) errors.push("At least one deliverable is required.");
+  if (!values.seniorityNeeded) errors.push("Experience requirement is required.");
+  if (!values.workMode) errors.push("Work mode is required.");
+
   const budgetMin = parseBudget(values.budgetMin, "Budget min", errors);
   const budgetMax = parseBudget(values.budgetMax, "Budget max", errors);
+  if (budgetMin === null || budgetMax === null) errors.push("A complete fixed-price budget range is required.");
 
   if (budgetMin !== null && budgetMax !== null && budgetMax < budgetMin) {
     errors.push("Budget max cannot be less than budget min.");
   }
 
   return errors;
+}
+
+export function snapshotFromGigForm(values: GigFormValues): Record<string, unknown> {
+  const { budgetMin, budgetMax } = getParsedBudgets(values);
+  const toAware = (value: string) => value ? new Date(value).toISOString() : null;
+  return {
+    terms_contract_version: 1,
+    snapshot_schema_version: 1,
+    version_kind: "initial_product_version",
+    payment_structure: "fixed_price",
+    currency: values.currency.trim().toUpperCase(),
+    title: values.title.trim(),
+    description: values.description.trim(),
+    scope: { tech_category: values.techCategory.trim() },
+    client_payment: {
+      payment_structure: "fixed_price",
+      currency: values.currency.trim().toUpperCase(),
+      budget: { minimum: budgetMin, maximum: budgetMax },
+      flexibility: values.budgetFlexibility,
+    },
+    required_skills: csvToArray(values.requiredSkills),
+    preferred_skills: csvToArray(values.preferredSkills),
+    experience_requirement: values.seniorityNeeded,
+    difficulty_level: values.difficultyLevel || null,
+    work_mode: values.workMode,
+    location_requirements: values.locationRequirements.trim() || null,
+    weekly_commitment: null,
+    expected_duration: null,
+    application_deadline: toAware(values.deadline),
+    project_deadline: toAware(values.projectDeadline),
+    deliverables: csvToArray(values.deliverables),
+    assumptions: [],
+  };
+}
+
+export function formFromTerms(terms: Record<string, unknown>): GigFormValues {
+  const payment = typeof terms.client_payment === "object" && terms.client_payment ? terms.client_payment as Record<string, unknown> : {};
+  const budget = typeof payment.budget === "object" && payment.budget ? payment.budget as Record<string, unknown> : payment;
+  const scope = typeof terms.scope === "object" && terms.scope ? terms.scope as Record<string, unknown> : {};
+  const localDate = (value: unknown) => typeof value === "string" ? new Date(value).toISOString().slice(0, 16) : "";
+  const strings = (value: unknown) => Array.isArray(value) ? value.filter((item): item is string => typeof item === "string") : [];
+  return {
+    title: typeof terms.title === "string" ? terms.title : "",
+    description: typeof terms.description === "string" ? terms.description : "",
+    techCategory: typeof scope.tech_category === "string" ? scope.tech_category : "",
+    requiredSkills: arrayToCsv(strings(terms.required_skills)), preferredSkills: arrayToCsv(strings(terms.preferred_skills)),
+    budgetMin: String(budget.minimum ?? payment.budget_min ?? ""), budgetMax: String(budget.maximum ?? payment.budget_max ?? ""),
+    difficultyLevel: (typeof terms.difficulty_level === "string" ? terms.difficulty_level : "") as GigFormValues["difficultyLevel"],
+    seniorityNeeded: (typeof terms.experience_requirement === "string" ? terms.experience_requirement : "") as GigFormValues["seniorityNeeded"],
+    deliverables: arrayToCsv(strings(terms.deliverables)),
+    workMode: (typeof terms.work_mode === "string" ? terms.work_mode : "") as GigFormValues["workMode"],
+    deadline: localDate(terms.application_deadline), projectDeadline: localDate(terms.project_deadline),
+    currency: typeof terms.currency === "string" ? terms.currency : "USD",
+    budgetFlexibility: typeof payment.flexibility === "string" ? payment.flexibility : "negotiable",
+    locationRequirements: typeof terms.location_requirements === "string" ? terms.location_requirements : "",
+  };
 }
 
 export function getParsedBudgets(values: GigFormValues) {
@@ -171,16 +248,8 @@ export function GigForm({ initialValues = emptyGigForm, isSubmitting, submitLabe
           />
         </label>
         <label className="block">
-          <span className="text-sm font-semibold text-ink">Status</span>
-          <select
-            value={values.status}
-            onChange={(event) => updateField("status", event.target.value as GigStatus)}
-            className={inputClasses}
-          >
-            <option value="draft">Draft</option>
-            <option value="open">Open</option>
-            <option value="closed">Closed</option>
-          </select>
+          <span className="text-sm font-semibold text-ink">Currency</span>
+          <input maxLength={3} value={values.currency} onChange={(event) => updateField("currency", event.target.value)} className={inputClasses} />
         </label>
         <label className="block">
           <span className="text-sm font-semibold text-ink">Required Skills</span>
@@ -189,6 +258,12 @@ export function GigForm({ initialValues = emptyGigForm, isSubmitting, submitLabe
             onChange={(event) => updateField("requiredSkills", event.target.value)}
             className={inputClasses}
           />
+        </label>
+        <label className="block">
+          <span className="text-sm font-semibold text-ink">Budget Flexibility</span>
+          <select value={values.budgetFlexibility} onChange={(event) => updateField("budgetFlexibility", event.target.value)} className={inputClasses}>
+            <option value="fixed">Fixed</option><option value="negotiable">Negotiable</option><option value="depends_on_scope">Depends on scope</option>
+          </select>
         </label>
         <label className="block">
           <span className="text-sm font-semibold text-ink">Preferred Skills</span>
@@ -266,13 +341,21 @@ export function GigForm({ initialValues = emptyGigForm, isSubmitting, submitLabe
           </select>
         </label>
         <label className="block">
-          <span className="text-sm font-semibold text-ink">Deadline</span>
+          <span className="text-sm font-semibold text-ink">Application Deadline</span>
           <input
-            type="date"
+            type="datetime-local"
             value={values.deadline}
             onChange={(event) => updateField("deadline", event.target.value)}
             className={inputClasses}
           />
+        </label>
+        <label className="block">
+          <span className="text-sm font-semibold text-ink">Project Deadline</span>
+          <input type="datetime-local" value={values.projectDeadline} onChange={(event) => updateField("projectDeadline", event.target.value)} className={inputClasses} />
+        </label>
+        <label className="block md:col-span-2">
+          <span className="text-sm font-semibold text-ink">Location / Timezone Requirements</span>
+          <input value={values.locationRequirements} onChange={(event) => updateField("locationRequirements", event.target.value)} className={inputClasses} />
         </label>
       </div>
 

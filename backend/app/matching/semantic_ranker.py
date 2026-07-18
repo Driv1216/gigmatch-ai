@@ -8,10 +8,13 @@ from typing import Literal
 from app.matching.contracts import FreelancerMatchProfile, GigMatchProfile
 from app.matching.semantic import (
     EmbeddingProvider,
+    InvalidEmbeddingOutputError,
+    SemanticRankingUnavailableError,
     build_freelancer_embedding_text,
     build_gig_embedding_text,
     cosine_similarity,
 )
+from app.marketplace.ranking import SemanticUnavailableReason
 
 
 @dataclass(frozen=True)
@@ -51,8 +54,13 @@ def score_semantic_match(
 
     freelancer_embedding_text = build_freelancer_embedding_text(freelancer)
     gig_embedding_text = build_gig_embedding_text(gig)
-    freelancer_vector = _validate_vector(provider.encode(freelancer_embedding_text), "freelancer")
-    gig_vector = _validate_vector(provider.encode(gig_embedding_text), "gig")
+    freelancer_vector = _validate_vector(_encode(provider, freelancer_embedding_text), "freelancer")
+    gig_vector = _validate_vector(_encode(provider, gig_embedding_text), "gig")
+    if len(freelancer_vector) != len(gig_vector):
+        raise InvalidEmbeddingOutputError(
+            SemanticUnavailableReason.INVALID_EMBEDDING_OUTPUT,
+            "Vectors must have the same dimension for cosine similarity.",
+        )
     raw_cosine_similarity = cosine_similarity(freelancer_vector, gig_vector)
 
     return SemanticScoreBreakdown(
@@ -109,17 +117,37 @@ def _normalize_cosine(raw_cosine_similarity: float) -> float:
 
 def _validate_vector(vector: list[float], label: str) -> list[float]:
     if not isinstance(vector, list):
-        raise ValueError(f"{label} embedding vector must be a list of numbers.")
+        raise InvalidEmbeddingOutputError(
+            SemanticUnavailableReason.INVALID_EMBEDDING_OUTPUT,
+            f"{label} embedding vector must be a list of numbers.",
+        )
     if not vector:
-        raise ValueError(f"{label} embedding vector must not be empty.")
+        raise InvalidEmbeddingOutputError(
+            SemanticUnavailableReason.INVALID_EMBEDDING_OUTPUT,
+            f"{label} embedding vector must not be empty.",
+        )
 
     validated: list[float] = []
     for value in vector:
         if not isinstance(value, (int, float)):
-            raise ValueError(f"{label} embedding vector must contain only numbers.")
+            raise InvalidEmbeddingOutputError(
+                SemanticUnavailableReason.INVALID_EMBEDDING_OUTPUT,
+                f"{label} embedding vector must contain only numbers.",
+            )
         validated.append(float(value))
 
     return validated
+
+
+def _encode(provider: EmbeddingProvider, text: str) -> list[float]:
+    try:
+        return provider.encode(text)
+    except SemanticRankingUnavailableError:
+        raise
+    except (OSError, RuntimeError, TimeoutError) as error:
+        raise SemanticRankingUnavailableError(
+            SemanticUnavailableReason.EMBEDDING_GENERATION_FAILED
+        ) from error
 
 
 def _provider_name(provider: EmbeddingProvider) -> str:

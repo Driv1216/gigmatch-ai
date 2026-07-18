@@ -6,8 +6,10 @@ import { useAuth } from "../context/AuthContext";
 import {
   fetchRecommendedGigs,
   MatchingApiError,
+  type RankingContext,
   type RecommendedGigItem,
 } from "../lib/matching";
+import { gigDetailPath, rankingPresentation } from "../lib/marketplaceView";
 import { formatScoreValue } from "../lib/matchingExplanations";
 
 function getRecommendationErrorMessage(error: unknown) {
@@ -47,6 +49,7 @@ function formatScore(score: number) {
 export function FreelancerDashboardPage() {
   const { user } = useAuth();
   const [recommendedGigs, setRecommendedGigs] = useState<RecommendedGigItem[]>([]);
+  const [rankingContext, setRankingContext] = useState<RankingContext | null>(null);
   const [isLoadingRecommendations, setIsLoadingRecommendations] = useState(true);
   const [recommendationsError, setRecommendationsError] = useState<string | null>(null);
 
@@ -67,10 +70,12 @@ export function FreelancerDashboardPage() {
 
         if (isMounted) {
           setRecommendedGigs(envelope.items);
+          setRankingContext(envelope.ranking_context);
         }
       } catch (error) {
         if (isMounted) {
           setRecommendedGigs([]);
+          setRankingContext(null);
           setRecommendationsError(getRecommendationErrorMessage(error));
         }
       } finally {
@@ -86,6 +91,8 @@ export function FreelancerDashboardPage() {
       isMounted = false;
     };
   }, [user]);
+
+  const ranking = rankingContext ? rankingPresentation(rankingContext) : null;
 
   return (
     <PageContainer className="space-y-8">
@@ -109,11 +116,11 @@ export function FreelancerDashboardPage() {
             <p className="text-sm font-semibold uppercase tracking-wide text-accent">Recommended gigs</p>
             <h2 className="mt-3 text-2xl font-bold tracking-normal text-ink">Backend-ranked opportunities</h2>
             <p className="mt-3 max-w-2xl text-sm leading-6 text-muted">
-              Matches are ranked by the backend hybrid matching engine and shown in the order returned by the API.
+              {ranking?.message ?? "Recommendations are ranked by the backend matching engine and shown in the order returned by the API."}
             </p>
           </div>
           <span className="inline-flex w-fit rounded-full border border-line bg-slate-50 px-3 py-1 text-xs font-semibold uppercase text-muted">
-            Hybrid ranking
+            {ranking?.label ?? "Ranking context"}
           </span>
         </div>
 
@@ -150,6 +157,11 @@ export function FreelancerDashboardPage() {
 }
 
 function RecommendedGigCard({ gig }: { gig: RecommendedGigItem }) {
+  const ranking = rankingPresentation({
+    ranking_mode: gig.ranking_mode,
+    semantic_status: gig.semantic_status,
+    semantic_unavailable_reason: gig.semantic_unavailable_reason,
+  });
   return (
     <article className="rounded-lg border border-line bg-white p-6">
       <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
@@ -168,14 +180,17 @@ function RecommendedGigCard({ gig }: { gig: RecommendedGigItem }) {
           {gig.category ? <p className="mt-2 text-sm font-semibold text-accent">{gig.category}</p> : null}
         </div>
 
-        <dl className="grid min-w-full grid-cols-1 gap-2 sm:grid-cols-3 lg:min-w-80">
-          <ScorePill label="Hybrid" value={formatScore(gig.hybrid_score)} />
+        <dl className={`grid min-w-full grid-cols-1 gap-2 lg:min-w-80 ${ranking.showSemanticScore ? "sm:grid-cols-3" : "sm:grid-cols-1"}`}>
+          {ranking.showHybridScore && gig.hybrid_score !== null ? <ScorePill label="Hybrid" value={formatScore(gig.hybrid_score)} /> : null}
           <ScorePill label="Keyword" value={formatScore(gig.keyword_score)} />
-          <ScorePill label="Semantic" value={formatScore(gig.semantic_score)} />
+          {ranking.showSemanticScore && gig.semantic_score !== null ? <ScorePill label="Semantic" value={formatScore(gig.semantic_score)} /> : null}
         </dl>
       </div>
 
       <MatchExplanationPanel explanation={gig.explanation} className="mt-6 shadow-none" />
+      <div className="mt-5 flex justify-end border-t border-line pt-5">
+        <Button to={gigDetailPath(gig.gig_id)} variant="secondary">View gig details</Button>
+      </div>
     </article>
   );
 }

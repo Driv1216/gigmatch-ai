@@ -8,6 +8,8 @@ import { EditGigPage } from "./pages/EditGigPage";
 import { FreelancerDashboardPage } from "./pages/FreelancerDashboardPage";
 import { FreelancerProfilePage } from "./pages/FreelancerProfilePage";
 import { GigParsePage } from "./pages/GigParsePage";
+import { GigDetailPage } from "./pages/GigDetailPage";
+import { GigDiscoveryPage } from "./pages/GigDiscoveryPage";
 import { LandingPage } from "./pages/LandingPage";
 import { LoginPage } from "./pages/LoginPage";
 import { ManageGigsPage } from "./pages/ManageGigsPage";
@@ -67,6 +69,22 @@ export default function App() {
           element={
             <ProtectedRoute allowedRole="client">
               <NewGigPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/gigs"
+          element={
+            <ProtectedRoute allowedRole="freelancer">
+              <GigDiscoveryPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/gigs/:gigId"
+          element={
+            <ProtectedRoute allowedRoles={["freelancer", "client", "admin"]}>
+              <GigDetailPage />
             </ProtectedRoute>
           }
         />

@@ -100,6 +100,24 @@ class GigPauseDetail:
         _validate_other(self.reason, self.explanation, "gig pause reason")
 
 
+class IntakeClosureReason(str, Enum):
+    SUFFICIENT_APPLICATIONS_RECEIVED = "sufficient_applications_received"
+    MOVING_TO_APPLICANT_REVIEW = "moving_to_applicant_review"
+    HIRING_TIMELINE_CHANGED = "hiring_timeline_changed"
+    REQUIREMENTS_UNDER_REVISION = "requirements_under_revision"
+    OTHER = "other"
+
+
+@dataclass(frozen=True)
+class IntakeClosureDetail:
+    reason: IntakeClosureReason
+    explanation: str | None = None
+
+    def __post_init__(self) -> None:
+        require_enum_member(self.reason, IntakeClosureReason, "intake closure reason")
+        _validate_other(self.reason, self.explanation, "intake closure reason")
+
+
 class GigCancellationReason(str, Enum):
     OPPORTUNITY_NO_LONGER_REQUIRED = "opportunity_no_longer_required"
     BUDGET_NO_LONGER_AVAILABLE = "budget_no_longer_available"

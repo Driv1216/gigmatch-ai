@@ -1,6 +1,8 @@
 import inspect
 import sys
 import unittest
+from copy import deepcopy
+from datetime import datetime, timezone
 from typing import Any
 
 from app.core.auth import InvalidTokenError, MissingTokenError, SupabaseAuthVerifier, VerifiedAuthUser
@@ -17,6 +19,7 @@ from app.matching.data_access import (
     prepare_client_owned_gig_profiles,
     prepare_freelancer_matching_data,
 )
+from app.marketplace.discovery import gig_row_for_matching, is_discoverable_and_application_ready
 
 
 class FakeAuthVerifier:
@@ -57,7 +60,12 @@ class FakeMatchingRepository:
 
     def list_open_gigs(self) -> list[dict[str, Any]]:
         self.calls.append(("list_open_gigs", ""))
-        return [gig for gig in self.gigs_by_id.values() if gig.get("status") == "open"]
+        now = datetime.now(timezone.utc)
+        return [
+            gig_row_for_matching(gig)
+            for gig in self.gigs_by_id.values()
+            if is_discoverable_and_application_ready(gig, now)
+        ]
 
     def list_gig_parses_for_gig(self, gig_id: str) -> list[dict[str, Any]]:
         self.calls.append(("list_gig_parses_for_gig", gig_id))
@@ -98,7 +106,7 @@ def make_repo() -> FakeMatchingRepository:
         "email": "private@example.com",
     }
     repo.gigs_by_id = {
-        "gig-1": {
+        "gig-1": _application_ready_gig({
             "id": "gig-1",
             "client_id": "client-1",
             "title": "Build React dashboard",
@@ -109,10 +117,9 @@ def make_repo() -> FakeMatchingRepository:
             "difficulty_level": "intermediate",
             "seniority_needed": "junior",
             "deliverables": ["dashboard"],
-            "status": "open",
             "updated_at": "2026-07-04T12:00:00+00:00",
-        },
-        "gig-2": {
+        }),
+        "gig-2": _application_ready_gig({
             "id": "gig-2",
             "client_id": "client-2",
             "title": "Other client gig",
@@ -121,8 +128,7 @@ def make_repo() -> FakeMatchingRepository:
             "required_skills": ["FastAPI"],
             "preferred_skills": [],
             "deliverables": [],
-            "status": "open",
-        },
+        }),
         "gig-closed": {
             "id": "gig-closed",
             "client_id": "client-1",
@@ -132,7 +138,10 @@ def make_repo() -> FakeMatchingRepository:
             "required_skills": ["React"],
             "preferred_skills": [],
             "deliverables": [],
-            "status": "closed",
+            "status": "closed_to_new_applications",
+            "opportunity_lifecycle": "active",
+            "application_intake": "closed",
+            "operational_state": "active",
         },
     }
     repo.matchable_freelancers = [
@@ -152,6 +161,54 @@ def make_repo() -> FakeMatchingRepository:
         },
     ]
     return repo
+
+
+def _application_ready_gig(gig: dict[str, Any]) -> dict[str, Any]:
+    version_id = f"version-{gig['id']}"
+    snapshot = {
+        "version_kind": "initial_product_version",
+        "terms_contract_version": 1,
+        "snapshot_schema_version": 1,
+        "payment_structure": "fixed_price",
+        "currency": "USD",
+        "title": gig["title"],
+        "description": gig["description"],
+        "scope": {"tech_category": gig["tech_category"]},
+        "client_payment": {
+            "payment_structure": "fixed_price",
+            "currency": "USD",
+            "budget_min": 1000,
+            "budget_max": 2000,
+        },
+        "required_skills": gig.get("required_skills", []),
+        "preferred_skills": gig.get("preferred_skills", []),
+        "experience_requirement": gig.get("seniority_needed") or "any",
+        "difficulty_level": gig.get("difficulty_level"),
+        "work_mode": "remote",
+        "location_requirements": None,
+        "weekly_commitment": None,
+        "application_deadline": "2099-12-31T23:59:59+00:00",
+        "project_deadline": "2100-01-31T23:59:59+00:00",
+        "deliverables": gig.get("deliverables") or ["Project delivery"],
+    }
+    version = {
+        "id": version_id,
+        "gig_id": gig["id"],
+        "terms_contract_version": 1,
+        "terms_snapshot": snapshot,
+        "created_at": gig.get("updated_at", "2026-07-04T12:00:00+00:00"),
+    }
+    return {
+        **gig,
+        "status": "open",
+        "opportunity_lifecycle": "active",
+        "application_intake": "accepting",
+        "operational_state": "active",
+        "current_gig_version_id": version_id,
+        "current_material_gig_version_id": version_id,
+        "current_version": version,
+        "current_material_version": version,
+    }
 
 
 class MatchingDataAccessTests(unittest.TestCase):
@@ -329,6 +386,30 @@ class MatchingDataAccessTests(unittest.TestCase):
         self.assertTrue(
             all(isinstance(freelancer, FreelancerMatchProfile) for freelancer in client_result.candidate_freelancers)
         )
+
+    def test_recommendation_candidate_pool_uses_application_ready_discoverability(self):
+        repo = make_repo()
+        paused = deepcopy(repo.gigs_by_id["gig-1"])
+        paused["id"] = "gig-paused"
+        paused["status"] = "paused"
+        paused["operational_state"] = "paused"
+        paused["current_version"]["gig_id"] = "gig-paused"
+        paused["current_material_version"] = paused["current_version"]
+        paused["current_gig_version_id"] = paused["current_version"]["id"]
+        paused["current_material_gig_version_id"] = paused["current_version"]["id"]
+        expired = deepcopy(repo.gigs_by_id["gig-2"])
+        expired["id"] = "gig-expired"
+        expired["current_version"]["gig_id"] = "gig-expired"
+        expired["current_version"]["terms_snapshot"]["application_deadline"] = "2020-01-01T00:00:00+00:00"
+        expired["current_material_version"] = expired["current_version"]
+        repo.gigs_by_id["gig-paused"] = paused
+        repo.gigs_by_id["gig-expired"] = expired
+
+        result = prepare_freelancer_matching_data(
+            "Bearer token", FakeAuthVerifier("freelancer-1"), repo
+        )
+
+        self.assertEqual({gig.gig_id for gig in result.candidate_gigs}, {"gig-1", "gig-2"})
 
     def test_public_return_objects_do_not_expose_raw_private_database_data(self):
         repo = make_repo()

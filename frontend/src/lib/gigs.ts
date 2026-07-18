@@ -3,7 +3,7 @@ import { supabase } from "./supabaseClient";
 export type DifficultyLevel = "beginner" | "intermediate" | "advanced";
 export type SeniorityNeeded = "student" | "junior" | "mid" | "senior" | "any";
 export type WorkMode = "remote" | "hybrid" | "onsite";
-export type GigStatus = "draft" | "open" | "closed";
+export type GigStatus = "draft" | "open" | "paused" | "closed_to_new_applications" | "filled" | "cancelled";
 
 export type Gig = {
   id: string;
@@ -58,17 +58,10 @@ export async function fetchGigForClient(gigId: string, clientId: string): Promis
 }
 
 export async function createGig(input: GigInput) {
-  const { error } = await supabase.from("gigs").insert(input);
+  const { data, error } = await supabase.from("gigs").insert(input).select("id,current_gig_version_id").single();
 
   if (error) {
     throw error;
   }
-}
-
-export async function updateGig(gigId: string, clientId: string, input: GigUpdateInput) {
-  const { error } = await supabase.from("gigs").update(input).eq("id", gigId).eq("client_id", clientId);
-
-  if (error) {
-    throw error;
-  }
+  return data as { id: string; current_gig_version_id: string };
 }

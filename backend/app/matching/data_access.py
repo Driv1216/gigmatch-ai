@@ -20,6 +20,8 @@ from app.core.auth import (
 )
 from app.matching.builders import build_freelancer_match_profile, build_gig_match_profile
 from app.matching.contracts import FreelancerMatchProfile, GigMatchProfile
+from app.marketplace.data_access import SupabaseMarketplaceReadRepository
+from app.marketplace.discovery import gig_row_for_matching, is_discoverable_and_application_ready
 
 VALID_MATCHING_ROLES = {"freelancer", "client", "admin"}
 PARSE_STATUS_PRIORITY = {"reviewed": 2, "parsed": 1}
@@ -107,7 +109,7 @@ class MatchingRepository(Protocol):
         """Return freelancer profile rows needed to build matchable candidates."""
 
 
-class SupabaseMatchingRepository:
+class SupabaseMatchingRepository(SupabaseMarketplaceReadRepository):
     """Read-only Supabase REST repository for matching preparation.
 
     This class uses the backend secret key because 4F-A needs server-side reads
@@ -163,18 +165,12 @@ class SupabaseMatchingRepository:
         )
 
     def list_open_gigs(self) -> list[dict[str, Any]]:
-        return self._select(
-            "gigs",
-            {
-                "select": (
-                    "id,client_id,title,description,tech_category,required_skills,"
-                    "preferred_skills,difficulty_level,seniority_needed,deliverables,status,"
-                    "created_at,updated_at"
-                ),
-                "status": "eq.open",
-                "order": "updated_at.desc",
-            },
-        )
+        now = datetime.now(timezone.utc)
+        return [
+            gig_row_for_matching(gig)
+            for gig in self.list_marketplace_gigs()
+            if is_discoverable_and_application_ready(gig, now)
+        ]
 
     def list_gig_parses_for_gig(self, gig_id: str) -> list[dict[str, Any]]:
         return self._select(
