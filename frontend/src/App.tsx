@@ -2,9 +2,16 @@ import { Navigate, Route, Routes } from "react-router-dom";
 import { AppLayout } from "./components/AppLayout";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import { AdminDashboardPage } from "./pages/AdminDashboardPage";
+import { ApplicationDetailPage } from "./pages/ApplicationDetailPage";
+import { ApplicantInboxPage } from "./pages/ApplicantInboxPage";
+import { ApplyToGigPage } from "./pages/ApplyToGigPage";
 import { ClientDashboardPage } from "./pages/ClientDashboardPage";
+import { ClientApplicantDetailPage } from "./pages/ClientApplicantDetailPage";
 import { ClientProfilePage } from "./pages/ClientProfilePage";
 import { EditGigPage } from "./pages/EditGigPage";
+import { EditApplicationPage } from "./pages/EditApplicationPage";
+import { EngagementListPage } from "./pages/EngagementListPage";
+import { EngagementWorkspacePage } from "./pages/EngagementWorkspacePage";
 import { FreelancerDashboardPage } from "./pages/FreelancerDashboardPage";
 import { FreelancerProfilePage } from "./pages/FreelancerProfilePage";
 import { GigParsePage } from "./pages/GigParsePage";
@@ -13,6 +20,7 @@ import { GigDiscoveryPage } from "./pages/GigDiscoveryPage";
 import { LandingPage } from "./pages/LandingPage";
 import { LoginPage } from "./pages/LoginPage";
 import { ManageGigsPage } from "./pages/ManageGigsPage";
+import { MyApplicationsPage } from "./pages/MyApplicationsPage";
 import { NewGigPage } from "./pages/NewGigPage";
 import { ResumeParsePage } from "./pages/ResumeParsePage";
 import { SignupPage } from "./pages/SignupPage";
@@ -87,6 +95,38 @@ export default function App() {
               <GigDetailPage />
             </ProtectedRoute>
           }
+        />
+        <Route
+          path="/gigs/:gigId/apply"
+          element={<ProtectedRoute allowedRole="freelancer"><ApplyToGigPage /></ProtectedRoute>}
+        />
+        <Route
+          path="/gigs/:gigId/applicants"
+          element={<ProtectedRoute allowedRole="client"><ApplicantInboxPage /></ProtectedRoute>}
+        />
+        <Route
+          path="/gigs/:gigId/applicants/:applicationId"
+          element={<ProtectedRoute allowedRole="client"><ClientApplicantDetailPage /></ProtectedRoute>}
+        />
+        <Route
+          path="/applications"
+          element={<ProtectedRoute allowedRole="freelancer"><MyApplicationsPage /></ProtectedRoute>}
+        />
+        <Route
+          path="/applications/:applicationId"
+          element={<ProtectedRoute allowedRole="freelancer"><ApplicationDetailPage /></ProtectedRoute>}
+        />
+        <Route
+          path="/applications/:applicationId/edit"
+          element={<ProtectedRoute allowedRole="freelancer"><EditApplicationPage /></ProtectedRoute>}
+        />
+        <Route
+          path="/engagements"
+          element={<ProtectedRoute allowedRoles={["freelancer", "client"]}><EngagementListPage /></ProtectedRoute>}
+        />
+        <Route
+          path="/engagements/:engagementId"
+          element={<ProtectedRoute allowedRoles={["freelancer", "client"]}><EngagementWorkspacePage /></ProtectedRoute>}
         />
         <Route
           path="/gigs/manage"

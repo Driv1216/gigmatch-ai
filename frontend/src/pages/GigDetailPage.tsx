@@ -4,13 +4,18 @@ import { useParams } from "react-router-dom";
 import { Button } from "../components/Button";
 import { PageContainer } from "../components/PageContainer";
 import { fetchGigDetail, MarketplaceApiError, type GigDetailResponse } from "../lib/marketplace";
+import { fetchApplicationContext, type ApplicationContext } from "../lib/applications";
+import { contextAction } from "../lib/applicationView";
 import { availabilityMessage, formatDateTime, formatDuration, formatPayment, formatRange } from "../lib/marketplaceView";
+import { useAuth } from "../context/AuthContext";
 
 export function GigDetailPage() {
   const { gigId } = useParams();
   const [detail, setDetail] = useState<GigDetailResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [applicationContext, setApplicationContext] = useState<ApplicationContext | null>(null);
+  const { role } = useAuth();
 
   useEffect(() => {
     let active = true;
@@ -36,6 +41,13 @@ export function GigDetailPage() {
     return () => { active = false; };
   }, [gigId]);
 
+  useEffect(() => {
+    let active = true;
+    if (!gigId || role !== "freelancer") return;
+    fetchApplicationContext(gigId).then((value) => { if (active) setApplicationContext(value); }).catch(() => { if (active) setApplicationContext(null); });
+    return () => { active = false; };
+  }, [gigId, role]);
+
   if (loading) {
     return <PageContainer><p className="text-sm font-medium text-muted">Loading gig details...</p></PageContainer>;
   }
@@ -54,6 +66,7 @@ export function GigDetailPage() {
       </PageContainer>
     );
   }
+  const applicationAction = applicationContext ? contextAction(applicationContext) : null;
 
   return (
     <PageContainer className="space-y-6">
@@ -103,6 +116,10 @@ export function GigDetailPage() {
             {detail.client.industry ? <p className="mt-3 text-sm text-muted">{detail.client.industry}</p> : null}
             {detail.client.company_summary ? <p className="mt-3 text-sm leading-6 text-muted">{detail.client.company_summary}</p> : null}
           </Section>
+          {role === "freelancer" && applicationAction ? (
+            applicationAction.destination ? <Button to={applicationAction.destination === "apply" ? `/gigs/${gigId}/apply` : applicationAction.destination} className="w-full">{applicationAction.label}</Button>
+              : <p className="rounded-md border border-amber-200 bg-amber-50 p-4 text-sm font-semibold text-amber-900">{applicationAction.label}</p>
+          ) : null}
           <Button to="/gigs" variant="secondary" className="w-full">Back to open gigs</Button>
         </aside>
       </div>

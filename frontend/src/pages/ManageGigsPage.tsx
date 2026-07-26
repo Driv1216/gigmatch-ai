@@ -215,10 +215,16 @@ export function ManageGigsPage() {
                     <p className="mt-2 text-sm leading-6 text-muted">Deadline: {formatDate(typeof gig.terms.application_deadline === "string" ? gig.terms.application_deadline : null)}</p>
                     <p className="mt-2 text-xs font-medium text-muted">Display v{gig.current_display_version_number} · Material v{gig.current_material_version_number}</p>
                     <p className="mt-2 text-xs font-medium text-muted">{gig.accepting_applications ? "Effectively accepting applications" : "Not effectively accepting applications"}</p>
+                    {gig.engagement_state === "cancelled_not_reopened" ? <p className="mt-2 text-sm font-semibold text-amber-700">Engagement cancelled · Gig not reopened</p> : null}
+                    {gig.engagement_state === "current" ? <p className="mt-2 text-sm font-semibold text-emerald-700">Filled · Current engagement active</p> : null}
                     {gig.upgrade_required ? <p className="mt-2 text-sm font-semibold text-amber-700">Upgrade Required — contract-zero terms remain excluded from discovery.</p> : null}
                     {gig.blocking_reason_codes.map((code) => <p key={code} className="mt-1 text-xs font-semibold text-amber-700">{code.replace(/_/g, " ")}</p>)}
                   </div>
                   <div className="flex flex-wrap gap-3">
+                    {gig.engagement_state !== "none" ? <Button to="/engagements" variant="secondary">View Engagement</Button> : null}
+                    <Button to={`/gigs/${gig.gig_id}/applicants`}>
+                      Review Applicants{gig.active_application_count ? ` (${gig.active_application_count})` : ""}
+                    </Button>
                     <Button
                       type="button"
                       variant="secondary"

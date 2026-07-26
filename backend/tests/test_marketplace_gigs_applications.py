@@ -210,6 +210,11 @@ class ApplicationStateMachineTests(unittest.TestCase):
             (ApplicationStage.ADVANCED, ApplicationAction.CLOSE_GIG_CANCELLED, ApplicationStage.CLOSED_GIG_CANCELLED),
             (ApplicationStage.NOT_SELECTED, ApplicationAction.CONTROLLED_REOPEN, ApplicationStage.UNDER_REVIEW),
             (ApplicationStage.WITHDRAWN, ApplicationAction.ACCEPT_RECONSIDERATION, ApplicationStage.UNDER_REVIEW),
+            (
+                ApplicationStage.WITHDRAWN,
+                ApplicationAction.REAPPLY_AFTER_MATERIAL_GIG_CHANGE,
+                ApplicationStage.UNDER_REVIEW,
+            ),
         )
         for source, action, target in cases:
             with self.subTest(source=source, action=action):
@@ -243,6 +248,16 @@ class ApplicationStateMachineTests(unittest.TestCase):
         stage_names = {stage.name for stage in ApplicationStage}
         self.assertNotIn("SELECTION_PENDING", stage_names)
         self.assertNotIn("INTERNAL_SHORTLIST", stage_names)
+
+    def test_material_change_reapplication_has_distinct_action_and_origin(self) -> None:
+        self.assertNotEqual(
+            ApplicationAction.REAPPLY_AFTER_MATERIAL_GIG_CHANGE,
+            ApplicationAction.ACCEPT_RECONSIDERATION,
+        )
+        self.assertEqual(
+            ApplicationVersionOrigin.GIG_CHANGE_REAPPLICATION.value,
+            "gig_change_reapplication",
+        )
 
     def test_identity_strings_reject_surrounding_whitespace(self) -> None:
         with self.assertRaises(ContractValidationError):

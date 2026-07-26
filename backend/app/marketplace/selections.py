@@ -295,9 +295,9 @@ def validate_no_unchanged_duplicate_request(
     if previous_request.status is SelectionRequestStatus.DECLINED:
         if previous_request.decline_disposition is not DeclineDisposition.REMAIN_INTERESTED:
             raise PolicyViolationError("A request declined with full withdrawal cannot be resent unchanged.")
-        if resend_detail.reason is not SelectionResendReason.FREELANCER_REMAINED_INTERESTED:
-            raise PolicyViolationError("Interested decline resends require the remained-interested reason.")
-        return
+        raise PolicyViolationError(
+            "A request declined while remaining interested cannot be resent with unchanged terms."
+        )
     if previous_request.status is SelectionRequestStatus.CANCELLED:
         if (
             previous_request.cancellation_detail is None

@@ -63,6 +63,7 @@ class AcceptedProposalSnapshot:
     scope: ProposalScope
     captured_at: datetime
     out_of_range_acknowledged: bool = False
+    scope_notes: str | None = None
 
     def __post_init__(self) -> None:
         require_non_empty(self.application_version_id, "application_version_id")
@@ -80,6 +81,12 @@ class AcceptedProposalSnapshot:
             raise ContractValidationError("Accepted snapshot scope must be a ProposalScope.")
         if not isinstance(self.out_of_range_acknowledged, bool):
             raise ContractValidationError("Commercial acknowledgement flag must be a boolean.")
+        if self.scope_notes is not None and (
+            not isinstance(self.scope_notes, str)
+            or not self.scope_notes.strip()
+            or len(self.scope_notes.strip()) > 2000
+        ):
+            raise ContractValidationError("Accepted scope notes must be bounded non-empty text.")
         if not self.timeline.is_selection_ready:
             raise ContractValidationError("Accepted proposal snapshot requires a concrete timeline.")
         if self.proposal.scope != self.scope:
@@ -102,6 +109,7 @@ class EngagementState:
     accepted_terms: AcceptedProposalSnapshot
     status: EngagementStatus
     confirmed_at: datetime
+    lifecycle_version: int = 1
     work_started_by_user_id: str | None = None
     work_started_at: datetime | None = None
     completion_requested_by_user_id: str | None = None
@@ -133,6 +141,8 @@ class EngagementState:
         if self.client_participant_user_id == self.freelancer_participant_user_id:
             raise ContractValidationError("Engagement participants must be distinct users.")
         require_aware_datetime(self.confirmed_at, "confirmed_at")
+        if not isinstance(self.lifecycle_version, int) or self.lifecycle_version < 1:
+            raise ContractValidationError("Engagement lifecycle version must be a positive integer.")
         _validate_paired_metadata(
             self.work_started_by_user_id,
             self.work_started_at,
@@ -196,7 +206,11 @@ class EngagementState:
 def prepare_kickoff(engagement: EngagementState, *, acting_user_id: str) -> EngagementState:
     _require_participant(engagement, acting_user_id)
     _require_status(engagement, EngagementStatus.CONFIRMED, "prepare kickoff")
-    return replace(engagement, status=EngagementStatus.KICKOFF_PENDING)
+    return replace(
+        engagement,
+        status=EngagementStatus.KICKOFF_PENDING,
+        lifecycle_version=engagement.lifecycle_version + 1,
+    )
 
 
 def start_work(
@@ -214,6 +228,7 @@ def start_work(
         status=EngagementStatus.IN_PROGRESS,
         work_started_by_user_id=acting_user_id,
         work_started_at=acted_at,
+        lifecycle_version=engagement.lifecycle_version + 1,
     )
 
 
@@ -231,6 +246,7 @@ def request_completion(
         status=EngagementStatus.COMPLETION_PENDING,
         completion_requested_by_user_id=requesting_user_id,
         completion_requested_at=requested_at,
+        lifecycle_version=engagement.lifecycle_version + 1,
     )
 
 
@@ -245,12 +261,17 @@ def resolve_completion(
     if acting_user_id == engagement.completion_requested_by_user_id:
         raise PolicyViolationError("Completion requester cannot resolve their own request.")
     if confirmed:
-        return replace(engagement, status=EngagementStatus.COMPLETED)
+        return replace(
+            engagement,
+            status=EngagementStatus.COMPLETED,
+            lifecycle_version=engagement.lifecycle_version + 1,
+        )
     return replace(
         engagement,
         status=EngagementStatus.IN_PROGRESS,
         completion_requested_by_user_id=None,
         completion_requested_at=None,
+        lifecycle_version=engagement.lifecycle_version + 1,
     )
 
 
@@ -272,6 +293,7 @@ def request_engagement_cancellation(
         cancellation_requested_at=requested_at,
         cancellation_detail=detail,
         previous_active_status=engagement.status,
+        lifecycle_version=engagement.lifecycle_version + 1,
     )
 
 
@@ -284,7 +306,11 @@ def acknowledge_engagement_cancellation(
     _require_status(engagement, EngagementStatus.CANCELLATION_PENDING, "acknowledge cancellation")
     if acting_user_id == engagement.cancellation_requested_by_user_id:
         raise PolicyViolationError("Cancellation requester cannot acknowledge their own request.")
-    return replace(engagement, status=EngagementStatus.CANCELLED)
+    return replace(
+        engagement,
+        status=EngagementStatus.CANCELLED,
+        lifecycle_version=engagement.lifecycle_version + 1,
+    )
 
 
 def withdraw_engagement_cancellation(
@@ -306,6 +332,7 @@ def withdraw_engagement_cancellation(
         cancellation_requested_at=None,
         cancellation_detail=None,
         previous_active_status=None,
+        lifecycle_version=engagement.lifecycle_version + 1,
     )
 
 

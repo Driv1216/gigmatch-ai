@@ -26,17 +26,22 @@ export function Navbar() {
           {role ? (
             <>
               {role === "freelancer" ? (
+                <>
+                  <NavLink
+                    to="/gigs"
+                    className={({ isActive }) => ["rounded-md px-3 py-2 text-sm font-medium transition", isActive ? "bg-slate-100 text-ink" : "text-muted hover:bg-slate-50 hover:text-ink"].join(" ")}
+                  >Open Gigs</NavLink>
+                  <NavLink
+                    to="/applications"
+                    className={({ isActive }) => ["rounded-md px-3 py-2 text-sm font-medium transition", isActive ? "bg-slate-100 text-ink" : "text-muted hover:bg-slate-50 hover:text-ink"].join(" ")}
+                  >My Applications</NavLink>
+                </>
+              ) : null}
+              {(role === "client" || role === "freelancer") ? (
                 <NavLink
-                  to="/gigs"
-                  className={({ isActive }) =>
-                    [
-                      "rounded-md px-3 py-2 text-sm font-medium transition",
-                      isActive ? "bg-slate-100 text-ink" : "text-muted hover:bg-slate-50 hover:text-ink",
-                    ].join(" ")
-                  }
-                >
-                  Open Gigs
-                </NavLink>
+                  to="/engagements"
+                  className={({ isActive }) => ["rounded-md px-3 py-2 text-sm font-medium transition", isActive ? "bg-slate-100 text-ink" : "text-muted hover:bg-slate-50 hover:text-ink"].join(" ")}
+                >Engagements</NavLink>
               ) : null}
               <NavLink
                 to={dashboardPathForRole(role)}

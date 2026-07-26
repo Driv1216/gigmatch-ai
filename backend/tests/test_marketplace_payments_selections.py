@@ -419,7 +419,7 @@ class SelectionRequestStateMachineTests(unittest.TestCase):
             SelectionInvalidationReason.APPLICATION_VERSION_CHANGED,
         )
 
-    def test_unchanged_duplicate_requires_structured_reason(self) -> None:
+    def test_interested_decline_requires_genuinely_changed_terms(self) -> None:
         request = transition_selection_request(
             _selection_request(), SelectionRequestStatus.DECLINED, acted_at=BEFORE_EXPIRY,
             decline_disposition=DeclineDisposition.REMAIN_INTERESTED,
@@ -432,13 +432,16 @@ class SelectionRequestStateMachineTests(unittest.TestCase):
                 gig_version_id="gv-1",
                 resend_detail=None,
             )
-        validate_no_unchanged_duplicate_request(
-            previous_request=request,
-            application_id="application-1",
-            application_version_id="av-1",
-            gig_version_id="gv-1",
-            resend_detail=SelectionResendDetail(SelectionResendReason.FREELANCER_REMAINED_INTERESTED),
-        )
+        with self.assertRaises(PolicyViolationError):
+            validate_no_unchanged_duplicate_request(
+                previous_request=request,
+                application_id="application-1",
+                application_version_id="av-1",
+                gig_version_id="gv-1",
+                resend_detail=SelectionResendDetail(
+                    SelectionResendReason.FREELANCER_REMAINED_INTERESTED
+                ),
+            )
 
     def test_pending_request_always_blocks_duplicate_even_with_resend_reason(self) -> None:
         with self.assertRaises(PolicyViolationError):

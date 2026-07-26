@@ -123,12 +123,32 @@ class SupabaseMarketplaceReadRepository:
         requests = self._select(
             "selection_requests", {"select": "gig_id,status,expires_at", "gig_id": f"in.({','.join(gig_ids)})"}
         )
+        engagements = self._select(
+            "engagements", {"select": "id,gig_id,status", "gig_id": f"in.({','.join(gig_ids)})"}
+        )
+        cancelled_engagement_ids = [
+            str(row["id"]) for row in engagements
+            if row.get("id") and row.get("status") == "cancelled"
+        ]
+        reopenings = self._select(
+            "engagement_reopenings",
+            {"select": "engagement_id,gig_id", "engagement_id": f"in.({','.join(cancelled_engagement_ids)})"},
+        ) if cancelled_engagement_ids else []
+        reopened_ids = {str(row.get("engagement_id")) for row in reopenings}
         for gig in gigs:
             gig_id = str(gig["id"])
             gig["active_application_count"] = sum(
                 1 for row in applications if str(row.get("gig_id")) == gig_id and row.get("stage") in ("under_review", "advanced")
             )
             gig["selection_requests"] = [row for row in requests if str(row.get("gig_id")) == gig_id]
+            gig_engagements = [row for row in engagements if str(row.get("gig_id")) == gig_id]
+            gig["has_current_engagement"] = any(
+                row.get("status") != "cancelled" for row in gig_engagements
+            )
+            gig["has_cancelled_unreopened_engagement"] = any(
+                row.get("status") == "cancelled" and str(row.get("id")) not in reopened_ids
+                for row in gig_engagements
+            )
         return gigs
 
     def _load_gig_records(self, query: dict[str, str]) -> list[dict[str, Any]]:

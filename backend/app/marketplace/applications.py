@@ -36,6 +36,7 @@ class ApplicationAction(str, Enum):
     CLOSE_GIG_CANCELLED = "close_gig_cancelled"
     CONTROLLED_REOPEN = "controlled_reopen"
     ACCEPT_RECONSIDERATION = "accept_reconsideration"
+    REAPPLY_AFTER_MATERIAL_GIG_CHANGE = "reapply_after_material_gig_change"
 
 
 ACTIVE_APPLICATION_STAGES = frozenset((ApplicationStage.UNDER_REVIEW, ApplicationStage.ADVANCED))
@@ -85,6 +86,10 @@ _VALID_APPLICATION_TRANSITIONS: dict[tuple[ApplicationStage, ApplicationAction],
     (ApplicationStage.ADVANCED, ApplicationAction.CLOSE_GIG_CANCELLED): ApplicationStage.CLOSED_GIG_CANCELLED,
     (ApplicationStage.NOT_SELECTED, ApplicationAction.CONTROLLED_REOPEN): ApplicationStage.UNDER_REVIEW,
     (ApplicationStage.WITHDRAWN, ApplicationAction.ACCEPT_RECONSIDERATION): ApplicationStage.UNDER_REVIEW,
+    (
+        ApplicationStage.WITHDRAWN,
+        ApplicationAction.REAPPLY_AFTER_MATERIAL_GIG_CHANGE,
+    ): ApplicationStage.UNDER_REVIEW,
 }
 
 
@@ -174,6 +179,7 @@ class ApplicationVersionOrigin(str, Enum):
     FREELANCER_EDIT = "freelancer_edit"
     GIG_CHANGE_TERMS_REAFFIRMED = "gig_change_terms_reaffirmed"
     GIG_CHANGE_PROPOSAL_UPDATED = "gig_change_proposal_updated"
+    GIG_CHANGE_REAPPLICATION = "gig_change_reapplication"
     RECONSIDERATION = "reconsideration"
 
 

@@ -77,6 +77,7 @@ def _snapshot() -> AcceptedProposalSnapshot:
         availability=Availability(date(2026, 7, 20)),
         scope=scope,
         captured_at=NOW,
+        scope_notes="Acceptance includes the documented API boundary.",
     )
 
 
@@ -101,7 +102,9 @@ def _cancellation_detail() -> EngagementCancellationDetail:
 class EngagementStateMachineTests(unittest.TestCase):
     def test_confirmed_can_prepare_kickoff_start_work_or_request_cancellation(self) -> None:
         confirmed = _engagement()
-        self.assertEqual(prepare_kickoff(confirmed, acting_user_id=CLIENT).status, EngagementStatus.KICKOFF_PENDING)
+        prepared = prepare_kickoff(confirmed, acting_user_id=CLIENT)
+        self.assertEqual(prepared.status, EngagementStatus.KICKOFF_PENDING)
+        self.assertEqual(prepared.lifecycle_version, confirmed.lifecycle_version + 1)
         self.assertEqual(
             start_work(confirmed, acting_user_id=FREELANCER, acted_at=LATER).status,
             EngagementStatus.IN_PROGRESS,

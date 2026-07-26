@@ -22,6 +22,7 @@ export type ManagedGig = {
   active_application_count: number;
   effectively_active_selection_request: boolean;
   latest_material_change_summary: Record<string, unknown>;
+  engagement_state: "none" | "current" | "cancelled_not_reopened";
 };
 
 export type MaterialPreview = {

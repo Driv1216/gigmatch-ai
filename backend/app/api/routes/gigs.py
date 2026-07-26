@@ -165,6 +165,7 @@ class OwnerGigManagement(StrictResponseModel):
     active_application_count: int
     effectively_active_selection_request: bool
     latest_material_change_summary: dict[str, Any]
+    engagement_state: str
 
 
 class OwnerGigEnvelope(StrictResponseModel):
@@ -480,6 +481,13 @@ def _owner_management(record: dict[str, Any], now: datetime) -> OwnerGigManageme
             "version_id": material.get("id"), "version_number": material.get("version_number"),
             "changed_fields": material.get("changed_fields") or [], "created_at": material.get("created_at"),
         },
+        engagement_state=(
+            "cancelled_not_reopened"
+            if bool(record.get("has_cancelled_unreopened_engagement"))
+            else "current"
+            if bool(record.get("has_current_engagement"))
+            else "none"
+        ),
     )
 
 

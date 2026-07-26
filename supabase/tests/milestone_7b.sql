@@ -582,10 +582,15 @@ select throws_ok(
 );
 select is((select count(*) from public.engagements where gig_id = (select gig_id from confirmation_cases where name = 'valid')), 1::bigint, 'repeated invocation creates nothing new');
 select is((select count(*) from public.marketplace_events where gig_id = (select gig_id from confirmation_cases where name = 'valid') and event_type = 'selection_accepted'), 1::bigint, 'selection accepted event is append-only and singular');
-select throws_ok(
+select lives_ok(
   (select format('update public.applications set stage = ''confirmed'', stage_reason_origin = null, stage_reason_code = null, stage_reason_payload = null where id = %L', other_active_application_id)
    from confirmation_cases where name = 'valid'),
-  null, null, 'a second confirmed application for the gig is rejected'
+  '7H permits multiple historical Confirmed applications while one non-cancelled engagement remains authoritative'
+);
+select is(
+  (select count(*) from public.engagements where gig_id = (select gig_id from confirmation_cases where name = 'valid') and status <> 'cancelled'),
+  1::bigint,
+  'historical Confirmed rows do not weaken the one non-cancelled engagement invariant'
 );
 select throws_ok(
   (select format('insert into public.engagements select gen_random_uuid(), gig_id, application_id, selection_request_id, client_participant_user_id, freelancer_participant_user_id, status, accepted_application_version_id, accepted_gig_version_id, accepted_terms_contract_version, accepted_terms_snapshot, snapshot_schema_version, confirmed_at, work_started_by_user_id, work_started_at, completion_requested_by_user_id, completion_requested_at, cancellation_requested_by_user_id, cancellation_requested_at, cancellation_reason_code, cancellation_detail, previous_active_status from public.engagements where gig_id = %L', gig_id)
