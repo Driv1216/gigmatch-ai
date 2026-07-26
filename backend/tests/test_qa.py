@@ -390,6 +390,7 @@ class QaRouteTests(unittest.TestCase):
 
     def test_linked_revision_update_sends_complete_snapshot(self) -> None:
         self.auth.user_id = "freelancer-1"
+        self.repo.application["current_version"] = {"currency": "USD"}
         status, _ = self.request(
             "POST",
             "/applications/application-1/revision-requests/revision-1/submit-update",
@@ -404,6 +405,12 @@ class QaRouteTests(unittest.TestCase):
         self.assertEqual(name, "revision_submit_update")
         self.assertEqual(payload["p_revision_request_id"], "revision-1")
         self.assertIn("proposal", payload["p_snapshot"])
+        self.assertEqual(payload["p_snapshot"]["proposal_contract_version"], 1)
+        self.assertEqual(payload["p_snapshot"]["snapshot_schema_version"], 1)
+        self.assertEqual(payload["p_snapshot"]["proposal"]["currency"], "USD")
+        self.assertEqual(
+            payload["p_snapshot"]["proposal"]["proposal_contract_version"], 1
+        )
 
     def test_idempotency_conflict_is_sanitized(self) -> None:
         self.repo.error = MarketplaceWriteError("M7F_IDEMPOTENCY_CONFLICT")

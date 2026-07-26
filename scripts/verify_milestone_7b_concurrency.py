@@ -143,7 +143,7 @@ def main() -> int:
         print(f"FAIL attempts: successes={len(successes)} failures={len(failures)}")
         return 1
     failure_text = failures[0].stderr + failures[0].stdout
-    if "not pending" not in failure_text:
+    if "M7G_SELECTION_REQUEST_NOT_PENDING" not in failure_text:
         print("FAIL losing attempt did not return the controlled non-pending failure")
         return 1
 

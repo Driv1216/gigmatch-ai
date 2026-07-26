@@ -74,6 +74,19 @@ export function statusLabel(stage: string): string {
   return stage.replace(/_/g, " ").replace(/\b\w/g, (letter) => letter.toUpperCase());
 }
 
+export function applicationClosureReason(reason: unknown): string | null {
+  if (reason === "another_applicant_selected") {
+    return "Another applicant was selected for this gig.";
+  }
+  if (reason === "gig_cancelled") {
+    return "The client cancelled this gig.";
+  }
+  if (typeof reason !== "string" || !reason.trim()) {
+    return null;
+  }
+  return statusLabel(reason);
+}
+
 export function canReaffirmApplication(detail: {
   response_to_updated_gig_required: boolean;
   compatibility: { can_reaffirm_existing_proposal: boolean };

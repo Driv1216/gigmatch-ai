@@ -7,7 +7,7 @@ import { SelectionPanel } from "../components/SelectionPanel";
 import { ReconsiderationPanel } from "../components/ReconsiderationPanel";
 import { fetchApplication, fetchApplicationVersions, reaffirmApplication, withdrawApplication, type ApplicationResponse, type VersionEnvelope } from "../lib/applications";
 import { isRecord } from "../lib/applicationContracts";
-import { statusLabel } from "../lib/applicationView";
+import { applicationClosureReason, statusLabel } from "../lib/applicationView";
 
 const reasons = ["accepted_another_opportunity", "no_longer_available", "scope_or_terms_no_longer_fit", "timeline_changed", "budget_expectations_mismatch", "gig_changed_materially", "personal_circumstances", "other"];
 
@@ -37,9 +37,11 @@ export function ApplicationDetailPage() {
   if (loading) return <PageContainer><p className="text-sm text-muted">Loading application...</p></PageContainer>;
   if (!detail || !applicationId) return <PageContainer><div role="alert" className="rounded-md border border-red-200 bg-red-50 p-6 text-red-700">{error ?? "Application not found."}</div></PageContainer>;
   const can = (action: string) => detail.allowed_actions.includes(action);
+  const closureReason = applicationClosureReason(detail.withdrawal_or_closure.reason);
   return <PageContainer className="space-y-6">
     <header className="rounded-lg border border-line bg-white p-7 shadow-soft"><p className="text-xs font-semibold uppercase text-accent">{statusLabel(detail.stage)} · application v{detail.current_version_number}</p><h1 className="mt-2 text-3xl font-bold text-ink">{String(detail.gig.title ?? "Application")}</h1><p className="mt-2 text-sm text-muted">{String(detail.client.company_name ?? detail.client.display_name ?? "Client")}</p></header>
     {error ? <div role="alert" className="rounded-md border border-red-200 bg-red-50 p-4 text-sm text-red-700">{error}</div> : null}
+    {closureReason ? <section className="rounded-lg border border-slate-300 bg-slate-50 p-5" aria-label="Application outcome"><h2 className="text-lg font-bold text-ink">Application outcome</h2><p className="mt-2 text-sm text-muted">{closureReason}</p></section> : null}
     {detail.response_to_updated_gig_required ? <section className="rounded-lg border border-amber-200 bg-amber-50 p-6"><h2 className="text-lg font-bold text-amber-950">The gig terms changed</h2><p className="mt-2 text-sm text-amber-900">Your current proposal answers gig terms v{detail.answered_gig_version_number}; the current material terms are v{detail.current_material_gig_version_number}.</p><ul className="mt-4 space-y-2 text-sm text-amber-900">{detail.gig_change_comparison.map((change) => <li key={change.field}><strong>{change.field.replace(/_/g, " ")}:</strong> updated</li>)}</ul><div className="mt-5 flex flex-wrap gap-3">{can("reaffirm_updated_gig_terms") ? <Button disabled={working} onClick={() => mutate(() => reaffirmApplication(applicationId, { expected_application_version_token: detail.application_version_token, expected_material_terms_token: detail.material_terms_token }))}>Reaffirm proposal</Button> : null}{can("update_for_gig_change") ? <Button to={`/applications/${applicationId}/edit?mode=update`} variant="secondary">Update proposal</Button> : null}</div>{!detail.compatibility.can_reaffirm_existing_proposal ? <p className="mt-3 text-xs font-semibold text-amber-900">The existing financial proposal is incompatible with the updated terms and must be revised.</p> : null}</section> : null}
     <div className="grid gap-6 lg:grid-cols-2"><Snapshot title="Current proposal" value={detail.current_application} /><Snapshot title="Original submission" value={detail.original_submission} /></div>
     <StructuredQaPanel applicationId={applicationId} onAttentionChange={() => void load()} />

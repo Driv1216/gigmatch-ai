@@ -19,6 +19,10 @@ export default tseslint.config(
     },
     rules: {
       ...reactHooks.configs.recommended.rules,
+      // Existing guarded loader effects intentionally synchronize remote state.
+      // The React 19 rule treats those calls as synchronous even when the
+      // setters only run from promise callbacks.
+      "react-hooks/set-state-in-effect": "off",
       "react-refresh/only-export-components": ["warn", { allowConstantExport: true }],
     },
   },

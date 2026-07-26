@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.api.routes import applicant_review, applications, auth, contact_exchange, engagements, evaluation, gigs, health, matching, parsing, profiles, qa, selections
+from app.api.routes import applicant_review, applications, auth, contact_exchange, dashboard, engagements, evaluation, gigs, health, matching, parsing, profiles, qa, selections
 from app.config import settings
 
 app = FastAPI(title=settings.app_name)
@@ -24,6 +24,7 @@ app.include_router(qa.router, tags=["application-qa"])
 app.include_router(selections.router, tags=["selection-requests"])
 app.include_router(engagements.router, tags=["engagements"])
 app.include_router(contact_exchange.router, tags=["contact-exchange"])
+app.include_router(dashboard.router, tags=["dashboards"])
 app.include_router(parsing.router, prefix="/parsing", tags=["parsing"])
 app.include_router(matching.router, prefix="/matching", tags=["matching"])
 app.include_router(evaluation.router, prefix="/evaluation", tags=["evaluation"])

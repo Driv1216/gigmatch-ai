@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 
 import { isApplicationContext, isApplicationEnvelope, isApplicationResponse, isVersionEnvelope } from "../src/lib/applicationContracts.ts";
-import { applicationCollectionState, applicationEditMode, canReaffirmApplication, contextAction, sortVersions, validateProposal } from "../src/lib/applicationView.ts";
+import { applicationClosureReason, applicationCollectionState, applicationEditMode, canReaffirmApplication, contextAction, sortVersions, validateProposal } from "../src/lib/applicationView.ts";
 
 const pagination = { page: 1, page_size: 20, total_items: 1, total_pages: 1 };
 const context = { gig_id: "g1", can_apply: true, blocker: null, existing_application_id: null, gig: {}, client: {}, material_terms: {}, payment_structure: "fixed_price", currency: "INR", required_proposal_fields: [], application_deadline: "2099-01-01T00:00:00Z", material_gig_version_number: 2, material_terms_token: "a".repeat(64) };
@@ -13,6 +13,14 @@ test("application collection has explicit loading, empty, error, and ready state
   assert.equal(applicationCollectionState(false, null, 0), "empty");
   assert.equal(applicationCollectionState(false, "offline", 0), "error");
   assert.equal(applicationCollectionState(false, null, 1), "ready");
+});
+
+test("selection confirmation closure has a respectful freelancer-visible reason", () => {
+  assert.equal(
+    applicationClosureReason("another_applicant_selected"),
+    "Another applicant was selected for this gig.",
+  );
+  assert.equal(applicationClosureReason(null), null);
 });
 
 test("context runtime contract and actions cover eligible, existing, and blocked gigs", () => {

@@ -542,12 +542,12 @@ def _allowed_actions(
     if stage in ("under_review", "advanced") and not terminal_gig:
         if stale:
             if can_reaffirm is not False:
-                actions.append("reaffirm_updated_terms")
-            actions.append("update_for_updated_terms")
+                actions.append("reaffirm_updated_gig_terms")
+            actions.append("update_for_gig_change")
         else:
-            actions.append("edit")
+            actions.append("edit_application")
         if not effective_request:
-            actions.append("withdraw")
+            actions.append("withdraw_application")
         else:
             blockers.append("pending_selection_blocks_application_withdrawal")
     elif stage == "withdrawn" and stale and _gig_is_application_ready(gig):

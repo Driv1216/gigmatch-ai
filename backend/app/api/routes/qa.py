@@ -351,9 +351,17 @@ def submit_revision_update(
     auth_verifier: AuthVerifier = Depends(get_auth_verifier),
     repository: QaRepository = Depends(get_qa_repository),
 ) -> dict[str, Any]:
-    actor_id, _ = _participant_application(
+    actor_id, application = _participant_application(
         application_id, authorization, auth_verifier, repository
     )
+    current_version = application.get("current_version")
+    currency = (
+        current_version.get("currency")
+        if isinstance(current_version, dict)
+        else None
+    )
+    if not isinstance(currency, str) or not currency:
+        raise HTTPException(status_code=409, detail="unsupported_application_contract")
     _call(
         repository,
         "revision_submit_update",
@@ -363,7 +371,7 @@ def submit_revision_update(
             "p_acting_user_id": actor_id,
             "p_request_id": str(body.request_id),
             "p_expected_application_version_token": body.expected_application_version_token,
-            "p_snapshot": body.snapshot.model_dump(mode="json"),
+            "p_snapshot": body.snapshot.canonical_payload(currency=currency),
         },
     )
     return _reload(repository, application_id, actor_id)

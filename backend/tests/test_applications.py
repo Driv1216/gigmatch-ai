@@ -265,6 +265,25 @@ class ApplicationRouteTests(unittest.TestCase):
                           "embedding", "auth_metadata", "service_role", "current_version_id"):
             self.assertNotIn(forbidden, serialized)
 
+    def test_detail_actions_match_the_frontend_contract_with_pending_selection(self) -> None:
+        current = self.repo.application["current_version"]
+        current["gig_version_id"] = self.repo.gig["current_material_version"]["id"]
+        current["answered_gig_version"] = self.repo.gig["current_material_version"]
+        self.repo.application["selection_requests"] = [{
+            "status": "pending",
+            "expires_at": "2099-01-01T00:00:00+00:00",
+        }]
+        status, detail = asyncio.run(
+            request_json("GET", "/applications/application-1")
+        )
+        self.assertEqual(status, 200)
+        self.assertIn("edit_application", detail["allowed_actions"])
+        self.assertNotIn("withdraw_application", detail["allowed_actions"])
+        self.assertIn(
+            "pending_selection_blocks_application_withdrawal",
+            detail["blockers"],
+        )
+
     def test_edit_reaffirm_update_withdraw_and_reapply_use_narrow_rpcs(self) -> None:
         calls = (
             ("POST", "/applications/application-1/versions", {
