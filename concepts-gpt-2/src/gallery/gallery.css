@@ -1,0 +1,73 @@
+.route-loading { min-height: 100vh; display: grid; place-items: center; font-size: .85rem; letter-spacing: .08em; text-transform: uppercase; }
+.gallery { min-height: 100vh; color: #16181b; background: #f1f3f5; }
+.gallery__head { min-height: 74px; display: flex; align-items: center; justify-content: space-between; gap: 2rem; padding: 0 4vw; border-bottom: 1px solid #cdd1d6; }
+.gallery__brand { display: flex; align-items: center; gap: .85rem; }
+.gallery__brand span { display: grid; place-items: center; width: 34px; height: 34px; background: #15171a; color: white; font: 700 .72rem "Archivo Variable"; letter-spacing: -.03em; }
+.gallery__brand b { font-size: .9rem; }
+.gallery__state { display: flex; align-items: center; gap: .55rem; color: #59606a; font-size: .75rem; }
+.gallery__state svg { color: #216e4e; }
+.gallery__state button { margin-left: .8rem; display: flex; align-items: center; gap: .35rem; border: 0; border-left: 1px solid #cdd1d6; background: none; padding: .35rem 0 .35rem 1.2rem; color: #30353b; }
+.gallery__state label { display: flex; align-items: center; gap: .4rem; margin-left: .55rem; font: 650 .58rem "Archivo Variable"; letter-spacing: .07em; text-transform: uppercase; }
+.gallery__state select { min-height: 34px; border: 1px solid #c4c9ce; background: #fff; padding: 0 .55rem; color: #30353b; font: 600 .68rem "Archivo Variable"; text-transform: capitalize; }
+.gallery__intro { padding: clamp(4rem, 8vw, 8rem) 4vw clamp(3rem, 6vw, 5.5rem); display: grid; grid-template-columns: 1fr 3fr 1.3fr; gap: 4vw; align-items: end; }
+.gallery__intro > p { align-self: start; margin: .6rem 0; color: #68717a; font: 620 .68rem "Archivo Variable"; letter-spacing: .11em; text-transform: uppercase; }
+.gallery__intro h1 { margin: 0; max-width: 930px; font: 620 clamp(3.3rem, 7vw, 7.2rem)/.92 "Archivo Variable"; letter-spacing: -.065em; }
+.gallery__intro div { padding-bottom: .3rem; }
+.gallery__intro div p { margin: 0 0 1.6rem; color: #515861; font-size: .88rem; line-height: 1.65; }
+.gallery__intro div span { font: 650 .66rem "Archivo Variable"; letter-spacing: .1em; text-transform: uppercase; }
+.gallery__list { border-top: 1px solid #bcc2c8; }
+.gallery__collection { min-height: 52px; padding: 0 4vw; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #bcc2c8; background: #e5e8eb; font: 650 .64rem "Archivo Variable"; letter-spacing: .11em; text-transform: uppercase; }
+.gallery__collection span { color: #68717a; }
+.gallery__concept { min-height: 150px; padding: 1.5rem 4vw; display: grid; grid-template-columns: .45fr 1.15fr 1.3fr .5fr; gap: 2vw; align-items: center; border-bottom: 1px solid #bcc2c8; transition: color .25s, background .25s, padding .25s; }
+.gallery__concept:hover { padding-left: 5vw; padding-right: 3vw; }
+.gallery__number { font: 500 .82rem "Space Grotesk Variable"; }
+.gallery__name small { font: 650 .62rem "Archivo Variable"; letter-spacing: .12em; text-transform: uppercase; opacity: .6; }
+.gallery__name h2 { margin: .25rem 0 0; font: 580 clamp(1.8rem, 3vw, 3.2rem)/1 "Archivo Variable"; letter-spacing: -.045em; }
+.gallery__description b { font-size: .82rem; }
+.gallery__description p { margin: .35rem 0 0; max-width: 460px; color: inherit; opacity: .68; font-size: .77rem; line-height: 1.45; }
+.gallery__description small { display: block; margin-top: .55rem; font: 650 .56rem "Archivo Variable"; letter-spacing: .1em; text-transform: uppercase; opacity: .72; }
+.gallery__open { justify-self: end; display: flex; align-items: center; gap: .5rem; font-size: .75rem; font-weight: 700; text-transform: uppercase; }
+.gallery__concept--northline:hover { background: #1557d7; color: white; }
+.gallery__concept--covenant:hover { background: #6c1f2b; color: #fff9ed; }
+.gallery__concept--waypoint:hover { background: #293de6; color: white; }
+.gallery__concept--relay:hover { background: #2b1235; color: #e8f5f5; }
+.gallery__concept--monument:hover { background: #ff3b21; color: #0b0b0b; }
+.gallery__concept--new-set { border-top: 0; }
+.gallery__concept--tempo:hover { background: #0e655f; color: #fff9ed; }
+.gallery__concept--duet:hover { background: linear-gradient(90deg, #b9d8ff 0 50%, #f4b941 50%); color: #111; }
+.gallery__concept--aperture:hover { background: #caff36; color: #080908; }
+.gallery__concept--facet:hover { background: #d9d1ff; color: #171522; }
+.gallery__concept--fold:hover { background: #9bc9bc; color: #102a24; }
+.gallery__concept--tally:hover { background: #174d3e; color: #f5f4ee; }
+.gallery__concept--lane:hover { background: #254cf1; color: white; }
+.gallery__concept--command:hover { background: #a7f3d0; color: #101113; }
+.gallery__concept--proofroom:hover { background: #173cdb; color: #f3ecdc; }
+.gallery__concept--trace:hover { background: #ff6737; color: #090a09; }
+.gallery__concept--harbor:hover { background: #16736b; color: #f5f7f4; }
+.gallery__concept--accord:hover { background: #7a2838; color: #f3eee4; }
+.gallery__concept--vector:hover { background: #254ddb; color: white; }
+.gallery__concept--atelier:hover { background: #111d3e; color: #c8f04a; }
+.gallery__concept--index:hover { background: #e6e05b; color: #15131a; }
+.gallery__concept--bench:hover { background: #1649d8; color: #fff; }
+.gallery__concept--measure:hover { background: #0d716f; color: #f7efe1; }
+.gallery__concept--crosscheck:hover { background: #19232c; color: #b9e0ec; }
+.gallery__concept--orbit:hover { background: #080b16; color: #c8ff43; }
+.gallery__concept--weave:hover { background: #24142a; color: #ff8a38; }
+.gallery__concept--current:hover { background: #073f59; color: #eee9dd; }
+.gallery__foot { padding: 2rem 4vw 4rem; display: flex; justify-content: space-between; color: #68717a; font-size: .72rem; }
+@media (max-width: 800px) {
+  .gallery__head { padding: 1rem 5vw; align-items: flex-start; }
+  .gallery__state { max-width: 180px; flex-wrap: wrap; justify-content: flex-end; }
+  .gallery__state > svg { display: none; }
+  .gallery__state button { margin: 0; border: 0; padding: 0; }
+  .gallery__state label { order: 3; width: 100%; justify-content: flex-end; }
+  .gallery__intro { grid-template-columns: 1fr; padding: 4rem 5vw 3rem; }
+  .gallery__intro h1 { font-size: clamp(3rem, 16vw, 5.5rem); }
+  .gallery__intro div { max-width: 430px; }
+  .gallery__concept { padding: 1.5rem 5vw; min-height: 185px; grid-template-columns: 42px 1fr auto; }
+  .gallery__collection { padding-inline: 5vw; }
+  .gallery__description { grid-column: 2 / 4; }
+  .gallery__open { grid-column: 3; grid-row: 1; }
+  .gallery__concept:hover { padding-left: 5vw; padding-right: 5vw; }
+  .gallery__foot { padding-inline: 5vw; flex-direction: column; gap: .5rem; }
+}
