@@ -1,6 +1,6 @@
 # GigMatch AI — Concept Suite II
 
-Twenty-six independent, high-fidelity frontend directions for the same GigMatch AI marketplace workflow.
+Thirty independent, high-fidelity frontend directions for the same GigMatch AI marketplace workflow.
 
 This folder is fully isolated. It does not import from or communicate with the real `frontend`, `backend`, Supabase project, or any earlier concept suite.
 
@@ -9,7 +9,7 @@ This folder is fully isolated. It does not import from or communicate with the r
 - Node.js 20 or newer
 - npm 10 or newer
 
-## Run all twenty-six concepts
+## Run all thirty concepts
 
 ```bash
 cd /Users/drivyaanshyadav/Desktop/Ai-Gig/gigmatch-ai/concepts-gpt-2
@@ -53,6 +53,10 @@ The root page is a neutral concept index. It links to:
 | Orbit | Bold semantic orbital field | `/orbit` |
 | Weave | Bold inspectable provenance weave | `/weave` |
 | Current | Bold continuous workflow current | `/current` |
+| Axiom | Bold procedural 3D living deal object | `/axiom` |
+| Conduit | Hybrid command-led live workspace | `/conduit` |
+| Switchboard | Hybrid routed operational field | `/switchboard` |
+| Delta | Hybrid commandable spatial current | `/delta` |
 
 Each concept has its own public opening, native role control, navigation model, responsive behavior, visual system, and link back to the concept index.
 
@@ -119,7 +123,23 @@ npm run preview
 
 Preview defaults to `http://localhost:5193`.
 
-Tests cover shared versioning, selection invalidation and renewal, expiry, atomic confirmation, gig filling, competing applicant outcomes, engagement creation, contact permission lineage, concept models, component-level accessibility, and representative client/freelancer routes across all twenty-six directions.
+Tests cover shared versioning, selection invalidation and renewal, expiry, atomic confirmation, gig filling, competing applicant outcomes, engagement creation, contact permission lineage, concept models, component-level accessibility, and representative client/freelancer routes across all thirty directions.
+
+## Comparing the Command × Current studies
+
+Directions 28–30 combine Current's exact bone, ocean, glass, coral, and black palette with Command's direct-intent structure at three different balances:
+
+- **Conduit — command-led:** a persistent command shell, dense route-specific records, and a compact five-stage current that exposes diversion and acceptance.
+- **Switchboard — balanced:** stage, record, and consequence panes remain visibly connected while commands and direct controls operate the same routes.
+- **Delta — current-led:** the spatial current owns the canvas while a docked command sheet supplies exact records, forms, tables, and actions.
+
+All three retain clickable alternatives for commands, complete freelancer and client routes, shared workflow state, semantic HTML controls, responsive transformations, and reduced-motion behavior. Command and Current remain unchanged for direct comparison.
+
+## Comparing the 3D exploration
+
+**Axiom** turns the shared workflow into a procedural living deal object. Verified evidence illuminates facets, revisions create nested shells, exact selection aligns two source rings, invalidation separates them, and acceptance closes the artifact into a stable engagement core.
+
+Axiom uses Three.js through React Three Fiber, with Drei controls and adaptive performance monitoring plus restrained React Postprocessing effects. The canvas remains a visual representation: every route, record, status, form, and consequential action also exists in semantic HTML. Reduced-motion and WebGL-unavailable modes keep the complete workflow operable without animated 3D.
 
 ## Comparing the final collection
 
@@ -180,6 +200,7 @@ The root gallery labels every hybrid’s two parents. Concepts 01–15 remain by
 - No backend or Supabase integration
 - No real authentication or payment processing
 - No photographs, illustrations, generated images, remote assets, or decorative analytics
+- Axiom's only visual assets are local procedural geometry; it has no remote models or textures
 - No admin evaluation console
 - No Sites plugin or deployment configuration
 

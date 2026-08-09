@@ -57,6 +57,14 @@ const cases = [
   ["/weave/client/selection", "EXACT AUTHORITY"],
   ["/current/freelancer/proposal", "Shape the exact promise"],
   ["/current/client/selection", "EXACT CONFIRMATION"],
+  ["/axiom/freelancer/proposal", "Give the promise exact dimensions"],
+  ["/axiom/client/selection", "Only exact versions can lock"],
+  ["/conduit/freelancer/proposal", "Update the promise"],
+  ["/conduit/client/review", "Compare the evidence"],
+  ["/switchboard/freelancer/gig", "Senior frontend systems engineer"],
+  ["/switchboard/client/selection", "Only matching versions can become work"],
+  ["/delta/freelancer/applications", "One record, from discovery to delivery"],
+  ["/delta/client/selection", "Authority has a visible history"],
 ] as const;
 
 describe("concept route coverage", () => {

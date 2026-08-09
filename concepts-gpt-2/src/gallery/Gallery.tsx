@@ -244,6 +244,45 @@ const concepts = [
     detail: "Records flow, divert on revision, and enter work atomically while context stays visible.",
     entry: "/current/freelancer/home",
   },
+  {
+    id: "axiom",
+    number: "27",
+    name: "Axiom",
+    type: "Bold",
+    thesis: "Living deal object",
+    detail: "Evidence, versions, authority, and engagement become one guided procedural 3D artifact.",
+    entry: "/axiom/freelancer/home",
+  },
+  {
+    id: "conduit",
+    number: "28",
+    name: "Conduit",
+    type: "Hybrid",
+    thesis: "Command-led live workspace",
+    detail: "Command’s operational shell carries Current’s palette, stage continuity, and visible state diversion.",
+    parents: "Command × Current · command-led",
+    entry: "/conduit/freelancer/home",
+  },
+  {
+    id: "switchboard",
+    number: "29",
+    name: "Switchboard",
+    type: "Hybrid",
+    thesis: "Routed operational field",
+    detail: "Stages, active records, and exact consequences remain connected around a direct command surface.",
+    parents: "Command × Current · balanced",
+    entry: "/switchboard/client/home",
+  },
+  {
+    id: "delta",
+    number: "30",
+    name: "Delta",
+    type: "Hybrid",
+    thesis: "Commandable spatial current",
+    detail: "Current’s full workflow field gains a docked record sheet and safe keyboard-first intent.",
+    parents: "Command × Current · current-led",
+    entry: "/delta/freelancer/home",
+  },
 ] as const;
 
 const presets = ["baseline", "revision", "invalidated", "expired", "engaged"] as const;
@@ -267,16 +306,16 @@ export function Gallery() {
       </header>
       <section className="gallery__intro">
         <p>Concept suite II · 2026</p>
-        <h1>Twenty-six different answers<br />to the same marketplace.</h1>
+        <h1>Thirty different answers<br />to the same marketplace.</h1>
         <div>
           <p>Each direction follows the same client and freelancer journey—from evidence-led discovery to exact-term confirmation and secure engagement.</p>
-          <span>9 grounded · 17 bold · no shared shell</span>
+          <span>9 grounded · 18 bold · 3 focused hybrids</span>
         </div>
       </section>
       <section className="gallery__list" aria-label="Concepts">
         {concepts.map((concept, index) => (
           <Fragment key={concept.id}>
-            {(index === 0 || index === 5 || index === 10 || index === 15 || index === 20) && <div className="gallery__collection"><b>{index === 0 ? "Original collection" : index === 5 ? "Expansion collection I" : index === 10 ? "Expansion collection II" : index === 15 ? "Hybrid collection" : "Final collection"}</b><span>{index === 0 ? "Directions 01–05" : index === 5 ? "Directions 06–10" : index === 10 ? "Directions 11–15" : index === 15 ? "Directions 16–20 · two clear parents" : "Directions 21–26 · six final operating models"}</span></div>}
+            {(index === 0 || index === 5 || index === 10 || index === 15 || index === 20 || index === 26 || index === 27) && <div className="gallery__collection"><b>{index === 0 ? "Original collection" : index === 5 ? "Expansion collection I" : index === 10 ? "Expansion collection II" : index === 15 ? "Hybrid collection" : index === 20 ? "Final collection" : index === 26 ? "3D exploration" : "Command × Current studies"}</b><span>{index === 0 ? "Directions 01–05" : index === 5 ? "Directions 06–10" : index === 10 ? "Directions 11–15" : index === 15 ? "Directions 16–20 · two clear parents" : index === 20 ? "Directions 21–26 · six final operating models" : index === 26 ? "Direction 27 · procedural spatial interface" : "Directions 28–30 · a deliberate hybrid spectrum"}</span></div>}
             <Link to={concept.entry} className={`gallery__concept gallery__concept--${concept.id} ${index === 5 ? "gallery__concept--new-set" : ""}`}>
               <span className="gallery__number">{concept.number}</span>
               <div className="gallery__name"><small>{concept.type}</small><h2>{concept.name}</h2></div>

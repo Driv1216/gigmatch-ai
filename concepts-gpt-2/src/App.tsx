@@ -28,6 +28,10 @@ const Crosscheck = lazy(() => import("./concepts/crosscheck/Crosscheck").then((m
 const Orbit = lazy(() => import("./concepts/orbit/Orbit").then((module) => ({ default: module.Orbit })));
 const Weave = lazy(() => import("./concepts/weave/Weave").then((module) => ({ default: module.Weave })));
 const Current = lazy(() => import("./concepts/current/Current").then((module) => ({ default: module.Current })));
+const Axiom = lazy(() => import("./concepts/axiom/Axiom").then((module) => ({ default: module.Axiom })));
+const Conduit = lazy(() => import("./concepts/conduit/Conduit").then((module) => ({ default: module.Conduit })));
+const Switchboard = lazy(() => import("./concepts/switchboard/Switchboard").then((module) => ({ default: module.Switchboard })));
+const Delta = lazy(() => import("./concepts/delta/Delta").then((module) => ({ default: module.Delta })));
 
 function pending() {
   return <div className="route-loading" role="status">Preparing concept…</div>;
@@ -91,6 +95,14 @@ export function App() {
         <Route path="/weave/:role/:view" element={<Weave />} />
         <Route path="/current" element={<Current />} />
         <Route path="/current/:role/:view" element={<Current />} />
+        <Route path="/axiom" element={<Axiom />} />
+        <Route path="/axiom/:role/:view" element={<Axiom />} />
+        <Route path="/conduit" element={<Conduit />} />
+        <Route path="/conduit/:role/:view" element={<Conduit />} />
+        <Route path="/switchboard" element={<Switchboard />} />
+        <Route path="/switchboard/:role/:view" element={<Switchboard />} />
+        <Route path="/delta" element={<Delta />} />
+        <Route path="/delta/:role/:view" element={<Delta />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </Suspense>

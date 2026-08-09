@@ -13,6 +13,9 @@ const concepts = [
   "orbit",
   "weave",
   "current",
+  "conduit",
+  "switchboard",
+  "delta",
 ] as const;
 
 const routeMatrix = concepts.flatMap((concept) =>
@@ -25,7 +28,7 @@ const routeMatrix = concepts.flatMap((concept) =>
   ),
 );
 
-describe("final collection complete route matrix", () => {
+describe("final and command-current collection complete route matrix", () => {
   it.each(routeMatrix)("renders $path inside the $concept interface", async ({ path }) => {
     render(
       <MemoryRouter initialEntries={[path]}>

@@ -54,6 +54,7 @@
 .gallery__concept--orbit:hover { background: #080b16; color: #c8ff43; }
 .gallery__concept--weave:hover { background: #24142a; color: #ff8a38; }
 .gallery__concept--current:hover { background: #073f59; color: #eee9dd; }
+.gallery__concept--axiom:hover { background: radial-gradient(circle at 72% 40%, #29368c, #080a15 64%); color: #5df5e9; }
 .gallery__foot { padding: 2rem 4vw 4rem; display: flex; justify-content: space-between; color: #68717a; font-size: .72rem; }
 @media (max-width: 800px) {
   .gallery__head { padding: 1rem 5vw; align-items: flex-start; }

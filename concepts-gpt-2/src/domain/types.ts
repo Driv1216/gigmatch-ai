@@ -25,7 +25,11 @@ export type ConceptId =
   | "crosscheck"
   | "orbit"
   | "weave"
-  | "current";
+  | "current"
+  | "axiom"
+  | "conduit"
+  | "switchboard"
+  | "delta";
 export type ViewId =
   | "home"
   | "discover"
