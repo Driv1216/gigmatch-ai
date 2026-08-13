@@ -1,4 +1,11 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type FormEvent,
+} from "react";
 import { Button } from "./Button";
 import {
   blockEngagementContact,
@@ -11,26 +18,45 @@ import {
   type ContactExchange,
   type RevealedContact,
 } from "../lib/contactExchange";
-import type {
-  ContactMethod,
-  ContactShare,
+import {
+  contactReportCategories,
+  type ContactMethod,
+  type ContactReportCategory,
+  type ContactShare,
 } from "../lib/contactExchangeContracts";
-import { deriveContactExchangeViewState } from "../lib/contactExchangeView";
+import {
+  contactErrorMessage,
+  contactMethodLabel,
+  ContactOperationRegistry,
+  contactSourceLines,
+  contactStatusPresentation,
+  deriveContactExchangeViewState,
+  humanizeContactMetadata,
+  isControlledContactConflict,
+} from "../lib/contactExchangeView";
 
 const URL_METHODS = new Set<ContactMethod>([
   "meeting_link",
   "professional_profile",
 ]);
-const REPORT_CATEGORIES = [
-  "harassment",
-  "spam",
-  "fraudulent_request",
-  "identity_misrepresentation",
-  "abusive_communication",
-  "suspicious_payment_request",
-  "request_for_credentials",
-  "other",
-];
+
+type UrlShareAttempt = {
+  method: ContactMethod;
+  value: string;
+  requestId: string;
+};
+
+type ReportAttempt = {
+  category: ContactReportCategory;
+  detail: string;
+  requestId: string;
+};
+
+type ConfirmAction =
+  | { kind: "revoke"; share: ContactShare }
+  | { kind: "block" };
+
+type MutationOutcome = "success" | "conflict" | "error";
 
 export function SecureContactExchange({
   engagementId,
@@ -44,21 +70,50 @@ export function SecureContactExchange({
   const [urlValues, setUrlValues] = useState<
     Partial<Record<ContactMethod, string>>
   >({});
-  const [reportCategory, setReportCategory] = useState("spam");
+  const [reportCategory, setReportCategory] =
+    useState<ContactReportCategory>("spam");
   const [reportDetail, setReportDetail] = useState("");
   const [reportSent, setReportSent] = useState(false);
+  const [confirmAction, setConfirmAction] = useState<ConfirmAction | null>(null);
+  const [announcement, setAnnouncement] = useState("");
+  const loadSequenceRef = useRef(0);
+  const operationsRef = useRef(
+    new ContactOperationRegistry(() => crypto.randomUUID()),
+  );
+  const urlShareAttemptRef = useRef<UrlShareAttempt | null>(null);
+  const reportAttemptRef = useRef<ReportAttempt | null>(null);
+  const revealAttemptsRef = useRef(new Map<string, string>());
 
   const clearRevealed = useCallback(() => setRevealed({}), []);
+  const clearEphemeralAttempts = useCallback(() => {
+    operationsRef.current.reset();
+    urlShareAttemptRef.current = null;
+    reportAttemptRef.current = null;
+    revealAttemptsRef.current.clear();
+  }, []);
+
   const load = useCallback(async () => {
+    const sequence = ++loadSequenceRef.current;
     clearRevealed();
+    setAnnouncement("");
     const next = await fetchContactExchange(engagementId);
+    if (sequence !== loadSequenceRef.current) return;
     setExchange(next);
     setError(null);
   }, [clearRevealed, engagementId]);
 
   useEffect(() => {
     let active = true;
+    loadSequenceRef.current += 1;
+    setExchange(null);
+    setError(null);
+    setUrlValues({});
+    setReportDetail("");
+    setReportSent(false);
+    setConfirmAction(null);
+    setAnnouncement("");
     clearRevealed();
+    clearEphemeralAttempts();
     fetchContactExchange(engagementId)
       .then((next) => {
         if (active) {
@@ -67,77 +122,234 @@ export function SecureContactExchange({
         }
       })
       .catch((value: unknown) => {
-        if (active) {
-          setError(
-            value instanceof Error
-              ? value.message
-              : "Unable to load contact exchange.",
-          );
-        }
+        if (active) setError(contactErrorMessage(value));
       });
     return () => {
       active = false;
+      loadSequenceRef.current += 1;
       clearRevealed();
+      clearEphemeralAttempts();
     };
-  }, [clearRevealed, engagementId]);
+  }, [clearEphemeralAttempts, clearRevealed, engagementId]);
 
   const viewState = deriveContactExchangeViewState(exchange, error);
-  const hasHistory = useMemo(
+  const totalHistory = useMemo(
     () =>
       (exchange?.shared_by_you.length ?? 0) +
-        (exchange?.shared_with_you.length ?? 0) >
-      0,
+      (exchange?.shared_with_you.length ?? 0),
     [exchange],
   );
 
-  async function mutate(operation: () => Promise<unknown>) {
+  async function runOrdinaryMutation(input: {
+    operation: "share_auth" | "revoke" | "block";
+    subjectId: string;
+    safeSignature?: string;
+    execute: (requestId: string) => Promise<unknown>;
+    successAnnouncement: string;
+  }): Promise<MutationOutcome> {
+    const requestId = operationsRef.current.get(
+      input.operation,
+      input.subjectId,
+      input.safeSignature,
+    );
     setWorking(true);
     setError(null);
     clearRevealed();
     try {
-      await operation();
+      await input.execute(requestId);
+      operationsRef.current.settle(
+        input.operation,
+        input.subjectId,
+        input.safeSignature,
+      );
       await load();
+      setAnnouncement(input.successAnnouncement);
+      return "success";
     } catch (value) {
-      setError(contactError(value));
-      if (value instanceof ContactExchangeApiError && value.status === 409) {
+      const controlledConflict = isControlledContactConflict(value);
+      if (controlledConflict) {
+        operationsRef.current.settle(
+          input.operation,
+          input.subjectId,
+          input.safeSignature,
+        );
         await load().catch(() => undefined);
       }
+      setError(contactErrorMessage(value));
+      return controlledConflict ? "conflict" : "error";
     } finally {
       setWorking(false);
     }
   }
 
-  async function share(method: ContactMethod, actionToken?: string) {
-    if (!actionToken) return;
-    const value = urlValues[method]?.trim();
-    await mutate(() =>
-      shareContact(engagementId, {
+  async function shareAuthMethod(method: ContactMethod, actionToken?: string) {
+    if (!actionToken || URL_METHODS.has(method)) return;
+    await runOrdinaryMutation({
+      operation: "share_auth",
+      subjectId: engagementId,
+      safeSignature: method,
+      execute: (requestId) =>
+        shareContact(engagementId, {
+          method,
+          share_action_token: actionToken,
+          request_id: requestId,
+        }),
+      successAnnouncement: `${contactMethodLabel(method)} sharing recorded.`,
+    });
+  }
+
+  async function shareUrlMethod(method: ContactMethod, actionToken?: string) {
+    if (!actionToken || !URL_METHODS.has(method)) return;
+    const value = urlValues[method]?.trim() ?? "";
+    if (!value) return;
+    const prior = urlShareAttemptRef.current;
+    const attempt =
+      prior?.method === method && prior.value === value
+        ? prior
+        : { method, value, requestId: crypto.randomUUID() };
+    urlShareAttemptRef.current = attempt;
+    setWorking(true);
+    setError(null);
+    clearRevealed();
+    try {
+      await shareContact(engagementId, {
         method,
         share_action_token: actionToken,
-        request_id: crypto.randomUUID(),
-        ...(URL_METHODS.has(method) ? { value } : {}),
-      }),
-    );
-    if (URL_METHODS.has(method)) {
+        request_id: attempt.requestId,
+        value: attempt.value,
+      });
+      urlShareAttemptRef.current = null;
       setUrlValues((current) => ({ ...current, [method]: "" }));
+      await load();
+      setAnnouncement(`${contactMethodLabel(method)} sharing recorded.`);
+    } catch (value) {
+      if (isControlledContactConflict(value)) {
+        urlShareAttemptRef.current = null;
+        await load().catch(() => undefined);
+      }
+      setError(contactErrorMessage(value));
+    } finally {
+      setWorking(false);
     }
   }
 
-  async function reveal(share: ContactShare) {
+  async function revealShare(share: ContactShare) {
     const action = share.actions.find((item) => item.action === "reveal");
     if (!action) return;
+    const requestId =
+      revealAttemptsRef.current.get(share.share_id) ?? crypto.randomUUID();
+    revealAttemptsRef.current.set(share.share_id, requestId);
     setWorking(true);
     setError(null);
+    clearRevealed();
+    setAnnouncement("");
     try {
       const result = await revealContact(share.share_id, {
         reveal_action_token: action.action_token,
-        request_id: crypto.randomUUID(),
+        request_id: requestId,
       });
-      setRevealed((current) => ({ ...current, [share.share_id]: result }));
+      if (result.share_id !== share.share_id || result.method !== share.method) {
+        throw new Error("Reveal authority did not match the requested share.");
+      }
+      revealAttemptsRef.current.delete(share.share_id);
+      setRevealed({ [share.share_id]: result });
+      setAnnouncement("Contact revealed.");
     } catch (value) {
       clearRevealed();
-      setError(contactError(value));
-      await load().catch(() => undefined);
+      setAnnouncement("Reveal stopped.");
+      if (value instanceof ContactExchangeApiError) {
+        revealAttemptsRef.current.delete(share.share_id);
+        await load().catch(() => undefined);
+      }
+      setError(contactErrorMessage(value));
+    } finally {
+      setWorking(false);
+    }
+  }
+
+  function hideReveal(shareId: string) {
+    setRevealed((current) => {
+      const next = { ...current };
+      delete next[shareId];
+      return next;
+    });
+    revealAttemptsRef.current.delete(shareId);
+    setAnnouncement("Contact hidden.");
+  }
+
+  function cancelUrlDraft(method: ContactMethod) {
+    setUrlValues((current) => ({ ...current, [method]: "" }));
+    if (urlShareAttemptRef.current?.method === method) {
+      urlShareAttemptRef.current = null;
+    }
+  }
+
+  async function confirmSensitiveAction() {
+    if (!confirmAction || !exchange) return;
+    if (confirmAction.kind === "revoke") {
+      const action = confirmAction.share.actions.find(
+        (item) => item.action === "revoke",
+      );
+      if (!action) return;
+      const outcome = await runOrdinaryMutation({
+        operation: "revoke",
+        subjectId: confirmAction.share.share_id,
+        execute: (requestId) =>
+          revokeContact(confirmAction.share.share_id, {
+            action_token: action.action_token,
+            request_id: requestId,
+          }),
+        successAnnouncement: "Contact sharing revoked.",
+      });
+      if (outcome !== "error") setConfirmAction(null);
+      return;
+    }
+    if (!exchange.block_action_token) return;
+    const outcome = await runOrdinaryMutation({
+      operation: "block",
+      subjectId: engagementId,
+      execute: (requestId) =>
+        blockEngagementContact(engagementId, {
+          action_token: exchange.block_action_token,
+          request_id: requestId,
+        }),
+      successAnnouncement: "Contact exchange blocked for this engagement.",
+    });
+    if (outcome !== "error") setConfirmAction(null);
+  }
+
+  async function submitReport(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (!exchange || reportSent) return;
+    const detail = reportDetail.trim();
+    if (reportCategory === "other" && !detail) return;
+    const prior = reportAttemptRef.current;
+    const attempt =
+      prior?.category === reportCategory && prior.detail === detail
+        ? prior
+        : { category: reportCategory, detail, requestId: crypto.randomUUID() };
+    reportAttemptRef.current = attempt;
+    setWorking(true);
+    setError(null);
+    clearRevealed();
+    try {
+      await reportEngagementContact(engagementId, {
+        report_action_token: exchange.report_action_token,
+        request_id: attempt.requestId,
+        category: attempt.category,
+        detail: attempt.detail || undefined,
+      });
+      reportAttemptRef.current = null;
+      setReportDetail("");
+      setReportSent(true);
+      await load();
+      setAnnouncement("Private report submitted.");
+    } catch (value) {
+      if (isControlledContactConflict(value)) {
+        reportAttemptRef.current = null;
+        await load().catch(() => undefined);
+      }
+      setError(contactErrorMessage(value));
     } finally {
       setWorking(false);
     }
@@ -145,355 +357,553 @@ export function SecureContactExchange({
 
   if (viewState === "loading") {
     return (
-      <section className="rounded-lg border border-line bg-white p-6" aria-busy="true">
-        <h2 className="text-xl font-bold text-ink">Secure Contact Exchange</h2>
-        <p className="mt-3 text-sm text-muted">Loading masked contact permissions…</p>
+      <section className="stage-nine-contact-state" aria-busy="true">
+        <span>Contact authority / loading</span>
+        <h2>Retrieving masked contact permissions</h2>
+        <p>No contact value is loaded until the server authorizes a deliberate reveal.</p>
       </section>
     );
   }
+
   if (viewState === "error" || exchange === null) {
     return (
-      <section className="rounded-lg border border-red-200 bg-red-50 p-6" role="alert">
-        <h2 className="text-xl font-bold text-red-900">Secure Contact Exchange</h2>
-        <p className="mt-3 text-sm text-red-800">{error ?? "Contact exchange is unavailable."}</p>
-        <Button className="mt-4" variant="secondary" onClick={() => void load()}>
-          Try Again
+      <section className="stage-nine-contact-state is-error" role="alert">
+        <span>Contact authority / stopped</span>
+        <h2>Secure Contact Exchange unavailable</h2>
+        <p>{error ?? "Contact exchange is unavailable."}</p>
+        <Button
+          type="button"
+          variant="secondary"
+          onClick={() => void load().catch((value: unknown) => setError(contactErrorMessage(value)))}
+        >
+          Retry Authority Check
         </Button>
       </section>
     );
   }
 
   return (
-    <section className="rounded-lg border border-line bg-white p-6">
-      <h2 className="text-xl font-bold text-ink">Secure Contact Exchange</h2>
-      <p className="mt-2 text-sm text-muted">
-        Sharing is limited to this engagement. Details stay masked until the other
-        participant explicitly reveals them.
+    <section className="stage-nine-contact-exchange" aria-labelledby="secure-contact-title">
+      <header className="contact-exchange-header">
+        <div>
+          <span>Engagement-scoped contact authority</span>
+          <h2 id="secure-contact-title">Choose what crosses the boundary.</h2>
+          <p>
+            Every method is directional and independent. The server controls consent,
+            masks, source state, blockers, and each authorized action.
+          </p>
+        </div>
+        <dl>
+          <Fact label="Availability" value={exchange.exchange_available ? "Open" : "Restricted"} />
+          <Fact label="History" value={`${totalHistory} share record${totalHistory === 1 ? "" : "s"}`} />
+          <Fact label="Lifecycle" value={humanizeContactMetadata(exchange.engagement_status)} />
+        </dl>
+      </header>
+
+      <p className="contact-local-announcement" aria-live="polite">
+        {announcement}
       </p>
+
       {error ? (
-        <div className="mt-4 rounded-md border border-red-200 bg-red-50 p-3 text-sm text-red-800" role="alert">
-          {error}
+        <div className="contact-exchange-notice is-error" role="alert">
+          <strong>Contact action stopped</strong>
+          <p>{error}</p>
         </div>
-      ) : null}
-      {exchange.blocked ? (
-        <div className="mt-5 rounded-md border border-amber-300 bg-amber-50 p-4">
-          <p className="font-semibold text-amber-950">
-            Contact and optional interaction are blocked for this engagement.
-          </p>
-          <p className="mt-1 text-sm text-amber-900">
-            This is not a platform-wide block. Engagement history and required
-            completion or cancellation actions remain available.
-          </p>
-        </div>
-      ) : null}
-      {!exchange.exchange_available && !exchange.blocked ? (
-        <p className="mt-5 rounded-md border border-line bg-slate-50 p-4 text-sm text-muted">
-          New sharing and reveal are unavailable for this engagement. You may still
-          revoke prior consent or submit a safety report.
-        </p>
-      ) : null}
-      {viewState === "empty" ? (
-        <p className="mt-5 text-sm text-muted">
-          No contact method has been shared for this engagement.
-        </p>
       ) : null}
 
-      <div className="mt-6 grid gap-6 lg:grid-cols-2">
-        <div>
-          <h3 className="font-semibold text-ink">Share a contact method</h3>
-          <div className="mt-3 space-y-3">
-            {exchange.available_methods.map((method) => (
-              <div key={method.method} className="rounded-md border border-line p-4">
-                <div className="flex flex-wrap items-center justify-between gap-3">
-                  <div>
-                    <p className="font-medium text-ink">{label(method.method)}</p>
-                    <VerificationLabel
-                      ownership={method.ownership_verification}
-                      whatsapp={method.whatsapp_availability}
-                    />
-                  </div>
-                  {!URL_METHODS.has(method.method) ? (
-                    <Button
-                      disabled={working || !method.available}
-                      onClick={() => void share(method.method, method.share_action_token)}
-                    >
-                      Share
-                    </Button>
+      {exchange.blocked ? (
+        <div className="contact-exchange-notice is-blocked">
+          <strong>
+            {exchange.blocked_by_viewer
+              ? "You permanently blocked contact for this engagement."
+              : "The other participant blocked contact for this engagement."}
+          </strong>
+          <p>
+            New sharing and reveal are denied in both directions. This is not an
+            account-wide block, and engagement lifecycle actions remain independent.
+          </p>
+        </div>
+      ) : null}
+
+      {!exchange.exchange_available && !exchange.blocked ? (
+        <div className="contact-exchange-notice is-restricted">
+          <strong>New sharing and reveal are unavailable.</strong>
+          <p>
+            Rendered actions and blockers come from current server authority. Prior
+            consent history remains visible; revocation and private reporting may remain available.
+          </p>
+        </div>
+      ) : null}
+
+      {viewState === "empty" ? (
+        <div className="contact-exchange-notice">
+          <strong>No share history yet.</strong>
+          <p>Choose one method below. Sharing one method never shares another.</p>
+        </div>
+      ) : null}
+
+      <div className="contact-direction-grid">
+        <section className="contact-direction-board" aria-labelledby="contact-outgoing-title">
+          <header>
+            <span>Direction 01 / You → participant</span>
+            <h3 id="contact-outgoing-title">You share</h3>
+            <p>Choose one source and create a new masked consent record.</p>
+          </header>
+          <div className="contact-method-register">
+            {exchange.available_methods.map((method, index) => (
+              <article className="contact-method-row" key={method.method}>
+                <span className="contact-row-index">{String(index + 1).padStart(2, "0")}</span>
+                <div className="contact-method-authority">
+                  <strong>{contactMethodLabel(method.method)}</strong>
+                  <SourceAuthority
+                    method={method.method}
+                    ownership={method.ownership_verification}
+                    whatsapp={method.whatsapp_availability}
+                  />
+                  {!method.available && method.unavailable_reason ? (
+                    <small>{humanizeContactMetadata(method.unavailable_reason)}</small>
                   ) : null}
                 </div>
                 {URL_METHODS.has(method.method) && method.available ? (
-                  <div className="mt-3">
-                    <label className="text-sm font-medium text-ink">
+                  <div className="contact-url-action">
+                    <label>
                       HTTPS URL
                       <input
                         type="url"
+                        inputMode="url"
+                        autoComplete="off"
+                        spellCheck={false}
                         value={urlValues[method.method] ?? ""}
-                        onChange={(event) =>
+                        onChange={(event) => {
+                          const value = event.target.value;
                           setUrlValues((current) => ({
                             ...current,
-                            [method.method]: event.target.value,
-                          }))
-                        }
-                        placeholder="https://…"
-                        className="mt-2 block w-full rounded-md border border-line px-3 py-2"
-                      />
-                    </label>
-                    <Button
-                      className="mt-3"
-                      disabled={working || !(urlValues[method.method] ?? "").trim()}
-                      onClick={() => void share(method.method, method.share_action_token)}
-                    >
-                      Share Provided URL
-                    </Button>
-                  </div>
-                ) : null}
-                {!method.available && method.unavailable_reason ? (
-                  <p className="mt-2 text-xs text-muted">{label(method.unavailable_reason)}</p>
-                ) : null}
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <div>
-          <h3 className="font-semibold text-ink">Shared with you</h3>
-          {exchange.shared_with_you.length === 0 ? (
-            <p className="mt-3 text-sm text-muted">Nothing has been shared with you.</p>
-          ) : (
-            <div className="mt-3 space-y-3">
-              {exchange.shared_with_you.map((share) => (
-                <ContactRow
-                  key={share.share_id}
-                  share={share}
-                  revealed={revealed[share.share_id]}
-                  working={working}
-                  onReveal={() => void reveal(share)}
-                  onHide={() =>
-                    setRevealed((current) => {
-                      const next = { ...current };
-                      delete next[share.share_id];
-                      return next;
-                    })
-                  }
-                />
-              ))}
-            </div>
-          )}
-        </div>
-      </div>
-
-      {hasHistory ? (
-        <div className="mt-6">
-          <h3 className="font-semibold text-ink">Your sharing history</h3>
-          <div className="mt-3 space-y-3">
-            {exchange.shared_by_you.map((share) => {
-              const revoke = share.actions.find((item) => item.action === "revoke");
-              return (
-                <div key={share.share_id} className="rounded-md border border-line p-4">
-                  <div className="flex flex-wrap items-center justify-between gap-3">
-                    <div>
-                      <p className="font-medium text-ink">
-                        {label(share.method)} · {share.masked_value}
-                      </p>
-                      <p className="text-xs text-muted">
-                        {label(share.consent_status)} · {label(share.source_status)}
-                      </p>
-                    </div>
-                    {revoke ? (
-                      <Button
-                        variant="secondary"
-                        disabled={working}
-                        onClick={() => {
+                            [method.method]: value,
+                          }));
                           if (
-                            window.confirm(
-                              "Revoke this share? GigMatch cannot erase information already viewed, copied or saved.",
-                            )
+                            urlShareAttemptRef.current?.method === method.method &&
+                            urlShareAttemptRef.current.value !== value.trim()
                           ) {
-                            void mutate(() =>
-                              revokeContact(share.share_id, {
-                                action_token: revoke.action_token,
-                                request_id: crypto.randomUUID(),
-                              }),
-                            );
+                            urlShareAttemptRef.current = null;
                           }
                         }}
+                        placeholder="https://…"
+                        aria-describedby={`${method.method}-url-boundary`}
+                      />
+                    </label>
+                    <small id={`${method.method}-url-boundary`}>
+                      Sent only when you choose Share. GigMatch does not fetch or preview it.
+                    </small>
+                    <div>
+                      <Button
+                        type="button"
+                        disabled={working || !(urlValues[method.method] ?? "").trim()}
+                        onClick={() =>
+                          void shareUrlMethod(method.method, method.share_action_token)
+                        }
                       >
-                        Revoke Sharing
+                        Share URL
                       </Button>
-                    ) : null}
+                      {(urlValues[method.method] ?? "").length > 0 ? (
+                        <Button
+                          type="button"
+                          variant="secondary"
+                          disabled={working}
+                          onClick={() => cancelUrlDraft(method.method)}
+                        >
+                          Cancel Draft
+                        </Button>
+                      ) : null}
+                    </div>
                   </div>
-                </div>
-              );
-            })}
+                ) : (
+                  <Button
+                    type="button"
+                    disabled={working || !method.available}
+                    onClick={() =>
+                      void shareAuthMethod(method.method, method.share_action_token)
+                    }
+                  >
+                    Share Method
+                  </Button>
+                )}
+              </article>
+            ))}
           </div>
-        </div>
-      ) : null}
+          <ContactHistory
+            title="Your share history"
+            empty="You have not shared a contact method in this engagement."
+            shares={exchange.shared_by_you}
+            working={working}
+            revealed={revealed}
+            onReveal={revealShare}
+            onHide={hideReveal}
+            onRevoke={(share) => setConfirmAction({ kind: "revoke", share })}
+          />
+        </section>
 
-      <div className="mt-7 border-t border-line pt-6">
-        <h3 className="font-semibold text-ink">Safety actions</h3>
-        <div className="mt-3 flex flex-wrap gap-3">
-          {exchange.block_action_token ? (
-            <Button
-              variant="secondary"
-              disabled={working}
-              onClick={() => {
-                if (
-                  window.confirm(
-                    "Block contact and optional interaction for this engagement? This is not platform-wide and no unblock flow is available.",
-                  )
-                ) {
-                  void mutate(() =>
-                    blockEngagementContact(engagementId, {
-                      action_token: exchange.block_action_token,
-                      request_id: crypto.randomUUID(),
-                    }),
-                  );
-                }
-              }}
-            >
-              Block for This Engagement
-            </Button>
-          ) : null}
-        </div>
-        <div className="mt-5 grid gap-3 md:grid-cols-[minmax(0,240px)_1fr_auto]">
-          <label className="text-sm font-medium text-ink">
-            Report category
-            <select
-              value={reportCategory}
-              onChange={(event) => setReportCategory(event.target.value)}
-              className="mt-2 block w-full rounded-md border border-line px-3 py-2"
-            >
-              {REPORT_CATEGORIES.map((category) => (
-                <option key={category} value={category}>{label(category)}</option>
-              ))}
-            </select>
-          </label>
-          <label className="text-sm font-medium text-ink">
-            Detail {reportCategory === "other" ? "(required)" : "(optional)"}
-            <input
-              value={reportDetail}
-              onChange={(event) => setReportDetail(event.target.value)}
-              className="mt-2 block w-full rounded-md border border-line px-3 py-2"
-            />
-          </label>
-          <Button
-            className="self-end"
-            variant="secondary"
-            disabled={
-              working ||
-              reportSent ||
-              (reportCategory === "other" && !reportDetail.trim())
-            }
-            onClick={() =>
-              void mutate(async () => {
-                await reportEngagementContact(engagementId, {
-                  report_action_token: exchange.report_action_token,
-                  request_id: crypto.randomUUID(),
-                  category: reportCategory,
-                  detail: reportDetail.trim() || undefined,
-                });
-                setReportSent(true);
-              })
-            }
-          >
-            {reportSent ? "Report Submitted" : "Submit Private Report"}
-          </Button>
-        </div>
+        <section className="contact-direction-board" aria-labelledby="contact-incoming-title">
+          <header>
+            <span>Direction 02 / Participant → you</span>
+            <h3 id="contact-incoming-title">Shared with you</h3>
+            <p>A masked destination remains private until the server authorizes reveal.</p>
+          </header>
+          <ContactHistory
+            title="Incoming share history"
+            empty="The other participant has not shared a contact method with you."
+            shares={exchange.shared_with_you}
+            working={working}
+            revealed={revealed}
+            onReveal={revealShare}
+            onHide={hideReveal}
+            onRevoke={(share) => setConfirmAction({ kind: "revoke", share })}
+          />
+        </section>
       </div>
 
-      <aside className="mt-7 rounded-md border border-amber-200 bg-amber-50 p-4 text-sm text-amber-950">
-        <p>
-          Revoking access hides the detail inside GigMatch but cannot erase
-          information already viewed, copied or saved.
-        </p>
-        <p className="mt-2">
-          GigMatch does not currently process payments or provide escrow. Never
-          share passwords, OTPs, access tokens or sensitive banking credentials.
-        </p>
-      </aside>
+      <section className="contact-safety-board" aria-labelledby="contact-safety-title">
+        <header>
+          <span>Separate authority / Safety</span>
+          <h3 id="contact-safety-title">Private report, engagement block, off-platform boundary.</h3>
+          <p>Reporting never automatically blocks or changes workflow authority.</p>
+        </header>
+        <div className="contact-safety-grid">
+          <form className="contact-report-form" onSubmit={(event) => void submitReport(event)}>
+            <div>
+              <span>Private operation 01</span>
+              <h4>Submit a private report</h4>
+              <p>
+                The counterparty does not receive these details. Reporting does not change
+                this engagement, applications, selection, or ranking.
+              </p>
+            </div>
+            <label>
+              Category
+              <select
+                value={reportCategory}
+                disabled={working || reportSent}
+                onChange={(event) => {
+                  setReportCategory(event.target.value as ContactReportCategory);
+                  reportAttemptRef.current = null;
+                }}
+              >
+                {contactReportCategories.map((category) => (
+                  <option key={category} value={category}>
+                    {humanizeContactMetadata(category)}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label>
+              Detail {reportCategory === "other" ? "(required)" : "(optional)"}
+              <textarea
+                value={reportDetail}
+                disabled={working || reportSent}
+                maxLength={1000}
+                onChange={(event) => {
+                  setReportDetail(event.target.value);
+                  reportAttemptRef.current = null;
+                }}
+              />
+            </label>
+            <Button
+              type="submit"
+              variant="secondary"
+              disabled={
+                working ||
+                reportSent ||
+                (reportCategory === "other" && !reportDetail.trim())
+              }
+            >
+              {reportSent ? "Private Report Submitted" : "Submit Private Report"}
+            </Button>
+          </form>
+
+          <article className="contact-block-action">
+            <span>Permanent operation 02</span>
+            <h4>Block contact in this engagement</h4>
+            <p>
+              Blocking denies new sharing and reveal in both directions. It does not end
+              the engagement or remove required lifecycle actions.
+            </p>
+            {exchange.block_action_token ? (
+              <Button
+                type="button"
+                variant="secondary"
+                disabled={working}
+                onClick={() => setConfirmAction({ kind: "block" })}
+              >
+                Block for This Engagement
+              </Button>
+            ) : (
+              <strong>{exchange.blocked ? "Block already permanent" : "Block action unavailable"}</strong>
+            )}
+          </article>
+
+          <aside className="contact-offplatform-warning">
+            <span>Safety boundary 03</span>
+            <h4>After reveal, communication may leave GigMatch.</h4>
+            <p>GigMatch controls consent and reveal inside Secure Contact Exchange.</p>
+            <p>Communication after reveal may happen outside GigMatch.</p>
+            <p>GigMatch does not process or guarantee off-platform payments.</p>
+            <p>Do not share passwords, OTPs, private keys or sensitive payment credentials.</p>
+            <strong>Server safety notes</strong>
+            <ul>
+              {exchange.warnings.map((warning) => (
+                <li key={warning}>{warning}</li>
+              ))}
+            </ul>
+          </aside>
+        </div>
+      </section>
+
+      {confirmAction ? (
+        <ContactConsequenceDialog
+          action={confirmAction}
+          working={working}
+          error={error}
+          onConfirm={() => void confirmSensitiveAction()}
+          onDismiss={() => {
+            if (!working) setConfirmAction(null);
+          }}
+        />
+      ) : null}
     </section>
   );
 }
 
-function ContactRow({
+function ContactHistory({
+  title,
+  empty,
+  shares,
+  working,
+  revealed,
+  onReveal,
+  onHide,
+  onRevoke,
+}: {
+  title: string;
+  empty: string;
+  shares: ContactShare[];
+  working: boolean;
+  revealed: Record<string, RevealedContact>;
+  onReveal: (share: ContactShare) => void;
+  onHide: (shareId: string) => void;
+  onRevoke: (share: ContactShare) => void;
+}) {
+  return (
+    <section className="contact-history">
+      <header>
+        <h4>{title}</h4>
+        <span>{shares.length} record{shares.length === 1 ? "" : "s"}</span>
+      </header>
+      {shares.length === 0 ? <p className="contact-history-empty">{empty}</p> : null}
+      <ol>
+        {shares.map((share, index) => (
+          <li key={share.share_id}>
+            <ContactShareRow
+              index={index + 1}
+              share={share}
+              revealed={revealed[share.share_id]}
+              working={working}
+              onReveal={() => onReveal(share)}
+              onHide={() => onHide(share.share_id)}
+              onRevoke={() => onRevoke(share)}
+            />
+          </li>
+        ))}
+      </ol>
+    </section>
+  );
+}
+
+function ContactShareRow({
+  index,
   share,
   revealed,
   working,
   onReveal,
   onHide,
+  onRevoke,
 }: {
+  index: number;
   share: ContactShare;
   revealed?: RevealedContact;
   working: boolean;
   onReveal: () => void;
   onHide: () => void;
+  onRevoke: () => void;
 }) {
-  const reveal = share.actions.find((item) => item.action === "reveal");
+  const revealAction = share.actions.some((item) => item.action === "reveal");
+  const revokeAction = share.actions.some((item) => item.action === "revoke");
+  const state = contactStatusPresentation(share);
   return (
-    <div className="rounded-md border border-line p-4">
-      <p className="font-medium text-ink">{label(share.method)}</p>
-      <VerificationLabel
-        ownership={share.ownership_verification}
-        whatsapp={share.whatsapp_availability}
-      />
-      <p className="mt-2 break-all text-sm text-muted">
-        {revealed?.value ?? share.masked_value}
-      </p>
-      <p className="mt-1 text-xs text-muted">
-        {label(share.consent_status)} · {label(share.source_status)}
-      </p>
-      {revealed ? (
-        <Button className="mt-3" variant="secondary" onClick={onHide}>
-          Hide
-        </Button>
-      ) : reveal ? (
-        <Button className="mt-3" disabled={working} onClick={onReveal}>
-          Reveal
-        </Button>
-      ) : null}
+    <article className={`contact-share-row is-${state.tone}`}>
+      <span className="contact-row-index">{String(index).padStart(2, "0")}</span>
+      <div className="contact-share-source">
+        <strong>{contactMethodLabel(share.method)}</strong>
+        <SourceAuthority
+          method={share.method}
+          ownership={share.ownership_verification}
+          whatsapp={share.whatsapp_availability}
+        />
+      </div>
+      <div className="contact-share-state">
+        <span>{state.consent}</span>
+        <span>{state.source}</span>
+        <small>{state.consequence}</small>
+      </div>
+      <div className="contact-share-value">
+        <span>{revealed ? "Revealed value" : "Server mask"}</span>
+        {revealed ? (
+          <output aria-label={`${contactMethodLabel(share.method)} revealed contact value`}>
+            {revealed.value}
+          </output>
+        ) : (
+          <strong>{share.masked_value}</strong>
+        )}
+      </div>
+      <div className="contact-share-meta">
+        <time dateTime={share.created_at}>Shared {formatDate(share.created_at)}</time>
+        {share.previous_share_id ? <span>New record after prior history</span> : null}
+        {share.revoked_at ? <time dateTime={share.revoked_at}>Revoked {formatDate(share.revoked_at)}</time> : null}
+        {share.invalidated_at ? <time dateTime={share.invalidated_at}>Invalidated {formatDate(share.invalidated_at)}</time> : null}
+      </div>
+      <div className="contact-share-actions">
+        {revealed ? (
+          <Button type="button" variant="secondary" onClick={onHide}>
+            Hide
+          </Button>
+        ) : revealAction ? (
+          <Button type="button" disabled={working} onClick={onReveal}>
+            Reveal Through Server
+          </Button>
+        ) : null}
+        {revokeAction ? (
+          <Button type="button" variant="secondary" disabled={working} onClick={onRevoke}>
+            Revoke Future Reveals
+          </Button>
+        ) : null}
+      </div>
+    </article>
+  );
+}
+
+function SourceAuthority({
+  method,
+  ownership,
+  whatsapp,
+}: {
+  method: ContactMethod;
+  ownership: ContactShare["ownership_verification"];
+  whatsapp?: ContactShare["whatsapp_availability"];
+}) {
+  return (
+    <span className="contact-source-lines">
+      {contactSourceLines(method, ownership, whatsapp).map((line) => (
+        <small key={line}>{line}</small>
+      ))}
+    </span>
+  );
+}
+
+function ContactConsequenceDialog({
+  action,
+  working,
+  error,
+  onConfirm,
+  onDismiss,
+}: {
+  action: ConfirmAction;
+  working: boolean;
+  error: string | null;
+  onConfirm: () => void;
+  onDismiss: () => void;
+}) {
+  const dialogRef = useRef<HTMLDialogElement>(null);
+  useEffect(() => {
+    dialogRef.current?.showModal();
+  }, []);
+  const revoke = action.kind === "revoke";
+  return (
+    <dialog
+      ref={dialogRef}
+      className="contact-consequence-dialog"
+      aria-labelledby="contact-consequence-title"
+      aria-describedby="contact-consequence-description"
+      onCancel={(event) => {
+        if (working) event.preventDefault();
+      }}
+      onClose={onDismiss}
+    >
+      <form
+        method="dialog"
+        onSubmit={(event) => {
+          event.preventDefault();
+          onConfirm();
+        }}
+      >
+        <header>
+          <span>{revoke ? "Consent consequence" : "Permanent contact consequence"}</span>
+          <h2 id="contact-consequence-title">
+            {revoke ? "Revoke future GigMatch reveals?" : "Block contact for this engagement?"}
+          </h2>
+        </header>
+        <div className="contact-consequence-body" id="contact-consequence-description">
+          {error ? <p className="is-error" role="alert">{error}</p> : null}
+          {revoke ? (
+            <>
+              <p>Future reveals through GigMatch stop for this share.</p>
+              <p>The revoked row remains historical and cannot be restored or reactivated.</p>
+              <p>A later reshare creates a new record with its own mask and source evidence.</p>
+              <p className="is-caution">
+                GigMatch cannot erase information the recipient may already have retained.
+              </p>
+            </>
+          ) : (
+            <>
+              <p>This block is permanent for this milestone and scoped only to this engagement.</p>
+              <p>New sharing and reveals stop in both directions. Your active shares are revoked.</p>
+              <p>The other participant’s consent history and the engagement itself remain intact.</p>
+              <p className="is-caution">
+                Required completion and cancellation actions remain available. External copies are not erased.
+              </p>
+            </>
+          )}
+        </div>
+        <footer>
+          <Button
+            type="button"
+            variant="secondary"
+            disabled={working}
+            onClick={() => dialogRef.current?.close()}
+          >
+            Keep Current Contact State
+          </Button>
+          <Button type="submit" disabled={working}>
+            {working
+              ? "Waiting for server…"
+              : revoke
+                ? "Revoke Future Reveals"
+                : "Permanently Block Contact"}
+          </Button>
+        </footer>
+      </form>
+    </dialog>
+  );
+}
+
+function Fact({ label, value }: { label: string; value: string }) {
+  return (
+    <div>
+      <dt>{label}</dt>
+      <dd>{value}</dd>
     </div>
   );
 }
 
-function VerificationLabel({
-  ownership,
-  whatsapp,
-}: {
-  ownership: "verified" | "user_provided";
-  whatsapp?: "self_declared";
-}) {
-  return (
-    <p className="mt-1 text-xs text-muted">
-      {ownership === "verified"
-        ? "Ownership verified by GigMatch Auth"
-        : "Provided by user · not verified by GigMatch"}
-      {whatsapp === "self_declared"
-        ? " · WhatsApp availability self-declared"
-        : ""}
-    </p>
-  );
-}
-
-function contactError(value: unknown): string {
-  if (value instanceof ContactExchangeApiError) {
-    const messages: Record<string, string> = {
-      contact_source_invalidated:
-        "The verified source changed. Ask the sharer to share it again.",
-      contact_exchange_blocked:
-        "Contact exchange is blocked for this engagement.",
-      contact_share_not_active: "This contact share is no longer active.",
-      stale_contact_action:
-        "Contact permissions changed. Review the refreshed state before retrying.",
-      contact_reveal_rate_limited:
-        "Reveal limit reached. Wait before revealing another contact.",
-    };
-    return messages[value.code] ?? value.message;
-  }
-  return value instanceof Error ? value.message : "Contact exchange failed.";
-}
-
-function label(value: string) {
-  return value
-    .replace(/_/g, " ")
-    .replace(/\b\w/g, (letter) => letter.toUpperCase());
-}
+const formatDate = (value: string) =>
+  new Intl.DateTimeFormat(undefined, {
+    dateStyle: "medium",
+    timeStyle: "short",
+  }).format(new Date(value));

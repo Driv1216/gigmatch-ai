@@ -7,7 +7,6 @@ import type {
 
 export type DashboardViewState = "loading" | "error" | "empty" | "ready";
 export type DashboardRole = "client" | "freelancer";
-export type DashboardNavigationItem = { label: string; to: string };
 
 const actionPriority: Record<AttentionKind, number> = {
   engagement_response_required: 1,
@@ -75,20 +74,4 @@ export function formatDashboardDate(value: string | null): string {
   return Number.isNaN(parsed.getTime())
     ? value
     : new Intl.DateTimeFormat(undefined, { dateStyle: "medium", timeStyle: "short" }).format(parsed);
-}
-
-export function dashboardNavigation(role: DashboardRole): DashboardNavigationItem[] {
-  return role === "freelancer"
-    ? [
-        { label: "Dashboard", to: "/dashboard/freelancer" },
-        { label: "Find Gigs", to: "/gigs" },
-        { label: "My Applications", to: "/applications" },
-        { label: "Engagements", to: "/engagements" },
-      ]
-    : [
-        { label: "Dashboard", to: "/dashboard/client" },
-        { label: "Manage Gigs", to: "/gigs/manage" },
-        { label: "Engagements", to: "/engagements" },
-        { label: "Create Gig", to: "/gigs/new" },
-      ];
 }

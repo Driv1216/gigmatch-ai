@@ -13,38 +13,41 @@ type RankingComparisonTableProps = {
 export function RankingComparisonTable({ query }: RankingComparisonTableProps) {
   if (query.ranking_comparison_rows.length === 0) {
     return (
-      <p className="rounded-md border border-dashed border-line bg-slate-50 px-4 py-3 text-sm text-muted">
+      <p className="admin-evaluation-empty">
         No ranking comparison rows were returned for this query.
       </p>
     );
   }
 
   return (
-    <div className="overflow-x-auto rounded-lg border border-line">
-      <table className="min-w-full divide-y divide-line text-left text-sm">
-        <thead className="bg-slate-50 text-xs uppercase tracking-wide text-muted">
+    <section className="admin-query-evidence" aria-labelledby={`${query.query_id}-ranking-title`}>
+      <header><span>QUERY-LEVEL EVIDENCE</span><h4 id={`${query.query_id}-ranking-title`}>Candidate rank register</h4></header>
+      <div className="admin-evaluation-table-wrap">
+      <table className="admin-evaluation-table admin-ranking-table">
+        <caption>Candidate ranks and backend scores by strategy for {query.query_id}</caption>
+        <thead>
           <tr>
-            <th className="px-4 py-3 font-semibold">Candidate</th>
+            <th>Candidate</th>
             {EVALUATION_STRATEGIES.map((strategy) => (
-              <th key={strategy} className="px-4 py-3 font-semibold">
+              <th key={strategy}>
                 {formatStrategyLabel(strategy)}
               </th>
             ))}
           </tr>
         </thead>
-        <tbody className="divide-y divide-line bg-white">
+        <tbody>
           {query.ranking_comparison_rows.map((row) => (
             <tr key={row.candidate_id}>
-              <td className="px-4 py-3 font-medium text-ink">{row.candidate_id}</td>
+              <th scope="row">{row.candidate_id}</th>
               {EVALUATION_STRATEGIES.map((strategy) => {
                 const candidate = findCandidate(query, strategy, row.candidate_id);
                 const rank = row.ranks_by_strategy[strategy];
                 return (
-                  <td key={`${row.candidate_id}-${strategy}`} className="px-4 py-3 text-muted">
+                  <td key={`${row.candidate_id}-${strategy}`}>
                     {typeof rank === "number" ? (
-                      <span>
-                        Rank <span className="font-semibold tabular-nums text-ink">{rank}</span>
-                        <span className="ml-2 text-xs tabular-nums">score {formatMetricValue(candidate?.score)}</span>
+                      <span className="admin-rank-value">
+                        Rank <strong>{rank}</strong>
+                        <small>score {formatMetricValue(candidate?.score)}</small>
                       </span>
                     ) : (
                       "Unavailable"
@@ -56,7 +59,8 @@ export function RankingComparisonTable({ query }: RankingComparisonTableProps) {
           ))}
         </tbody>
       </table>
-    </div>
+      </div>
+    </section>
   );
 }
 

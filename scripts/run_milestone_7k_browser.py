@@ -404,6 +404,10 @@ def start_services(
     frontend_handle.close()
     wait_http(f"{BACKEND_ORIGIN}/health")
     wait_http(FRONTEND_ORIGIN)
+    # Vite may observe the freshly written ignored .env immediately after its first
+    # ready response. Wait through that one local restart before opening browsers.
+    time.sleep(1)
+    wait_http(FRONTEND_ORIGIN)
 
 
 def stop_services(processes: list[subprocess.Popen[bytes]]) -> None:

@@ -1,6 +1,5 @@
 import { useState, type FormEvent } from "react";
-import { useNavigate } from "react-router-dom";
-import { PageContainer } from "../components/PageContainer";
+import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { dashboardPathForRole, type UserRole } from "../lib/auth";
 import { supabase } from "../lib/supabaseClient";
@@ -36,7 +35,7 @@ export function SignupPage() {
     });
 
     if (error || !data.user) {
-      setErrorMessage(error?.message ?? "Unable to create account.");
+      setErrorMessage("Unable to create account. Check your details and try again.");
       setIsSubmitting(false);
       return;
     }
@@ -55,81 +54,112 @@ export function SignupPage() {
     });
 
     if (profileError) {
-      setErrorMessage(profileError.message);
+      setErrorMessage("Account created, but the saved role profile could not be completed. Contact support before continuing.");
       setIsSubmitting(false);
       return;
     }
 
-    await refreshProfile();
-    navigate(dashboardPathForRole(role));
+    try {
+      const persistedProfile = await refreshProfile();
+
+      if (!persistedProfile) {
+        setErrorMessage("Account created, but no saved role profile could be resolved. Contact support before continuing.");
+        setIsSubmitting(false);
+        return;
+      }
+
+      navigate(dashboardPathForRole(persistedProfile.role));
+    } catch {
+      setErrorMessage("Account created, but the saved role profile could not be loaded. Contact support before continuing.");
+      setIsSubmitting(false);
+    }
   }
 
   return (
-    <PageContainer>
-      <div className="max-w-xl rounded-lg border border-line bg-white p-8 shadow-soft">
-        <h1 className="text-3xl font-bold tracking-normal text-ink">Signup</h1>
-        <form className="mt-8 space-y-5" onSubmit={handleSubmit}>
-          <label className="block">
-            <span className="text-sm font-semibold text-ink">Full name</span>
+    <section className="switchboard-auth-page is-signup" aria-labelledby="signup-title">
+      <aside className="switchboard-auth-context">
+        <span className="switchboard-public-eyebrow">ACCOUNT CREATION / TWO PARTICIPANT ROLES</span>
+        <h1 id="signup-title">Choose your side of the work.</h1>
+        <p>Create a freelancer or client account. This selection is used once for account creation; your persisted profile becomes the authority after signup.</p>
+        <dl>
+          <div><dt>Freelancer</dt><dd>Discover gigs and submit structured proposals</dd></div>
+          <div><dt>Client</dt><dd>Create gigs and review applicants</dd></div>
+          <div><dt>After signup</dt><dd>Saved role controls protected access</dd></div>
+        </dl>
+      </aside>
+
+      <div className="switchboard-auth-panel">
+        <header>
+          <span>SIGNUP / NEW PARTICIPANT</span>
+          <h2>Signup</h2>
+          <p>All fields are required. Existing administrative accounts use the ordinary login page.</p>
+        </header>
+        <form onSubmit={handleSubmit} aria-describedby={[errorMessage ? "signup-error" : null, successMessage ? "signup-success" : null].filter(Boolean).join(" ") || undefined}>
+          <label>
+            <span>Full name</span>
             <input
               type="text"
+              name="name"
+              autoComplete="name"
               value={fullName}
               onChange={(event) => setFullName(event.target.value)}
               required
-              className="mt-2 w-full rounded-md border border-line bg-white px-4 py-3 text-sm text-ink outline-none transition focus:border-brand focus:ring-2 focus:ring-blue-100"
             />
           </label>
-          <label className="block">
-            <span className="text-sm font-semibold text-ink">Email</span>
+          <label>
+            <span>Email</span>
             <input
               type="email"
+              name="email"
+              autoComplete="email"
               value={email}
               onChange={(event) => setEmail(event.target.value)}
               required
-              className="mt-2 w-full rounded-md border border-line bg-white px-4 py-3 text-sm text-ink outline-none transition focus:border-brand focus:ring-2 focus:ring-blue-100"
             />
           </label>
-          <label className="block">
-            <span className="text-sm font-semibold text-ink">Password</span>
+          <label>
+            <span>Password</span>
             <input
               type="password"
+              name="new-password"
+              autoComplete="new-password"
               value={password}
               onChange={(event) => setPassword(event.target.value)}
               required
               minLength={6}
-              className="mt-2 w-full rounded-md border border-line bg-white px-4 py-3 text-sm text-ink outline-none transition focus:border-brand focus:ring-2 focus:ring-blue-100"
             />
           </label>
-          <label className="block">
-            <span className="text-sm font-semibold text-ink">Role</span>
-            <select
-              value={role}
-              onChange={(event) => setRole(event.target.value as SignupRole)}
-              className="mt-2 w-full rounded-md border border-line bg-white px-4 py-3 text-sm text-ink outline-none transition focus:border-brand focus:ring-2 focus:ring-blue-100"
-            >
-              <option value="freelancer">Freelancer</option>
-              <option value="client">Client</option>
-            </select>
-          </label>
+          <fieldset className="switchboard-role-choice">
+            <legend>Role</legend>
+            <p>Used for this account-creation operation; it is not a runtime role switch.</p>
+            <div>
+              <label className={role === "freelancer" ? "is-selected" : undefined}>
+                <input type="radio" name="role" value="freelancer" checked={role === "freelancer"} onChange={() => setRole("freelancer")} />
+                <span><b>Freelancer</b><small>Find and propose</small></span>
+              </label>
+              <label className={role === "client" ? "is-selected" : undefined}>
+                <input type="radio" name="role" value="client" checked={role === "client"} onChange={() => setRole("client")} />
+                <span><b>Client</b><small>Create and review</small></span>
+              </label>
+            </div>
+          </fieldset>
           {errorMessage ? (
-            <p className="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-700">
-              {errorMessage}
-            </p>
+            <p id="signup-error" className="switchboard-auth-message is-error" role="alert">{errorMessage}</p>
           ) : null}
           {successMessage ? (
-            <p className="rounded-md border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-700">
-              {successMessage}
-            </p>
+            <p id="signup-success" className="switchboard-auth-message is-success" role="status">{successMessage}</p>
           ) : null}
           <button
             type="submit"
             disabled={isSubmitting}
-            className="inline-flex min-h-11 w-full items-center justify-center rounded-md bg-brand px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60"
+            className="switchboard-auth-submit"
           >
-            {isSubmitting ? "Creating account..." : "Create account"}
+            <span>{isSubmitting ? "Creating account..." : "Create account"}</span>
+            <b aria-hidden="true">→</b>
           </button>
         </form>
+        <p className="switchboard-auth-alternate">Already have an account? <Link to="/login">Login</Link>.</p>
       </div>
-    </PageContainer>
+    </section>
   );
 }

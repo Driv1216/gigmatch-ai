@@ -15,14 +15,15 @@ export function DashboardStatePanel({
 }: DashboardStatePanelProps) {
   return (
     <section
-      className="rounded-lg border border-line bg-white p-6 shadow-soft"
+      className="dashboard-state-panel"
       aria-live="polite"
       aria-busy={busy}
     >
-      <h2 className="text-lg font-bold text-ink">{title}</h2>
-      <p className="mt-2 text-sm leading-6 text-muted">{body}</p>
+      <span>{busy ? "Loading" : "Current state"}</span>
+      <h2>{title}</h2>
+      <p>{body}</p>
       {retry ? (
-        <Button type="button" variant="secondary" className="mt-4" onClick={retry}>
+        <Button type="button" variant="secondary" onClick={retry}>
           Try again
         </Button>
       ) : null}

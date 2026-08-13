@@ -41,5 +41,5 @@ export function formatMetricValue(value: number | null | undefined) {
 }
 
 export function formatCountDetail(value: unknown) {
-  return typeof value === "number" ? String(value) : "0";
+  return typeof value === "number" ? String(value) : "Unavailable";
 }

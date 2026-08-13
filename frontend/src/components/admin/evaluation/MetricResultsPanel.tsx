@@ -8,18 +8,16 @@ type MetricResultsPanelProps = {
 
 export function MetricResultsPanel({ summary }: MetricResultsPanelProps) {
   return (
-    <section aria-labelledby="metric-results-title" className="rounded-lg border border-line bg-white p-6 shadow-soft">
-      <div>
-        <p className="text-sm font-semibold uppercase tracking-wide text-accent">Strategy metrics</p>
-        <h2 id="metric-results-title" className="mt-2 text-2xl font-bold tracking-normal text-ink">
-          Backend-provided aggregate metric results
-        </h2>
-        <p className="mt-3 max-w-3xl text-sm leading-6 text-muted">
-          Values are returned by the evaluation API. Unavailable metrics are shown with backend-provided reasons.
-        </p>
-      </div>
+    <section aria-labelledby="metric-results-title" className="admin-evaluation-section admin-metric-results">
+      <header className="admin-evaluation-section-header">
+        <span>02 / METRICS</span>
+        <div>
+          <h2 id="metric-results-title">Backend-provided aggregate results</h2>
+          <p>Values are formatted, not recalculated. Unavailable metrics keep their backend reason and never become zero.</p>
+        </div>
+      </header>
 
-      <div className="mt-6 space-y-6">
+      <div className="admin-strategy-metric-stack">
         {EVALUATION_STRATEGIES.map((strategy) => (
           <StrategyMetricTable
             key={strategy}
@@ -34,54 +32,48 @@ export function MetricResultsPanel({ summary }: MetricResultsPanelProps) {
 
 function StrategyMetricTable({ strategy, metrics }: { strategy: EvaluationStrategy; metrics: MetricResult[] }) {
   return (
-    <div>
-      <h3 className="text-base font-bold tracking-normal text-ink">{formatStrategyLabel(strategy)} ranking</h3>
+    <article className="admin-strategy-metric-board">
+      <header>
+        <span>{strategy.toUpperCase()} / AGGREGATE</span>
+        <h3>{formatStrategyLabel(strategy)} ranking</h3>
+      </header>
       {metrics.length === 0 ? (
-        <p className="mt-3 rounded-md border border-dashed border-line bg-slate-50 px-4 py-3 text-sm text-muted">
+        <p className="admin-evaluation-empty">
           No backend metric results were returned for this strategy.
         </p>
       ) : (
-        <div className="mt-3 overflow-x-auto rounded-lg border border-line">
-          <table className="min-w-full divide-y divide-line text-left text-sm">
-            <thead className="bg-slate-50 text-xs uppercase tracking-wide text-muted">
+        <div className="admin-evaluation-table-wrap">
+          <table className="admin-evaluation-table">
+            <caption>Aggregate metrics for {formatStrategyLabel(strategy)} ranking</caption>
+            <thead>
               <tr>
-                <th className="px-4 py-3 font-semibold">Metric</th>
-                <th className="px-4 py-3 font-semibold">Value</th>
-                <th className="px-4 py-3 font-semibold">Availability</th>
-                <th className="px-4 py-3 font-semibold">Included</th>
-                <th className="px-4 py-3 font-semibold">Excluded</th>
-                <th className="px-4 py-3 font-semibold">Reason</th>
+                <th>Metric</th>
+                <th>Value</th>
+                <th>Availability</th>
+                <th>Included</th>
+                <th>Excluded</th>
+                <th>Reason</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-line bg-white">
+            <tbody>
               {metrics.map((metric) => (
                 <tr key={`${strategy}-${metric.metric_name}-${metric.k ?? "all"}`}>
-                  <td className="px-4 py-3 font-medium text-ink">{formatMetricName(metric)}</td>
-                  <td className="px-4 py-3 tabular-nums text-ink">{formatMetricValue(metric.value)}</td>
-                  <td className="px-4 py-3">
-                    <span
-                      className={`inline-flex rounded-full px-2.5 py-1 text-xs font-semibold ${
-                        metric.is_available
-                          ? "border border-emerald-200 bg-emerald-50 text-emerald-700"
-                          : "border border-amber-200 bg-amber-50 text-amber-800"
-                      }`}
-                    >
+                  <th scope="row">{formatMetricName(metric)}</th>
+                  <td className="is-number">{metric.is_available ? formatMetricValue(metric.value) : "Unavailable"}</td>
+                  <td>
+                    <span className={`admin-metric-status ${metric.is_available ? "is-available" : "is-unavailable"}`}>
                       {metric.is_available ? "Available" : "Unavailable"}
                     </span>
                   </td>
-                  <td className="px-4 py-3 tabular-nums text-muted">
-                    {formatCountDetail(metric.details?.included_query_count)}
-                  </td>
-                  <td className="px-4 py-3 tabular-nums text-muted">
-                    {formatCountDetail(metric.details?.excluded_query_count)}
-                  </td>
-                  <td className="max-w-md px-4 py-3 text-muted">{metric.reason ?? "None"}</td>
+                  <td className="is-number">{formatCountDetail(metric.details?.included_query_count)}</td>
+                  <td className="is-number">{formatCountDetail(metric.details?.excluded_query_count)}</td>
+                  <td className="is-reason">{metric.reason ?? "No limitation reported"}</td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
       )}
-    </div>
+    </article>
   );
 }

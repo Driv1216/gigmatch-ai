@@ -80,15 +80,62 @@ export type QaIndicator = {
   latest_qa_activity_at: string | null;
 };
 
+const QA_MODES: QaMode[] = [
+  "initial_clarification",
+  "initial_response_only",
+  "advanced_discussion",
+  "read_only",
+];
+
+const MESSAGE_KINDS: QaMessage["message_kind"][] = [
+  "initial_question",
+  "question",
+  "answer",
+  "clarification",
+  "decline",
+  "correction",
+];
+
+const REVISION_STATUSES: RevisionRequest["status"][] = [
+  "open",
+  "fulfilled",
+  "declined",
+  "superseded",
+  "closed_by_stage_change",
+  "closed_by_gig_state",
+];
+
+const PERMISSION_KEYS: Array<keyof QaPermissions> = [
+  "ask_initial_question",
+  "send_advanced_question",
+  "send_clarification",
+  "answer_question",
+  "decline_question",
+  "correct_own_message",
+  "report_message",
+  "stop_pre_advancement",
+  "create_revision_request",
+  "respond_to_revision_request",
+];
+
 export function isQaThread(value: unknown): value is QaThread {
-  if (!isRecord(value) || typeof value.application_id !== "string" ||
+  if (!isRecord(value) || !nonEmptyString(value.application_id) ||
+    !nonEmptyString(value.gig_id) || !nonEmptyString(value.current_application_stage) ||
+    !nonEmptyString(value.current_application_version_id) ||
+    !nonEmptyString(value.current_material_gig_version_id) ||
+    !nonEmptyString(value.application_version_token) ||
     !["client", "freelancer"].includes(String(value.viewer_role)) ||
-    !["initial_clarification", "initial_response_only", "advanced_discussion", "read_only"]
-      .includes(String(value.mode)) ||
-    !isRecord(value.permissions) || !isRecord(value.initial_question_allowance) ||
+    !QA_MODES.includes(value.mode as QaMode) || !isPermissions(value.permissions) ||
+    !isAllowance(value.initial_question_allowance) ||
+    typeof value.pre_advance_discussion_stopped !== "boolean" ||
+    !nonNegativeInteger(value.pending_question_count) ||
+    !nonNegativeInteger(value.pending_question_count_for_other_participant) ||
+    typeof value.qa_requires_attention !== "boolean" ||
     !Array.isArray(value.messages) || !value.messages.every(isQaMessage) ||
     !Array.isArray(value.revision_history) || !value.revision_history.every(isRevision) ||
-    !isRecord(value.pagination)) return false;
+    !isPagination(value.pagination) || !stringArray(value.blockers) ||
+    typeof value.proposal_authority_notice !== "string" ||
+    !(value.latest_qa_activity_at === null || typeof value.latest_qa_activity_at === "string")) return false;
   return value.open_revision_request === null || isRevision(value.open_revision_request);
 }
 
@@ -101,18 +148,61 @@ export function isQaIndicator(value: unknown): value is QaIndicator {
 }
 
 function isQaMessage(value: unknown): value is QaMessage {
-  return isRecord(value) && typeof value.id === "string" &&
-    typeof value.sequence_number === "number" &&
-    typeof value.message_kind === "string" &&
-    typeof value.is_mine === "boolean" &&
-    typeof value.created_at === "string";
+  return isRecord(value) && nonEmptyString(value.id) &&
+    positiveInteger(value.sequence_number) &&
+    ["client", "freelancer"].includes(String(value.sender_role)) &&
+    MESSAGE_KINDS.includes(value.message_kind as QaMessage["message_kind"]) &&
+    typeof value.is_mine === "boolean" && typeof value.created_at === "string" &&
+    nullableString(value.topic) && nullableString(value.other_topic_detail) &&
+    nullableString(value.body) && nullableString(value.in_reply_to_message_id) &&
+    nullableString(value.corrects_message_id) && nullableString(value.decline_reason_code) &&
+    nullableString(value.decline_reason_detail) && typeof value.reported_by_viewer === "boolean";
 }
 
 function isRevision(value: unknown): value is RevisionRequest {
-  return isRecord(value) && typeof value.id === "string" &&
-    typeof value.status === "string" &&
-    typeof value.requested_application_version_id === "string" &&
-    typeof value.requested_material_gig_version_id === "string";
+  return isRecord(value) && nonEmptyString(value.id) &&
+    REVISION_STATUSES.includes(value.status as RevisionRequest["status"]) &&
+    nonEmptyString(value.requested_application_version_id) &&
+    nonEmptyString(value.requested_material_gig_version_id) &&
+    nonEmptyString(value.reason_code) && typeof value.created_at === "string" &&
+    nullableString(value.reason_detail) && nullableString(value.terminal_at) &&
+    nullableString(value.response_application_version_id) &&
+    nullableString(value.response_reason_code) && nullableString(value.response_reason_detail);
+}
+
+function isPermissions(value: unknown): value is QaPermissions {
+  return isRecord(value) && PERMISSION_KEYS.every((key) => typeof value[key] === "boolean");
+}
+
+function isAllowance(value: unknown): value is QaThread["initial_question_allowance"] {
+  return isRecord(value) && nonNegativeInteger(value.used) && nonNegativeInteger(value.remaining) &&
+    nonNegativeInteger(value.limit) && value.used + value.remaining === value.limit;
+}
+
+function isPagination(value: unknown): value is QaThread["pagination"] {
+  return isRecord(value) && typeof value.has_more === "boolean" &&
+    (value.before_sequence === null || positiveInteger(value.before_sequence)) &&
+    positiveInteger(value.limit);
+}
+
+function stringArray(value: unknown): value is string[] {
+  return Array.isArray(value) && value.every((item) => typeof item === "string");
+}
+
+function nullableString(value: unknown): value is string | null {
+  return value === null || typeof value === "string";
+}
+
+function nonEmptyString(value: unknown): value is string {
+  return typeof value === "string" && value.length > 0;
+}
+
+function positiveInteger(value: unknown): value is number {
+  return Number.isInteger(value) && Number(value) > 0;
+}
+
+function nonNegativeInteger(value: unknown): value is number {
+  return Number.isInteger(value) && Number(value) >= 0;
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {

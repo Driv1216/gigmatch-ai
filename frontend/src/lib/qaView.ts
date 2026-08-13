@@ -1,4 +1,4 @@
-import type { QaMessage, QaMode, QaThread } from "./qaContracts";
+import type { QaMessage, QaMode, QaThread, RevisionRequest } from "./qaContracts";
 
 const SAFETY_CODES = new Set([
   "contact_information_not_allowed",
@@ -15,6 +15,70 @@ export function qaModeLabel(mode: QaMode): string {
     advanced_discussion: "Advanced structured discussion",
     read_only: "Read-only history",
   }[mode];
+}
+
+export function qaModeDescription(mode: QaMode): string {
+  return {
+    initial_clarification: "The client may use the server-projected permanent pre-advancement allowance. The freelancer may resolve open questions.",
+    initial_response_only: "New pre-advancement client turns are stopped. Existing open questions may still be answered or declined.",
+    advanced_discussion: "Both participants may use the backend-authorized structured discussion actions.",
+    read_only: "The immutable discussion remains available. Individual report permission can remain available independently.",
+  }[mode];
+}
+
+export function qaBlockerLabel(code: string): string {
+  const labels: Record<string, string> = {
+    gig_filled: "Gig filled",
+    gig_cancelled: "Gig cancelled",
+    gig_draft: "Gig is a draft",
+    gig_paused: "Gig paused",
+    application_confirmed: "Application confirmed",
+    application_not_selected: "Application Not Selected",
+    application_withdrawn: "Application withdrawn",
+    application_closed_gig_cancelled: "Application closed with cancelled gig",
+    returned_to_general_review: "Returned to Under Review after prior advancement",
+    pre_advance_discussion_stopped: "Further pre-advancement client turns stopped",
+    application_state_not_writable: "Current application state is not writable",
+  };
+  return labels[code] ?? labelCode(code);
+}
+
+export function revisionStatusLabel(status: RevisionRequest["status"]): string {
+  return {
+    open: "Open",
+    fulfilled: "Updated proposal submitted",
+    declined: "Declined",
+    superseded: "Superseded by newer authority",
+    closed_by_stage_change: "Closed by application-stage change",
+    closed_by_gig_state: "Closed by gig state",
+  }[status];
+}
+
+export function revisionConsequence(request: RevisionRequest): string {
+  if (request.status === "open") return "The existing proposal remains official until an authorized complete update succeeds.";
+  if (request.status === "fulfilled") return "A complete immutable proposal version was created and linked as the revision response.";
+  if (request.status === "declined") return "No proposal version was created; the prior proposal remains official.";
+  if (request.status === "superseded") return "A proposal or material-gig change made this exact-version request non-actionable.";
+  if (request.status === "closed_by_stage_change") return "The application left the required stage; historical request evidence remains.";
+  return "The gig lifecycle made this request non-actionable; historical request evidence remains.";
+}
+
+export function questionResolutionIds(messages: QaMessage[]): Set<string> {
+  return new Set(messages.flatMap((message) =>
+    (message.message_kind === "answer" || message.message_kind === "decline") && message.in_reply_to_message_id
+      ? [message.in_reply_to_message_id]
+      : [],
+  ));
+}
+
+export function messageRelationship(message: QaMessage, messages: QaMessage[]): string | null {
+  const reference = message.in_reply_to_message_id ?? message.corrects_message_id;
+  if (!reference) return null;
+  const source = messages.find((candidate) => candidate.id === reference);
+  const sequence = source?.sequence_number ? `#${source.sequence_number}` : "outside this loaded page";
+  return message.in_reply_to_message_id
+    ? `Primary response to question ${sequence}`
+    : `Append-only correction to message ${sequence}`;
 }
 
 export function qaErrorMessage(error: unknown): string {
@@ -37,6 +101,10 @@ export function qaErrorMessage(error: unknown): string {
     stale_application_version: "The proposal changed. Review the current version before continuing.",
     stale_gig_version: "The gig terms changed. Review the current terms before continuing.",
     pending_selection_blocks_revision: "A pending selection request blocks proposal revision.",
+    qa_action_not_allowed: "That action is no longer authorized for the current participant or thread mode.",
+    invalid_question_response: "Review the structured response requirements and try again. Your draft is preserved.",
+    invalid_message_reference: "The referenced message is no longer actionable. The current history has been refreshed.",
+    invalid_revision_response: "The complete proposal revision did not satisfy current authoritative requirements. Your draft is preserved.",
   };
   return messages[code] ?? "Unable to update structured Q&A. Review the current state and try again.";
 }
@@ -72,6 +140,10 @@ export function requiresAuthoritativeRefresh(error: unknown): boolean {
     "revision_request_superseded",
     "stale_application_version",
     "stale_gig_version",
+    "qa_action_not_allowed",
+    "invalid_message_reference",
+    "pending_selection_blocks_revision",
+    "invalid_revision_response",
   ].includes(errorCode(error));
 }
 
@@ -97,4 +169,8 @@ function retryAfter(error: unknown): number | null {
   if (!(error instanceof Error) || !("retryAfter" in error)) return null;
   const value = Number(error.retryAfter);
   return Number.isFinite(value) && value > 0 ? value : null;
+}
+
+function labelCode(value: string): string {
+  return value.replace(/_/g, " ").replace(/\b\w/g, (letter) => letter.toUpperCase());
 }

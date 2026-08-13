@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Button } from "../components/Button";
+import { GigEditPreviewDialog } from "../components/GigEditPreviewDialog";
 import { GigForm, formFromTerms, snapshotFromGigForm, type GigFormValues } from "../components/GigForm";
-import { PageContainer } from "../components/PageContainer";
+import { GigRouteContextRail } from "../components/GigRouteContextRail";
+import { GigVersionReference } from "../components/GigVersionReference";
 import {
   editManagedGig,
   fetchManagedGig,
@@ -14,6 +16,19 @@ import {
   type MaterialPreview,
   upgradeManagedGig,
 } from "../lib/gigManagement";
+import { latestMaterialChangedFields } from "../lib/gigManagementView";
+
+type PendingPreview = {
+  snapshot: Record<string, unknown>;
+  preview: MaterialPreview;
+  requiresReconfirmation: boolean;
+};
+
+const concurrencyCodes = new Set([
+  "stale_gig_version",
+  "material_change_confirmation_required",
+  "material_change_consequences_changed",
+]);
 
 export function EditGigPage() {
   const { id } = useParams();
@@ -23,24 +38,27 @@ export function EditGigPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
-  const [pending, setPending] = useState<{ snapshot: Record<string, unknown>; preview: MaterialPreview } | null>(null);
-  const [reloadKey, setReloadKey] = useState(0);
+  const [pending, setPending] = useState<PendingPreview | null>(null);
 
   useEffect(() => {
     let mounted = true;
     if (!id) return;
     setIsLoading(true);
+    setErrorMessage(null);
     fetchManagedGig(id)
       .then((next) => { if (mounted) setGig(next); })
       .catch((error) => { if (mounted) setErrorMessage(managementErrorMessage(error)); })
       .finally(() => { if (mounted) setIsLoading(false); });
     return () => { mounted = false; };
-  }, [id, reloadKey]);
+  }, [id]);
 
   async function handleSubmit(values: GigFormValues) {
     if (!id || !gig) return;
-    setIsSubmitting(true); setErrorMessage(null); setSuccessMessage(null); setPending(null);
     const snapshot = snapshotFromGigForm(values);
+    setIsSubmitting(true);
+    setErrorMessage(null);
+    setSuccessMessage(null);
+    setPending(null);
     try {
       if (gig.lifecycle === "draft") {
         await publishManagedGig(id, gig.optimistic_concurrency_token, snapshot);
@@ -52,34 +70,19 @@ export function EditGigPage() {
         navigate("/gigs/manage");
         return;
       }
+
       const preview = await previewManagedGigEdit(id, gig.optimistic_concurrency_token, snapshot);
       if (preview.code === "no_effective_change") {
-        setSuccessMessage("No effective change was detected; no version was created.");
-      } else if (preview.code === "material_change_confirmation_required") {
-        setPending({ snapshot, preview });
+        setSuccessMessage("The server found no effective change, so no immutable version was created.");
+      } else if (preview.is_material || preview.code === "material_change_confirmation_required") {
+        setPending({ snapshot, preview, requiresReconfirmation: false });
       } else {
         await editManagedGig(id, gig.optimistic_concurrency_token, snapshot);
-        setSuccessMessage(preview.is_material ? "Material version created." : "Minor display version created.");
-        setReloadKey((value) => value + 1);
+        await refreshAfterSave("Minor display version created. The applicant-relevant material version was preserved.");
       }
     } catch (error) {
-      setErrorMessage(managementErrorMessage(error));
-    } finally {
-      setIsSubmitting(false);
-    }
-  }
-
-  async function confirmMaterialChange() {
-    if (!id || !gig || !pending) return;
-    setIsSubmitting(true); setErrorMessage(null);
-    try {
-      await editManagedGig(id, gig.optimistic_concurrency_token, pending.snapshot, pending.preview);
-      setPending(null); setSuccessMessage("Material version created and dependent records were updated atomically.");
-      setReloadKey((value) => value + 1);
-    } catch (error) {
-      if (error instanceof GigManagementApiError && ["material_change_confirmation_required", "material_change_consequences_changed"].includes(error.code) && error.detail && typeof error.detail === "object") {
-        setPending({ snapshot: pending.snapshot, preview: error.detail as MaterialPreview });
-        setErrorMessage("Consequences changed while you were reviewing. Review the refreshed counts before confirming again.");
+      if (isConcurrencyError(error)) {
+        await refreshAndRepreview(snapshot, "The gig changed while this draft was open. Review the fresh server preview before confirming.");
       } else {
         setErrorMessage(managementErrorMessage(error));
       }
@@ -88,30 +91,91 @@ export function EditGigPage() {
     }
   }
 
-  const submitLabel = gig?.lifecycle === "draft" ? "Publish Gig" : gig?.upgrade_required ? "Upgrade and Publish" : "Review Changes";
+  async function confirmPreview() {
+    if (!id || !gig || !pending) return;
+    setIsSubmitting(true);
+    setErrorMessage(null);
+    try {
+      await editManagedGig(id, gig.optimistic_concurrency_token, pending.snapshot, pending.preview.is_material ? pending.preview : undefined);
+      setPending(null);
+      await refreshAfterSave(pending.preview.is_material
+        ? "Material version created. Display and applicant-relevant material references advanced atomically."
+        : "Refreshed minor display version created; material terms were preserved.");
+    } catch (error) {
+      if (isConcurrencyError(error)) {
+        await refreshAndRepreview(pending.snapshot, "Consequences changed during confirmation. Review the newly calculated server preview and confirm again.");
+      } else {
+        setErrorMessage(managementErrorMessage(error));
+      }
+    } finally {
+      setIsSubmitting(false);
+    }
+  }
+
+  async function refreshAndRepreview(snapshot: Record<string, unknown>, message: string) {
+    if (!id) return;
+    try {
+      const latest = await fetchManagedGig(id);
+      setGig(latest);
+      const preview = await previewManagedGigEdit(id, latest.optimistic_concurrency_token, snapshot);
+      if (preview.code === "no_effective_change") {
+        setPending(null);
+        setSuccessMessage("The latest authoritative version already contains this draft; no version was created.");
+        setErrorMessage(null);
+        return;
+      }
+      setPending({ snapshot, preview, requiresReconfirmation: true });
+      setErrorMessage(message);
+    } catch (refreshError) {
+      setPending(null);
+      setErrorMessage(`${managementErrorMessage(refreshError)} Your entered draft remains in the form.`);
+    }
+  }
+
+  async function refreshAfterSave(message: string) {
+    if (!id) return;
+    setSuccessMessage(message);
+    try {
+      setGig(await fetchManagedGig(id));
+    } catch (error) {
+      setErrorMessage(`${managementErrorMessage(error)} The save completed, but the version reference could not be refreshed.`);
+    }
+  }
+
+  const submitLabel = gig?.lifecycle === "draft" ? "Publish gig" : gig?.upgrade_required ? "Upgrade & publish" : "Preview changes";
+  const title = gig && typeof gig.terms.title === "string" ? gig.terms.title : "Owned gig";
+  const materialFields = gig ? latestMaterialChangedFields(gig.latest_material_change_summary) : [];
+
   return (
-    <PageContainer>
-      <div className="rounded-lg border border-line bg-white p-8 shadow-soft">
-        <div className="flex flex-col gap-4 border-b border-line pb-6 sm:flex-row sm:items-center sm:justify-between">
-          <div><p className="text-sm font-semibold uppercase tracking-wide text-accent">Client Gig</p><h1 className="mt-3 text-3xl font-bold tracking-normal text-ink">Version-aware Gig Editor</h1></div>
-          <div className="flex gap-3"><Button to="/gigs/manage" variant="secondary">Manage Gigs</Button><Button to="/dashboard/client" variant="secondary">Dashboard</Button></div>
-        </div>
-        {isLoading ? <p className="mt-8 text-sm font-medium text-muted">Loading gig...</p> : null}
-        {errorMessage ? <p className="mt-8 rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-700">{errorMessage}</p> : null}
-        {successMessage ? <p className="mt-8 rounded-md border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-700">{successMessage}</p> : null}
-        {gig?.upgrade_required ? <p className="mt-8 rounded-md border border-amber-200 bg-amber-50 px-4 py-3 text-sm font-medium text-amber-800">Upgrade required: supply complete supported terms. Existing values are not invented.</p> : null}
-        {pending ? (
-          <section className="mt-8 rounded-lg border border-amber-300 bg-amber-50 p-6">
-            <h2 className="text-lg font-bold text-ink">Confirm material consequences</h2>
-            <p className="mt-2 text-sm text-muted">Changed fields: {pending.preview.changed_fields.join(", ")}</p>
-            <p className="mt-2 text-sm text-muted">Active applications requiring a response: {pending.preview.affected_application_count}</p>
-            <p className="mt-2 text-sm text-muted">Selection request: {pending.preview.selection_request_effect.replace(/_/g, " ")}</p>
-            <div className="mt-5 flex gap-3"><Button type="button" onClick={confirmMaterialChange} disabled={isSubmitting}>Confirm Material Change</Button><Button type="button" variant="secondary" onClick={() => setPending(null)}>Keep Editing</Button></div>
-          </section>
-        ) : null}
-        {!isLoading && gig ? <GigForm key={`${gig.current_display_version_id}-${reloadKey}`} initialValues={formFromTerms(gig.terms)} isSubmitting={isSubmitting} submitLabel={submitLabel} submittingLabel="Saving..." onSubmit={handleSubmit} /> : null}
-        {!isLoading && !gig && !errorMessage ? <Button onClick={() => navigate("/gigs/manage")}>Back to Manage Gigs</Button> : null}
-      </div>
-    </PageContainer>
+    <section className="stage-three-page gig-authoring-page gig-editor-page" aria-busy={isLoading}>
+      {gig ? <GigRouteContextRail title={title} state={gig.product_state} phase="Version-aware editing" returnLabel="Return to managed gigs" returnTo="/gigs/manage" /> : null}
+      <header className="stage-three-editorial-header">
+        <div><p>Client operations / Immutable terms</p><h1>{gig?.lifecycle === "draft" ? "Complete Draft" : gig?.upgrade_required ? "Upgrade Legacy Terms" : "Edit Gig"}</h1></div>
+        <div className="stage-three-editorial-context"><span>Candidate → preview → version</span><p>The complete candidate is previewed against the current display version. Material consequences always require explicit confirmation.</p><Button to="/gigs/manage" variant="secondary">Manage gigs</Button></div>
+      </header>
+
+      {isLoading ? <div className="stage-three-state-panel" role="status"><span>Gig editor</span><h2>Loading current terms</h2><p>Retrieving the owner DTO and concurrency reference…</p></div> : null}
+      {errorMessage ? <div className="stage-three-notice is-error" role="alert"><strong>Controlled edit conflict</strong><p>{errorMessage}</p></div> : null}
+      {successMessage ? <div className="stage-three-notice is-success" role="status"><strong>Version authority updated</strong><p>{successMessage}</p></div> : null}
+
+      {!isLoading && gig ? (
+        <>
+          <GigVersionReference displayVersion={gig.current_display_version_number} materialVersion={gig.current_material_version_number} contractVersion={gig.terms_contract_version} latestChangedFields={materialFields} />
+          {gig.upgrade_required ? <div className="stage-three-notice is-warning" role="status"><strong>Manual contract-zero upgrade</strong><p>Complete every supported term. Existing values and historical dependencies will not be invented or rebound.</p></div> : null}
+          <div className="gig-authoring-board">
+            <header><span>{gig.lifecycle === "draft" ? "Draft publication" : "Complete candidate"}</span><h2>{title}</h2><p>{gig.lifecycle === "draft" ? "Publishing creates the first supported immutable terms version." : "Submitting does not write immediately; the server first classifies exact changed fields and consequences."}</p></header>
+            <GigForm initialValues={formFromTerms(gig.terms)} isSubmitting={isSubmitting} submitLabel={submitLabel} submittingLabel="Checking authority…" onSubmit={handleSubmit} />
+          </div>
+        </>
+      ) : null}
+
+      {!isLoading && !gig && !errorMessage ? <div className="stage-three-state-panel"><span>Owner record</span><h2>Gig not available</h2><p>The owned gig could not be loaded.</p><Button onClick={() => navigate("/gigs/manage")}>Back to Manage Gigs</Button></div> : null}
+
+      {pending ? <GigEditPreviewDialog preview={pending.preview} requiresReconfirmation={pending.requiresReconfirmation} isSubmitting={isSubmitting} onConfirm={confirmPreview} onDismiss={() => setPending(null)} /> : null}
+    </section>
   );
+}
+
+function isConcurrencyError(error: unknown): error is GigManagementApiError {
+  return error instanceof GigManagementApiError && concurrencyCodes.has(error.code);
 }

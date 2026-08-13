@@ -39,7 +39,7 @@ export function ClientDashboardPage() {
       {dashboard.data ? (
         <>
           <DashboardSection title="Summary" description="Complete current totals from authoritative workflow state.">
-            <dl className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            <dl className="dashboard-summary-grid is-client">
               <DashboardSummaryCard label="Active owned gigs" value={dashboard.data.summary.active_owned_gigs} />
               <DashboardSummaryCard label="Active applications" value={dashboard.data.summary.active_applications} />
               <DashboardSummaryCard label="Under review" value={dashboard.data.summary.under_review_applications} />
@@ -63,23 +63,24 @@ export function ClientDashboardPage() {
             action={<Button to="/gigs/manage" variant="secondary">Manage gigs</Button>}
           >
             {dashboard.data.gig_review_overview.items.length === 0 ? (
-              <p className="text-sm text-muted">No applicant-review activity yet.</p>
+              <p className="dashboard-empty-row">No applicant-review activity yet.</p>
             ) : (
-              <ul className="divide-y divide-line">
-                {dashboard.data.gig_review_overview.items.map((gig) => (
-                  <li key={gig.gig_id} className="py-4 first:pt-0 last:pb-0">
-                    <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+              <ul className="dashboard-record-list">
+                {dashboard.data.gig_review_overview.items.map((gig, index) => (
+                  <li key={gig.gig_id} className="dashboard-record-row">
+                    <span className="dashboard-row-index" aria-hidden="true">{String(index + 1).padStart(2, "0")}</span>
+                    <div className="dashboard-row-content">
                       <div>
-                        <div className="flex flex-wrap gap-2">
+                        <div className="dashboard-status-line">
                           <WorkflowStatusBadge status={gig.product_state} tone={gig.operational_state === "paused" ? "attention" : "active"} />
                           {gig.has_effective_selection_request ? <WorkflowStatusBadge status="Selection pending" tone="attention" /> : null}
                         </div>
-                        <h3 className="mt-2 font-semibold text-ink">{gig.gig_title}</h3>
-                        <p className="mt-1 text-xs text-muted">
+                        <h3>{gig.gig_title}</h3>
+                        <p className="dashboard-row-meta">
                           {gig.under_review_count} Under Review · {gig.advanced_count} Advanced · {gig.internal_shortlist_count} Shortlisted · {gig.client_qa_action_count} Q&amp;A responses
                         </p>
                       </div>
-                      <div className="flex flex-wrap gap-2">
+                      <div className="dashboard-row-actions">
                         <Button to={`/gigs/${encodeURIComponent(gig.gig_id)}/applicants`} variant="secondary">Review applicants</Button>
                         <Button to="/gigs/manage" variant="secondary">Manage gig</Button>
                       </div>
@@ -92,21 +93,25 @@ export function ClientDashboardPage() {
 
           <DashboardSection title="Pending Selection Requests" description="Only currently effective, unexpired requests are shown.">
             {dashboard.data.pending_selection_requests.items.length === 0 ? (
-              <p className="text-sm text-muted">No effective selection requests.</p>
+              <p className="dashboard-empty-row">No effective selection requests.</p>
             ) : (
-              <ul className="grid gap-3 md:grid-cols-2">
-                {dashboard.data.pending_selection_requests.items.map((selection) => (
-                  <li key={selection.selection_request_id} className="rounded-md border border-line p-4">
-                    <WorkflowStatusBadge status="Awaiting freelancer response" tone="attention" />
-                    <h3 className="mt-3 font-semibold text-ink">{selection.gig_title}</h3>
-                    <p className="mt-1 text-xs text-muted">Expires {formatDashboardDate(selection.expires_at)}</p>
-                    <Button
-                      className="mt-4 w-full"
-                      to={`/gigs/${encodeURIComponent(selection.gig_id)}/applicants/${encodeURIComponent(selection.application_id)}`}
-                      variant="secondary"
-                    >
-                      Open selection context
-                    </Button>
+              <ul className="dashboard-record-list">
+                {dashboard.data.pending_selection_requests.items.map((selection, index) => (
+                  <li key={selection.selection_request_id} className="dashboard-record-row is-attention">
+                    <span className="dashboard-row-index" aria-hidden="true">{String(index + 1).padStart(2, "0")}</span>
+                    <div className="dashboard-row-content">
+                      <div>
+                        <WorkflowStatusBadge status="Awaiting freelancer response" tone="attention" />
+                        <h3>{selection.gig_title}</h3>
+                        <p className="dashboard-row-meta">Expires {formatDashboardDate(selection.expires_at)}</p>
+                      </div>
+                      <Button
+                        to={`/gigs/${encodeURIComponent(selection.gig_id)}/applicants/${encodeURIComponent(selection.application_id)}`}
+                        variant="secondary"
+                      >
+                        Open selection context
+                      </Button>
+                    </div>
                   </li>
                 ))}
               </ul>
@@ -119,17 +124,22 @@ export function ClientDashboardPage() {
             action={<Button to="/engagements" variant="secondary">View all engagements</Button>}
           >
             {dashboard.data.active_engagements.items.length === 0 ? (
-              <p className="text-sm text-muted">No active engagements.</p>
+              <p className="dashboard-empty-row">No active engagements.</p>
             ) : (
-              <ul className="grid gap-3 md:grid-cols-2">
-                {dashboard.data.active_engagements.items.map((engagement) => (
-                  <li key={engagement.engagement_id} className="rounded-md border border-line p-4">
-                    <WorkflowStatusBadge status={engagement.status} tone={engagement.response_required ? "attention" : "active"} />
-                    <h3 className="mt-3 font-semibold text-ink">{engagement.gig_title}</h3>
-                    <p className="mt-1 text-xs text-muted">Activity {formatDashboardDate(engagement.latest_activity_at)}</p>
-                    <Button className="mt-4 w-full" to={`/engagements/${encodeURIComponent(engagement.engagement_id)}`} variant="secondary">
-                      Open workspace
-                    </Button>
+              <ul className="dashboard-record-list">
+                {dashboard.data.active_engagements.items.map((engagement, index) => (
+                  <li key={engagement.engagement_id} className="dashboard-record-row">
+                    <span className="dashboard-row-index" aria-hidden="true">{String(index + 1).padStart(2, "0")}</span>
+                    <div className="dashboard-row-content">
+                      <div>
+                        <WorkflowStatusBadge status={engagement.status} tone={engagement.response_required ? "attention" : "active"} />
+                        <h3>{engagement.gig_title}</h3>
+                        <p className="dashboard-row-meta">Activity {formatDashboardDate(engagement.latest_activity_at)}</p>
+                      </div>
+                      <Button to={`/engagements/${encodeURIComponent(engagement.engagement_id)}`} variant="secondary">
+                        Open workspace
+                      </Button>
+                    </div>
                   </li>
                 ))}
               </ul>

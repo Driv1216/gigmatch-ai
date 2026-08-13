@@ -8,24 +8,28 @@ type StrategyComparisonTableProps = {
 
 export function StrategyComparisonTable({ query }: StrategyComparisonTableProps) {
   return (
-    <div className="overflow-x-auto rounded-lg border border-line">
-      <table className="min-w-full divide-y divide-line text-left text-sm">
-        <thead className="bg-slate-50 text-xs uppercase tracking-wide text-muted">
+    <section className="admin-query-evidence" aria-labelledby={`${query.query_id}-strategy-title`}>
+      <header><span>METHOD / STRATEGY COMPARISON</span><h4 id={`${query.query_id}-strategy-title`}>Backend strategy results</h4></header>
+      <div className="admin-evaluation-table-wrap">
+      <table className="admin-evaluation-table">
+        <caption>Keyword, semantic, and hybrid evidence for {query.query_id}</caption>
+        <thead>
           <tr>
-            <th className="px-4 py-3 font-semibold">Strategy</th>
-            <th className="px-4 py-3 font-semibold">Ranked candidates</th>
-            <th className="px-4 py-3 font-semibold">Available metrics</th>
-            <th className="px-4 py-3 font-semibold">Unavailable metrics</th>
-            <th className="px-4 py-3 font-semibold">Top result</th>
+            <th>Strategy</th>
+            <th>Ranked candidates</th>
+            <th>Available metrics</th>
+            <th>Unavailable metrics</th>
+            <th>Top result</th>
           </tr>
         </thead>
-        <tbody className="divide-y divide-line bg-white">
+        <tbody>
           {EVALUATION_STRATEGIES.map((strategy) => (
             <StrategyRow key={strategy} strategy={strategy} query={query} />
           ))}
         </tbody>
       </table>
-    </div>
+      </div>
+    </section>
   );
 }
 
@@ -34,22 +38,24 @@ function StrategyRow({ strategy, query }: { strategy: EvaluationStrategy; query:
   const availableMetrics = result?.metrics.filter((metric) => metric.is_available) ?? [];
   const unavailableMetrics = result?.metrics.filter((metric) => !metric.is_available) ?? [];
   const topCandidate = result?.ranked_candidates.find((candidate) => candidate.rank === 1);
+  const availableSummary = result
+    ? availableMetrics.length > 0
+      ? availableMetrics.map((metric) => `${formatMetricName(metric)} ${formatMetricValue(metric.value)}`).join(", ")
+      : "None returned"
+    : "Unavailable";
+  const unavailableSummary = result
+    ? unavailableMetrics.length > 0
+      ? unavailableMetrics.map((metric) => `${formatMetricName(metric)}: ${metric.reason ?? "Unavailable"}`).join(", ")
+      : "None reported"
+    : "Unavailable";
 
   return (
     <tr>
-      <td className="px-4 py-3 font-medium text-ink">{formatStrategyLabel(strategy)}</td>
-      <td className="px-4 py-3 tabular-nums text-muted">{result?.ranked_candidate_ids.length ?? 0}</td>
-      <td className="px-4 py-3 text-muted">
-        {availableMetrics.length > 0
-          ? availableMetrics.map((metric) => `${formatMetricName(metric)} ${formatMetricValue(metric.value)}`).join(", ")
-          : "None"}
-      </td>
-      <td className="px-4 py-3 text-muted">
-        {unavailableMetrics.length > 0
-          ? unavailableMetrics.map((metric) => `${formatMetricName(metric)}: ${metric.reason ?? "Unavailable"}`).join(", ")
-          : "None"}
-      </td>
-      <td className="px-4 py-3 text-muted">
+      <th scope="row">{formatStrategyLabel(strategy)}</th>
+      <td className="is-number">{result ? result.ranked_candidate_ids.length : "Unavailable"}</td>
+      <td>{availableSummary}</td>
+      <td className="is-reason">{unavailableSummary}</td>
+      <td>
         {topCandidate ? `${topCandidate.candidate_id} (${formatMetricValue(topCandidate.score)})` : "Unavailable"}
       </td>
     </tr>

@@ -35,10 +35,12 @@ begin
 end;
 $$;
 
+drop trigger if exists set_user_profiles_updated_at on public.user_profiles;
 create trigger set_user_profiles_updated_at
 before update on public.user_profiles
 for each row execute function public.set_updated_at();
 
+drop trigger if exists prevent_user_profile_role_change on public.user_profiles;
 create trigger prevent_user_profile_role_change
 before update on public.user_profiles
 for each row execute function public.prevent_user_profile_role_change();
@@ -78,10 +80,12 @@ create table if not exists public.client_profiles (
   updated_at timestamptz not null default now()
 );
 
+drop trigger if exists set_freelancer_profiles_updated_at on public.freelancer_profiles;
 create trigger set_freelancer_profiles_updated_at
 before update on public.freelancer_profiles
 for each row execute function public.set_updated_at();
 
+drop trigger if exists set_client_profiles_updated_at on public.client_profiles;
 create trigger set_client_profiles_updated_at
 before update on public.client_profiles
 for each row execute function public.set_updated_at();
@@ -109,12 +113,13 @@ create table if not exists public.gigs (
   )
 );
 
-create index gigs_client_id_idx on public.gigs (client_id);
-create index gigs_status_idx on public.gigs (status);
-create index gigs_tech_category_idx on public.gigs (tech_category);
-create index gigs_required_skills_gin_idx on public.gigs using gin (required_skills);
-create index gigs_preferred_skills_gin_idx on public.gigs using gin (preferred_skills);
+create index if not exists gigs_client_id_idx on public.gigs (client_id);
+create index if not exists gigs_status_idx on public.gigs (status);
+create index if not exists gigs_tech_category_idx on public.gigs (tech_category);
+create index if not exists gigs_required_skills_gin_idx on public.gigs using gin (required_skills);
+create index if not exists gigs_preferred_skills_gin_idx on public.gigs using gin (preferred_skills);
 
+drop trigger if exists set_gigs_updated_at on public.gigs;
 create trigger set_gigs_updated_at
 before update on public.gigs
 for each row execute function public.set_updated_at();
@@ -158,19 +163,21 @@ create table if not exists public.gig_parses (
   updated_at timestamptz not null default now()
 );
 
+drop trigger if exists set_resume_parses_updated_at on public.resume_parses;
 create trigger set_resume_parses_updated_at
 before update on public.resume_parses
 for each row execute function public.set_updated_at();
 
+drop trigger if exists set_gig_parses_updated_at on public.gig_parses;
 create trigger set_gig_parses_updated_at
 before update on public.gig_parses
 for each row execute function public.set_updated_at();
 
-create index resume_parses_skills_gin_idx on public.resume_parses using gin (skills);
-create index resume_parses_categories_gin_idx on public.resume_parses using gin (categories);
-create index gig_parses_required_skills_gin_idx on public.gig_parses using gin (required_skills);
-create index gig_parses_preferred_skills_gin_idx on public.gig_parses using gin (preferred_skills);
-create index gig_parses_categories_gin_idx on public.gig_parses using gin (categories);
+create index if not exists resume_parses_skills_gin_idx on public.resume_parses using gin (skills);
+create index if not exists resume_parses_categories_gin_idx on public.resume_parses using gin (categories);
+create index if not exists gig_parses_required_skills_gin_idx on public.gig_parses using gin (required_skills);
+create index if not exists gig_parses_preferred_skills_gin_idx on public.gig_parses using gin (preferred_skills);
+create index if not exists gig_parses_categories_gin_idx on public.gig_parses using gin (categories);
 
 alter table public.user_profiles enable row level security;
 alter table public.freelancer_profiles enable row level security;
@@ -178,6 +185,30 @@ alter table public.client_profiles enable row level security;
 alter table public.gigs enable row level security;
 alter table public.resume_parses enable row level security;
 alter table public.gig_parses enable row level security;
+
+drop policy if exists "Users can select their own profile" on public.user_profiles;
+drop policy if exists "Users can insert their own non-admin profile" on public.user_profiles;
+drop policy if exists "Users can update their own non-admin profile" on public.user_profiles;
+drop policy if exists "Freelancers can select their own freelancer profile" on public.freelancer_profiles;
+drop policy if exists "Freelancers can insert their own freelancer profile" on public.freelancer_profiles;
+drop policy if exists "Freelancers can update their own freelancer profile" on public.freelancer_profiles;
+drop policy if exists "Admins can select all freelancer profiles" on public.freelancer_profiles;
+drop policy if exists "Clients can select their own client profile" on public.client_profiles;
+drop policy if exists "Clients can insert their own client profile" on public.client_profiles;
+drop policy if exists "Clients can update their own client profile" on public.client_profiles;
+drop policy if exists "Admins can select all client profiles" on public.client_profiles;
+drop policy if exists "Clients can select their own gigs" on public.gigs;
+drop policy if exists "Clients can insert their own gigs" on public.gigs;
+drop policy if exists "Clients can update their own gigs" on public.gigs;
+drop policy if exists "Admins can select all gigs" on public.gigs;
+drop policy if exists "Freelancers can select their own resume parse" on public.resume_parses;
+drop policy if exists "Freelancers can insert their own resume parse" on public.resume_parses;
+drop policy if exists "Freelancers can update their own resume parse" on public.resume_parses;
+drop policy if exists "Freelancers can delete their own resume parse" on public.resume_parses;
+drop policy if exists "Clients can select parses for their own gigs" on public.gig_parses;
+drop policy if exists "Clients can insert parses for their own gigs" on public.gig_parses;
+drop policy if exists "Clients can update parses for their own gigs" on public.gig_parses;
+drop policy if exists "Clients can delete parses for their own gigs" on public.gig_parses;
 
 create policy "Users can select their own profile" on public.user_profiles
 for select to authenticated using ((select auth.uid()) = id);

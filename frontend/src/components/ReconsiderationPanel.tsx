@@ -1,95 +1,158 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { Link } from "react-router-dom";
 import { Button } from "./Button";
+import { ReconsiderationActionDialog, type ReconsiderationDialogAction } from "./ReconsiderationActionDialog";
 import {
   cancelReconsiderationInvitation,
   createReconsiderationInvitation,
+  EngagementApiError,
   fetchReconsiderationContext,
   fetchReconsiderationInvitation,
   respondToReconsideration,
+  type ReconsiderationContext,
   type ReconsiderationInvitation,
 } from "../lib/engagements";
-import { isRecord } from "../lib/engagementContracts";
+import {
+  engagementErrorMessage,
+  EngagementOperationRegistry,
+  humanize,
+  reconsiderationStatusConsequence,
+  structuredValue,
+  type EngagementOperation,
+} from "../lib/engagementView";
 
-type Props = { applicationId: string; onChanged?: () => void };
+type Props = { applicationId: string; authorityRefreshKey?: number; onChanged?: () => void | Promise<void> };
 
-export function ReconsiderationPanel({ applicationId, onChanged }: Props) {
-  const [context, setContext] = useState<Record<string, unknown> | null>(null);
+export function ReconsiderationPanel({ applicationId, authorityRefreshKey = 0, onChanged }: Props) {
+  const [context, setContext] = useState<ReconsiderationContext | null>(null);
   const [invitation, setInvitation] = useState<ReconsiderationInvitation | null>(null);
-  const [reason, setReason] = useState("failed_engagement_reopened");
-  const [explanation, setExplanation] = useState("");
+  const [loading, setLoading] = useState(true);
   const [working, setWorking] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [activeAction, setActiveAction] = useState<ReconsiderationDialogAction | null>(null);
+  const authorityRefreshRef = useRef(authorityRefreshKey);
+  const loadSequenceRef = useRef(0);
+  const operationsRef = useRef(new EngagementOperationRegistry(() => crypto.randomUUID()));
+
   const load = useCallback(async () => {
+    const sequence = ++loadSequenceRef.current;
     const next = await fetchReconsiderationContext(applicationId);
-    const invitationId = typeof next.pending_invitation_id === "string"
-      ? next.pending_invitation_id : null;
+    const nextInvitation = next.pending_invitation_id
+      ? await fetchReconsiderationInvitation(next.pending_invitation_id)
+      : null;
+    if (sequence !== loadSequenceRef.current) return;
     setContext(next);
-    setInvitation(invitationId ? await fetchReconsiderationInvitation(invitationId) : null);
+    setInvitation((current) => nextInvitation ?? (current?.status !== "pending" ? current : null));
   }, [applicationId]);
+
   useEffect(() => {
     let active = true;
-    load().catch((value: unknown) => {
-      if (active) setError(value instanceof Error ? value.message : "Unable to load reconsideration state.");
-    });
-    return () => { active = false; };
+    operationsRef.current.reset();
+    setContext(null); setInvitation(null); setError(null); setActiveAction(null); setLoading(true);
+    load().catch((value: unknown) => { if (active) setError(engagementErrorMessage(value)); })
+      .finally(() => { if (active) setLoading(false); });
+    return () => { active = false; loadSequenceRef.current += 1; };
   }, [load]);
 
-  async function run(action: () => Promise<unknown>) {
+  useEffect(() => {
+    if (authorityRefreshRef.current === authorityRefreshKey) return;
+    authorityRefreshRef.current = authorityRefreshKey;
+    void load().catch((value: unknown) => setError(engagementErrorMessage(value)));
+  }, [authorityRefreshKey, load]);
+
+  async function run(input: { reasonCode?: string; explanation?: string }): Promise<boolean> {
+    if (!context || !activeAction) return false;
+    const operation = operationFor(activeAction);
+    const aggregateId = invitation?.invitation_id ?? applicationId;
+    const meaningfulInput = activeAction === "create" ? input : {};
+    const requestId = operationsRef.current.get(operation, aggregateId, meaningfulInput);
     setWorking(true); setError(null);
-    try { await action(); await load(); onChanged?.(); }
-    catch (value) { setError(value instanceof Error ? value.message : "Unable to update invitation."); await load().catch(() => undefined); }
-    finally { setWorking(false); }
+    try {
+      let result: ReconsiderationInvitation;
+      if (activeAction === "create") {
+        if (!context.action_token) throw new Error("Reconsideration invitation authority is unavailable.");
+        result = await createReconsiderationInvitation(applicationId, { action_token: context.action_token, request_id: requestId, reason_code: input.reasonCode, explanation: input.explanation });
+      } else {
+        if (!invitation) throw new Error("Reconsideration invitation is unavailable.");
+        if (activeAction === "cancel") result = await cancelReconsiderationInvitation(invitation.invitation_id, { action_token: invitation.action_token, request_id: requestId });
+        else result = await respondToReconsideration(invitation.invitation_id, activeAction === "reaffirm" ? "reaffirm" : "decline", { action_token: invitation.action_token, request_id: requestId });
+      }
+      operationsRef.current.settle(operation, aggregateId, meaningfulInput);
+      setInvitation(result);
+      await load();
+      await onChanged?.();
+      return true;
+    } catch (value) {
+      if (value instanceof EngagementApiError && value.status === 409) {
+        operationsRef.current.settle(operation, aggregateId, meaningfulInput);
+        await load().catch(() => undefined);
+        await onChanged?.();
+        setActiveAction(null);
+      }
+      setError(engagementErrorMessage(value));
+      return false;
+    } finally { setWorking(false); }
   }
 
-  if (!context) return null;
-  const viewerRole = String(context.viewer_role ?? "");
-  const eligible = context.eligible === true;
-  const createToken = typeof context.action_token === "string" ? context.action_token : null;
-  const blockers = Array.isArray(context.blockers) ? context.blockers.map(String) : [];
+  if (loading && !context) return <section className="reconsideration-board" aria-busy="true"><header><span>Stage 8 / Reconsideration</span><h2>Loading recovery authority</h2><p>Checking the cancelled-engagement reopening chain and current application binding…</p></header></section>;
+  if (!context) return <section className="reconsideration-board"><header><span>Stage 8 / Reconsideration</span><h2>Recovery authority unavailable</h2><p>{error ?? "No reconsideration context is available."}</p></header></section>;
+
+  const blockers = context.blockers;
   return (
-    <section className="rounded-lg border border-line bg-white p-6">
-      <p className="text-xs font-semibold uppercase tracking-wide text-accent">Failed-engagement recovery</p>
-      <h2 className="mt-2 text-xl font-bold text-ink">Reconsideration invitation</h2>
-      <p className="mt-2 text-sm leading-6 text-muted">Prior application history remains unchanged. Reopening requires freelancer consent and a fresh immutable proposal version.</p>
-      {error ? <p role="alert" className="mt-4 text-sm text-red-700">{error}</p> : null}
-      {invitation ? (
-        <div className="mt-5 rounded-md border border-line p-4">
-          <p className="font-semibold text-ink">{label(invitation.status)}</p>
-          <p className="mt-1 text-sm text-muted">{label(invitation.reason_code)}{invitation.reason_explanation ? ` · ${invitation.reason_explanation}` : ""}</p>
-          {invitation.status === "pending" && viewerRole === "client" && invitation.allowed_actions.includes("cancel") ? (
-            <div className="mt-4"><Button variant="secondary" disabled={working} onClick={() => { if (window.confirm("Cancel this pending reconsideration invitation?")) void run(() => cancelReconsiderationInvitation(invitation.invitation_id, { action_token: invitation.action_token, request_id: crypto.randomUUID() })); }}>Cancel invitation</Button></div>
-          ) : null}
-          {invitation.status === "pending" && viewerRole === "freelancer" ? (
-            <div className="mt-4 space-y-4">
-              <TermsComparison invitation={invitation} />
-              <div className="flex flex-wrap gap-3">
-                {invitation.allowed_actions.includes("reaffirm") ? <Button disabled={working} onClick={() => void run(() => respondToReconsideration(invitation.invitation_id, "reaffirm", { action_token: invitation.action_token, request_id: crypto.randomUUID() }))}>Reaffirm and Reopen</Button> : null}
-                {invitation.allowed_actions.includes("submit_update") ? <Button variant="secondary" to={`/applications/${applicationId}/edit?mode=reconsideration&invitationId=${invitation.invitation_id}`}>Submit Updated Proposal</Button> : null}
-                {invitation.allowed_actions.includes("decline") ? <Button variant="secondary" disabled={working} onClick={() => { if (window.confirm("Decline this invitation? Your application stage and history will remain unchanged.")) void run(() => respondToReconsideration(invitation.invitation_id, "decline", { action_token: invitation.action_token, request_id: crypto.randomUUID() })); }}>Decline</Button> : null}
-              </div>
-            </div>
-          ) : null}
+    <section className="reconsideration-board" aria-labelledby={`reconsideration-title-${applicationId}`}>
+      <header><span>Stage 8 / Failed-engagement recovery</span><h2 id={`reconsideration-title-${applicationId}`}>Reconsideration</h2><p>A distinct consent workflow bound to one cancelled engagement and its one-time Gig Reopening. It is not Reopen Application, intake reopening, or selection revised terms.</p></header>
+      {error ? <div className="reconsideration-notice is-error" role="alert"><strong>Reconsideration action stopped</strong><p>{error}</p></div> : null}
+
+      {invitation ? <InvitationRecord invitation={invitation} working={working} onAction={setActiveAction} applicationId={applicationId} /> : (
+        <div className="reconsideration-availability">
+          <div><span>Current application</span><strong>{humanize(String(context.viewer_role))}</strong><p>{context.eligible ? "Server authority permits an invitation for this application." : "No invitation is currently authorized."}</p></div>
+          {context.viewer_role === "client" && context.eligible && context.action_token ? <Button type="button" disabled={working} onClick={() => setActiveAction("create")}>Send Reconsideration Invitation</Button> : null}
         </div>
-      ) : viewerRole === "client" && eligible && createToken ? (
-        <div className="mt-5">
-          <label className="text-sm font-semibold text-ink">Invitation reason
-            <select value={reason} onChange={(event) => setReason(event.target.value)} className="mt-2 block w-full max-w-md rounded-md border border-line px-3 py-2">
-              {["failed_engagement_reopened", "client_reconsideration", "freelancer_invited_back", "other"].map((value) => <option key={value} value={value}>{label(value)}</option>)}
-            </select>
-          </label>
-          <textarea value={explanation} onChange={(event) => setExplanation(event.target.value)} className="mt-3 block w-full max-w-2xl rounded-md border border-line px-3 py-2" placeholder={reason === "other" ? "Explanation required" : "Optional explanation"} />
-          <div className="mt-3"><Button disabled={working || (reason === "other" && !explanation.trim())} onClick={() => void run(() => createReconsiderationInvitation(applicationId, { action_token: createToken, request_id: crypto.randomUUID(), reason_code: reason, explanation: explanation.trim() || undefined }))}>Send reconsideration invitation</Button></div>
-        </div>
-      ) : viewerRole === "client" ? (
-        <p className="mt-4 text-sm text-muted">{blockers.includes("failed_engagement_winner_ineligible") ? "The cancelled engagement’s freelancer is not eligible for reconsideration on this gig." : blockers.length ? blockers.map(label).join(" · ") : "No reconsideration action is available."}</p>
-      ) : null}
+      )}
+
+      {!invitation && blockers.length ? <div className="reconsideration-blockers"><strong>Current authority</strong>{blockers.map((blocker) => <p key={blocker}>{blockerMessage(blocker)}</p>)}</div> : null}
+
+      <footer className="reconsideration-boundary-note"><strong>Immutable-history boundary</strong><p>Sending, cancelling, or declining creates no application version. Only Reaffirm and Reopen or a successful complete updated proposal creates a fresh version with origin Reconsideration.</p></footer>
+
+      {activeAction ? <ReconsiderationActionDialog action={activeAction} gigTitle={invitation?.gig.title ?? "Current gig"} working={working} onConfirm={run} onDismiss={() => { if (!working) setActiveAction(null); }} /> : null}
     </section>
   );
 }
 
-function TermsComparison({ invitation }: { invitation: ReconsiderationInvitation }) {
-  const proposal = isRecord(invitation.previous_proposal.proposal)
-    ? invitation.previous_proposal.proposal : {};
-  return <div className="grid gap-3 text-sm md:grid-cols-2"><div className="rounded-md bg-slate-50 p-3"><p className="font-semibold text-ink">Previous proposal</p><p className="mt-1 text-muted">{label(String(proposal.payment_structure ?? proposal.mode ?? "proposal"))}</p></div><div className="rounded-md bg-slate-50 p-3"><p className="font-semibold text-ink">Current gig terms</p><p className="mt-1 text-muted">{label(String(invitation.current_gig_terms.payment_structure ?? "current terms"))}</p></div></div>;
+function InvitationRecord({ invitation, working, onAction, applicationId }: { invitation: ReconsiderationInvitation; working: boolean; onAction: (action: ReconsiderationDialogAction) => void; applicationId: string }) {
+  return (
+    <article className="reconsideration-record">
+      <div className="reconsideration-source-chain"><span>Source</span><Link to={`/engagements/${invitation.source_engagement_id}`}>Cancelled engagement</Link><b>→</b><strong>Gig Reopened · Intake Closed</strong><b>→</b><strong>Reconsideration invitation</strong></div>
+      <header><div><span>Invitation status</span><h3>{humanize(invitation.status)}</h3><p>{reconsiderationStatusConsequence(invitation.status)}</p></div><div><span>Structured reason</span><strong>{humanize(invitation.reason_code)}</strong>{invitation.reason_explanation ? <p>{invitation.reason_explanation}</p> : null}<time dateTime={invitation.created_at}>Sent {formatDate(invitation.created_at)}</time></div></header>
+      <div className="reconsideration-comparison"><Terms title="Previous complete proposal" values={invitation.previous_proposal} /><Terms title="Current material gig terms" values={invitation.current_gig_terms} /></div>
+      {invitation.status === "pending" ? <div className="reconsideration-actions">
+        {invitation.allowed_actions.includes("cancel") ? <Button type="button" variant="secondary" disabled={working} onClick={() => onAction("cancel")}>Cancel Invitation</Button> : null}
+        {invitation.allowed_actions.includes("reaffirm") ? <Button type="button" disabled={working} onClick={() => onAction("reaffirm")}>Reaffirm and Reopen</Button> : null}
+        {invitation.allowed_actions.includes("submit_update") ? <Button variant="secondary" to={`/applications/${applicationId}/edit?mode=reconsideration&invitationId=${invitation.invitation_id}`}>Submit Updated Proposal</Button> : null}
+        {invitation.allowed_actions.includes("decline") ? <Button type="button" variant="secondary" disabled={working} onClick={() => onAction("decline")}>Decline Invitation</Button> : null}
+      </div> : null}
+      {invitation.status === "pending" && invitation.allowed_actions.length === 0 ? <p className="reconsideration-paused">This pending invitation is preserved, but current gig/application authority makes every response unavailable.</p> : null}
+    </article>
+  );
 }
-const label = (value: string) => value.replace(/_/g, " ").replace(/\b\w/g, (letter) => letter.toUpperCase());
+
+function Terms({ title, values }: { title: string; values: Record<string, unknown> }) {
+  return <section><h4>{title}</h4><dl>{Object.entries(values).map(([key, value]) => <div key={key}><dt>{humanize(key)}</dt><dd>{structuredValue(value)}</dd></div>)}</dl></section>;
+}
+
+function operationFor(action: ReconsiderationDialogAction): EngagementOperation {
+  return { create: "create_reconsideration", cancel: "cancel_reconsideration", reaffirm: "reaffirm_reconsideration", decline: "decline_reconsideration" }[action] as EngagementOperation;
+}
+
+function blockerMessage(code: string): string {
+  return {
+    gig_not_reopened_after_cancellation: "The gig has not been reopened through failed-engagement Gig Reopening.",
+    gig_not_active: "The gig is not currently active for controlled recovery.",
+    engagement_already_exists: "A current non-cancelled engagement already owns this gig.",
+    application_not_eligible: "Only a previous Not Selected or Withdrawn application is eligible.",
+    failed_engagement_winner_ineligible: "The cancelled engagement’s historical winner cannot be invited back through this workflow.",
+    invitation_already_pending: "This application already has a pending reconsideration invitation.",
+  }[code] ?? humanize(code);
+}
+
+const formatDate = (value: string) => new Intl.DateTimeFormat(undefined, { dateStyle: "medium", timeStyle: "short" }).format(new Date(value));

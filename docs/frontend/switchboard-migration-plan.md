@@ -2,7 +2,7 @@
 
 - Status: **LOCKED — implementation source of truth**
 - Locked: 2026-08-09
-- Last precision amendment: 2026-08-09
+- Last precision amendment: 2026-08-10
 - Selected design reference: `concepts-gpt-2/src/concepts/switchboard`
 - Implementation model: one stage at a time, with review and verification before the next stage
 - Migration state: plan locked; redesign implementation not started by this document
@@ -1204,6 +1204,10 @@ Review:
 
 Visual fidelity does not authorize fake data, fake behavior, or a security regression.
 
+#### Closure Gate browser-proof precision amendment
+
+Previously approved per-stage browser, responsive, accessibility, and visual evidence remains valid unless final Closure Gate cleanup changes the relevant route/shared dependency or exposes a regression. Final browser verification focuses on cross-stage integration, role/security boundaries, the supplied real participant accounts, high-risk workflow continuity, and surfaces affected by final legacy removal. Existing `PARTIAL / NOT RUN` evidence is never silently promoted to PASS.
+
 ### 10.5 Durable per-stage closure artifacts
 
 The locked plan preserves migration intent. Stage closure documents preserve what actually happened, allowing a future chat to recover execution history without relying on conversation memory.
@@ -1389,6 +1393,7 @@ The migration does not authorize:
 24. Legitimate freelancer/client role choice remains part of signup; the concept role toggle never becomes post-auth runtime switching, and admin signup remains unavailable.
 25. Every stage produces a durable closure artifact, while the master plan changes only through explicit source-of-truth approval.
 26. The final Closure Gate reruns the complete frontend, backend, database, concurrency, browser, repository-hygiene, visual, and bundle proof.
+27. Previously approved per-stage browser, responsive, accessibility, and visual evidence remains valid unless Closure Gate cleanup changes the relevant route/shared dependency or exposes a regression; Closure Gate browser work focuses on cross-stage integration, role/security boundaries, supplied real participant accounts, high-risk continuity, and legacy-removal surfaces, and never silently promotes existing `PARTIAL / NOT RUN` evidence to PASS.
 
 ### Rejected approaches
 

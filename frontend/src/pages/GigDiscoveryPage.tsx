@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { Button } from "../components/Button";
-import { PageContainer } from "../components/PageContainer";
 import { fetchOpenGigs, MarketplaceApiError, type GigDiscoveryEnvelope, type GigSummary } from "../lib/marketplace";
 import { collectionViewState, formatDateTime, formatPayment, gigDetailPath, paginationState } from "../lib/marketplaceView";
 
@@ -36,29 +35,40 @@ export function GigDiscoveryPage() {
   const controls = paginationState(pagination?.page ?? page, pagination?.total_pages ?? 0);
 
   return (
-    <PageContainer className="space-y-6">
-      <header className="rounded-lg border border-line bg-white p-8 shadow-soft">
-        <p className="text-sm font-semibold uppercase tracking-wide text-accent">Open marketplace</p>
-        <h1 className="mt-3 text-3xl font-bold tracking-normal text-ink">Discover application-ready gigs</h1>
-        <p className="mt-4 max-w-2xl text-base leading-7 text-muted">
-          Browse current published opportunities with complete terms, active intake, and a future application deadline.
-        </p>
+    <section className="stage-two-page discovery-page" aria-busy={loading}>
+      <header className="stage-two-editorial-header">
+        <div>
+          <p>OPEN MARKETPLACE / PUBLISHED OPPORTUNITIES</p>
+          <h1>Find the brief worth opening.</h1>
+        </div>
+        <div className="stage-two-editorial-context">
+          <span>Source: open-gig discovery</span>
+          <p>
+            These are paginated application-ready gigs, not personalized recommendations. No ranking or match score is applied to this list.
+          </p>
+        </div>
       </header>
 
-      {state === "loading" ? <StatePanel title="Loading open gigs" body="Retrieving the latest marketplace opportunities..." /> : null}
+      {state === "loading" ? <StatePanel title="Loading open gigs" body="Retrieving the latest marketplace opportunities…" /> : null}
       {state === "error" ? <StatePanel title="Open gigs unavailable" body={error ?? "Unable to load open gigs."} tone="error" /> : null}
       {state === "empty" ? <StatePanel title="No open gigs right now" body="There are no application-ready opportunities available at the moment." /> : null}
 
       {state === "ready" && data ? (
-        <>
-          <div className="space-y-5">
-            {data.items.map((gig) => <GigSummaryCard key={gig.gig_id} gig={gig} />)}
+        <div className="discovery-board">
+          <div className="discovery-board-heading" aria-hidden="true">
+            <span>Lane</span><span>Opportunity</span><span>Terms + timing</span>
           </div>
-          <nav className="flex flex-col gap-3 rounded-lg border border-line bg-white p-5 shadow-soft sm:flex-row sm:items-center sm:justify-between" aria-label="Gig pages">
-            <p className="text-sm text-muted">
+          <ol className="discovery-list">
+            {data.items.map((gig, index) => (
+              <li key={gig.gig_id}><GigSummaryRow gig={gig} index={(data.pagination.page - 1) * data.pagination.page_size + index + 1} /></li>
+            ))}
+          </ol>
+          <nav className="stage-two-pagination" aria-label="Gig pages">
+            <p>
+              <span>Open discovery</span>
               Page {data.pagination.page} of {data.pagination.total_pages} · {data.pagination.total_items} open gigs
             </p>
-            <div className="flex gap-3">
+            <div>
               <Button type="button" variant="secondary" disabled={!controls.canGoPrevious} onClick={() => setPage((value) => value - 1)}>
                 Previous
               </Button>
@@ -67,50 +77,64 @@ export function GigDiscoveryPage() {
               </Button>
             </div>
           </nav>
-        </>
+        </div>
       ) : null}
-    </PageContainer>
+    </section>
   );
 }
 
-function GigSummaryCard({ gig }: { gig: GigSummary }) {
+function GigSummaryRow({ gig, index }: { gig: GigSummary; index: number }) {
+  const clientName = gig.client.company_name ?? gig.client.display_name;
   return (
-    <article className="rounded-lg border border-line bg-white p-6 shadow-soft">
-      <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
-        <div>
-          <div className="flex flex-wrap items-center gap-2">
-            <span className="rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-semibold uppercase text-emerald-700">Open</span>
-            <span className="rounded-full border border-line bg-slate-50 px-3 py-1 text-xs font-semibold text-muted">{gig.work_mode}</span>
-          </div>
-          <h2 className="mt-4 text-xl font-bold text-ink">{gig.title}</h2>
-          <p className="mt-2 text-sm font-semibold text-accent">{gig.category}</p>
-          <p className="mt-4 max-w-3xl text-sm leading-6 text-muted">{gig.published_summary}</p>
+    <article className="discovery-row">
+      <div className="discovery-row-index">{String(index).padStart(2, "0")}</div>
+      <div className="discovery-row-main">
+        <div className="discovery-row-status">
+          <span>Open</span>
+          <span>{humanize(gig.work_mode)}</span>
+          {gig.location_requirement ? <span>{gig.location_requirement}</span> : null}
         </div>
-        <div className="min-w-56 rounded-md border border-line bg-slate-50 p-4">
-          <p className="text-xs font-semibold uppercase text-muted">Payment</p>
-          <p className="mt-2 text-sm font-bold text-ink">{formatPayment(gig.payment)}</p>
-          <p className="mt-3 text-xs text-muted">Apply by {formatDateTime(gig.application_deadline)}</p>
+        <h2>{gig.title}</h2>
+        <p className="discovery-row-source">{clientName} · {gig.category}{gig.client.industry ? ` · ${gig.client.industry}` : ""}</p>
+        <p className="discovery-row-summary">{gig.published_summary}</p>
+        <div className="discovery-skill-groups">
+          <SkillGroup label="Required" values={gig.required_skills} />
+          <SkillGroup label="Preferred" values={gig.preferred_skills} />
         </div>
       </div>
-      <div className="mt-5 flex flex-wrap gap-2">
-        {gig.required_skills.map((skill) => <span key={skill} className="rounded-full border border-line px-3 py-1 text-xs font-semibold text-ink">{skill}</span>)}
-      </div>
-      <div className="mt-6 flex flex-col gap-4 border-t border-line pt-5 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <p className="text-sm font-semibold text-ink">{gig.client.company_name ?? gig.client.display_name}</p>
-          {gig.client.industry ? <p className="mt-1 text-xs text-muted">{gig.client.industry}</p> : null}
-        </div>
-        <Button to={gigDetailPath(gig.gig_id)} variant="secondary">View full details</Button>
+      <div className="discovery-row-terms">
+        <dl>
+          <div><dt>Payment</dt><dd>{formatPayment(gig.payment)}</dd></div>
+          <div><dt>Apply by</dt><dd><time dateTime={gig.application_deadline}>{formatDateTime(gig.application_deadline)}</time></dd></div>
+          <div><dt>Experience</dt><dd>{humanize(gig.experience_requirement)}</dd></div>
+        </dl>
+        <Button to={gigDetailPath(gig.gig_id)} variant="secondary">Open complete gig</Button>
       </div>
     </article>
   );
 }
 
-function StatePanel({ title, body, tone = "neutral" }: { title: string; body: string; tone?: "neutral" | "error" }) {
+function SkillGroup({ label, values }: { label: string; values: string[] }) {
   return (
-    <div className={`rounded-lg border p-8 ${tone === "error" ? "border-red-200 bg-red-50" : "border-line bg-white"}`}>
-      <h2 className={`text-lg font-bold ${tone === "error" ? "text-red-800" : "text-ink"}`}>{title}</h2>
-      <p className={`mt-2 text-sm leading-6 ${tone === "error" ? "text-red-700" : "text-muted"}`}>{body}</p>
+    <div>
+      <span>{label}</span>
+      <ul>
+        {values.length ? values.map((skill) => <li key={skill}>{skill}</li>) : <li>None specified</li>}
+      </ul>
     </div>
   );
+}
+
+function StatePanel({ title, body, tone = "neutral" }: { title: string; body: string; tone?: "neutral" | "error" }) {
+  return (
+    <div className={`stage-two-state-panel${tone === "error" ? " is-error" : ""}`} role={tone === "error" ? "alert" : "status"}>
+      <span>{tone === "error" ? "Controlled error" : "Marketplace state"}</span>
+      <h2>{title}</h2>
+      <p>{body}</p>
+    </div>
+  );
+}
+
+function humanize(value: string) {
+  return value.replace(/_/g, " ");
 }

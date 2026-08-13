@@ -2,8 +2,10 @@ import { supabase } from "./supabaseClient";
 import {
   isSelectionContext,
   isSelectionRequestDetail,
+  isSelectionRequestHistory,
   type SelectionContext,
   type SelectionRequestDetail,
+  type SelectionRequestHistory,
 } from "./selectionContracts";
 
 const apiBaseUrl = (import.meta.env.VITE_API_BASE_URL ?? "http://localhost:8000").replace(/\/$/, "");
@@ -26,6 +28,15 @@ export function fetchSelectionRequest(requestId: string): Promise<SelectionReque
   return request(
     `/selection-requests/${encodeURIComponent(requestId)}`,
     isSelectionRequestDetail,
+  );
+}
+
+export function fetchSelectionRequestHistory(
+  applicationId: string,
+): Promise<SelectionRequestHistory> {
+  return request(
+    `/applications/${encodeURIComponent(applicationId)}/selection-requests`,
+    isSelectionRequestHistory,
   );
 }
 
@@ -105,4 +116,4 @@ function isRecord(value: unknown): value is Record<string, unknown> {
   return value !== null && typeof value === "object" && !Array.isArray(value);
 }
 
-export type { SelectionContext, SelectionRequestDetail };
+export type { SelectionContext, SelectionRequestDetail, SelectionRequestHistory };

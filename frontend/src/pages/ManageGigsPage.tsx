@@ -1,112 +1,64 @@
 import { useEffect, useState } from "react";
 import { Button } from "../components/Button";
+import { GigLifecycleDialog, type GigLifecycleAction } from "../components/GigLifecycleDialog";
+import { GigVersionReference } from "../components/GigVersionReference";
 import { MatchExplanationPanel } from "../components/MatchExplanationPanel";
-import { PageContainer } from "../components/PageContainer";
 import { fetchManagedGigs, managementErrorMessage, runGigAction, type ManagedGig } from "../lib/gigManagement";
+import { latestMaterialChangedFields, managementActionState, stableManagementErrorMessage } from "../lib/gigManagementView";
 import {
   fetchRecommendedFreelancersForGig,
   MatchingApiError,
   type RankingContext,
   type RecommendedFreelancerItem,
 } from "../lib/matching";
-import { rankingPresentation } from "../lib/marketplaceView";
 import { formatScoreValue } from "../lib/matchingExplanations";
+import { rankingPresentation } from "../lib/marketplaceView";
 
-function formatDate(value: string | null) {
-  if (!value) {
-    return "No deadline";
-  }
-
-  return new Date(value).toLocaleString(undefined, {
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-  });
-}
-
-function getRecommendationErrorMessage(error: unknown) {
-  if (error instanceof MatchingApiError) {
-    const message = error.message.toLowerCase();
-
-    if (error.status === 401) {
-      return "Sign in again to load freelancer recommendations.";
-    }
-
-    if (error.status === 403 && message.includes("owned")) {
-      return "We could not access recommendations for this gig. Confirm you own this gig and try again.";
-    }
-
-    if (error.status === 403) {
-      return "Freelancer recommendations are available for client-owned gigs.";
-    }
-
-    if (error.status === 404) {
-      return "This gig was not found.";
-    }
-
-    if (error.status === 503) {
-      return "The matching service is not available right now.";
-    }
-
-    return error.message;
-  }
-
-  if (error instanceof Error) {
-    return error.message;
-  }
-
-  return "We could not load freelancer recommendations right now.";
-}
-
-function formatScore(score: number) {
-  return formatScoreValue(score) ?? "Unavailable";
-}
+type OpenAction = { gig: ManagedGig; action: GigLifecycleAction };
 
 export function ManageGigsPage() {
   const [gigs, setGigs] = useState<ManagedGig[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [actionMessage, setActionMessage] = useState<string | null>(null);
+  const [isActing, setIsActing] = useState(false);
+  const [openAction, setOpenAction] = useState<OpenAction | null>(null);
+  const [reloadKey, setReloadKey] = useState(0);
   const [selectedGigId, setSelectedGigId] = useState<string | null>(null);
   const [recommendedFreelancers, setRecommendedFreelancers] = useState<RecommendedFreelancerItem[]>([]);
   const [rankingContext, setRankingContext] = useState<RankingContext | null>(null);
   const [isLoadingRecommendations, setIsLoadingRecommendations] = useState(false);
   const [recommendationsError, setRecommendationsError] = useState<string | null>(null);
-  const [actionMessage, setActionMessage] = useState<string | null>(null);
-  const [isActing, setIsActing] = useState(false);
-  const [reloadKey, setReloadKey] = useState(0);
-
   const selectedGig = gigs.find((gig) => gig.gig_id === selectedGigId) ?? null;
 
   useEffect(() => {
     let isMounted = true;
-
-    async function loadGigs() {
-      setIsLoading(true);
-      setErrorMessage(null);
-
-      try {
-        const nextGigs = await fetchManagedGigs();
-
-        if (isMounted) {
-          setGigs(nextGigs);
-        }
-      } catch (error) {
-        if (isMounted) {
-          setErrorMessage(error instanceof Error ? error.message : "Unable to load gigs.");
-        }
-      } finally {
-        if (isMounted) {
-          setIsLoading(false);
-        }
-      }
-    }
-
-    loadGigs();
-
-    return () => {
-      isMounted = false;
-    };
+    setIsLoading(true);
+    setErrorMessage(null);
+    fetchManagedGigs()
+      .then((nextGigs) => { if (isMounted) setGigs(nextGigs); })
+      .catch((error) => { if (isMounted) setErrorMessage(managementErrorMessage(error)); })
+      .finally(() => { if (isMounted) setIsLoading(false); });
+    return () => { isMounted = false; };
   }, [reloadKey]);
+
+  async function confirmAction(body?: Record<string, unknown>) {
+    if (!openAction) return false;
+    setIsActing(true);
+    setErrorMessage(null);
+    setActionMessage(null);
+    try {
+      await runGigAction(openAction.gig.gig_id, openAction.action, body);
+      setActionMessage(actionSuccessMessage(openAction.action));
+      setReloadKey((value) => value + 1);
+      return true;
+    } catch (error) {
+      setErrorMessage(managementErrorMessage(error));
+      return false;
+    } finally {
+      setIsActing(false);
+    }
+  }
 
   async function loadRecommendedFreelancers(gig: ManagedGig) {
     setSelectedGigId(gig.gig_id);
@@ -114,7 +66,6 @@ export function ManageGigsPage() {
     setRecommendationsError(null);
     setRecommendedFreelancers([]);
     setRankingContext(null);
-
     try {
       const envelope = await fetchRecommendedFreelancersForGig(gig.gig_id);
       setRecommendedFreelancers(envelope.items);
@@ -126,250 +77,243 @@ export function ManageGigsPage() {
     }
   }
 
-  async function runAction(gig: ManagedGig, action: "intake/close" | "intake/reopen" | "pause" | "resume" | "cancel") {
-    let body: Record<string, unknown> | undefined;
-    if (action === "intake/close") {
-      const reason = window.prompt("Closure reason code", "moving_to_applicant_review");
-      if (!reason) return;
-      const explanation = reason === "other" ? window.prompt("Explain why applications are closing") : null;
-      if (reason === "other" && !explanation) return;
-      body = { reason, explanation };
-    } else if (action === "pause") {
-      const reason = window.prompt("Pause reason code", "business_delay");
-      if (!reason) return;
-      const explanation = reason === "other" ? window.prompt("Explain why the gig is paused") : null;
-      if (reason === "other" && !explanation) return;
-      body = { reason, explanation };
-    } else if (action === "cancel") {
-      if (!window.confirm("Cancel this published gig and close all active applications and requests? This is terminal.")) return;
-      const explanation = window.prompt("Applicant-facing cancellation explanation");
-      if (!explanation) return;
-      const reason = window.prompt("Cancellation reason code", "opportunity_no_longer_required");
-      if (!reason) return;
-      const other = reason === "other" ? window.prompt("Explain the other cancellation reason") : null;
-      if (reason === "other" && !other) return;
-      body = { reason, applicant_facing_explanation: explanation, closes_active_records_confirmed: true, other_explanation: other };
-    }
-    setIsActing(true); setErrorMessage(null); setActionMessage(null);
-    try {
-      await runGigAction(gig.gig_id, action, body);
-      setActionMessage("Gig state updated.");
-      setReloadKey((value) => value + 1);
-    } catch (error) {
-      setErrorMessage(managementErrorMessage(error));
-    } finally {
-      setIsActing(false);
-    }
-  }
-
-  const ranking = rankingContext ? rankingPresentation(rankingContext) : null;
-
   return (
-    <PageContainer>
-      <div className="rounded-lg border border-line bg-white p-8 shadow-soft">
-        <div className="flex flex-col gap-4 border-b border-line pb-6 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <p className="text-sm font-semibold uppercase tracking-wide text-accent">Client Gigs</p>
-            <h1 className="mt-3 text-3xl font-bold tracking-normal text-ink">Manage Gigs</h1>
-          </div>
-          <Button to="/gigs/new">Post a New Gig</Button>
+    <section className="stage-three-page manage-gigs-page" aria-busy={isLoading}>
+      <header className="stage-three-editorial-header">
+        <div>
+          <p>Client operations / Gig authority</p>
+          <h1>Manage Gigs</h1>
         </div>
+        <div className="stage-three-editorial-context">
+          <span>Source → consequence → action</span>
+          <p>Each lane reflects the owner DTO. State changes stay local to this route and are offered only when the server authorizes them.</p>
+          <Button to="/gigs/new">Create a gig</Button>
+        </div>
+      </header>
 
-        {isLoading ? <p className="mt-8 text-sm font-medium text-muted">Loading gigs...</p> : null}
+      {isLoading ? <StatePanel title="Loading owned gigs" body="Retrieving authoritative lifecycle, version, and blocker projections…" /> : null}
+      {errorMessage ? <Notice tone="error" title="Gig control unavailable" body={errorMessage} /> : null}
+      {actionMessage ? <Notice tone="success" title="Authoritative state refreshed" body={actionMessage} /> : null}
 
-        {errorMessage ? (
-          <p className="mt-8 rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-700">
-            {errorMessage}
-          </p>
-        ) : null}
-        {actionMessage ? <p className="mt-8 rounded-md border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-700">{actionMessage}</p> : null}
+      {!isLoading && !errorMessage && gigs.length === 0 ? (
+        <div className="stage-three-state-panel">
+          <span>Empty owner register</span>
+          <h2>No gigs yet</h2>
+          <p>Create complete supported terms. The first valid publish attempt creates a reusable draft and then asks the backend to publish it.</p>
+          <Button to="/gigs/new">Create the first gig</Button>
+        </div>
+      ) : null}
 
-        {!isLoading && !errorMessage && gigs.length === 0 ? (
-          <div className="mt-8 rounded-lg border border-dashed border-line bg-slate-50 p-8">
-            <h2 className="text-xl font-bold tracking-normal text-ink">No gigs posted yet</h2>
-            <p className="mt-3 max-w-2xl text-sm leading-6 text-muted">
-              Create the first structured gig before future parsing and matching milestones begin.
-            </p>
-            <div className="mt-6">
-              <Button to="/gigs/new">Post a New Gig</Button>
-            </div>
+      {!isLoading && gigs.length > 0 ? (
+        <div className="manage-gig-board" aria-label="Owned gig control lanes">
+          <div className="manage-gig-board-heading" aria-hidden="true">
+            <span>Lane</span><span>Owned record</span><span>Authoritative state</span><span>Available controls</span>
           </div>
-        ) : null}
+          {gigs.map((gig, index) => (
+            <ManagedGigLane
+              key={gig.gig_id}
+              gig={gig}
+              index={index}
+              isActing={isActing}
+              isLoadingRecommendations={isLoadingRecommendations && selectedGigId === gig.gig_id}
+              onAction={(action) => setOpenAction({ gig, action })}
+              onRecommendations={() => loadRecommendedFreelancers(gig)}
+            />
+          ))}
+        </div>
+      ) : null}
 
-        {!isLoading && gigs.length > 0 ? (
-          <div className="mt-8 space-y-4">
-            {gigs.map((gig) => (
-              <article key={gig.gig_id} className="rounded-lg border border-line bg-white p-6">
-                <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-                  <div>
-                    <div className="flex flex-wrap items-center gap-3">
-                      <h2 className="text-xl font-bold tracking-normal text-ink">{String(gig.terms.title ?? "Untitled gig")}</h2>
-                      <span className="rounded-full border border-line bg-slate-50 px-3 py-1 text-xs font-semibold uppercase text-muted">
-                        {gig.product_state.replace(/_/g, " ")}
-                      </span>
-                    </div>
-                    <p className="mt-2 text-sm font-semibold text-accent">{String((gig.terms.scope as Record<string, unknown> | undefined)?.tech_category ?? "Uncategorised")}</p>
-                    <p className="mt-3 text-sm leading-6 text-muted">
-                      Required skills: {Array.isArray(gig.terms.required_skills) ? gig.terms.required_skills.join(", ") : "None listed"}
-                    </p>
-                    <p className="mt-2 text-sm leading-6 text-muted">Deadline: {formatDate(typeof gig.terms.application_deadline === "string" ? gig.terms.application_deadline : null)}</p>
-                    <p className="mt-2 text-xs font-medium text-muted">Display v{gig.current_display_version_number} · Material v{gig.current_material_version_number}</p>
-                    <p className="mt-2 text-xs font-medium text-muted">{gig.accepting_applications ? "Effectively accepting applications" : "Not effectively accepting applications"}</p>
-                    {gig.engagement_state === "cancelled_not_reopened" ? <p className="mt-2 text-sm font-semibold text-amber-700">Engagement cancelled · Gig not reopened</p> : null}
-                    {gig.engagement_state === "current" ? <p className="mt-2 text-sm font-semibold text-emerald-700">Filled · Current engagement active</p> : null}
-                    {gig.upgrade_required ? <p className="mt-2 text-sm font-semibold text-amber-700">Upgrade Required — contract-zero terms remain excluded from discovery.</p> : null}
-                    {gig.blocking_reason_codes.map((code) => <p key={code} className="mt-1 text-xs font-semibold text-amber-700">{code.replace(/_/g, " ")}</p>)}
-                  </div>
-                  <div className="flex flex-wrap gap-3">
-                    {gig.engagement_state !== "none" ? <Button to="/engagements" variant="secondary">View Engagement</Button> : null}
-                    <Button to={`/gigs/${gig.gig_id}/applicants`}>
-                      Review Applicants{gig.active_application_count ? ` (${gig.active_application_count})` : ""}
-                    </Button>
-                    <Button
-                      type="button"
-                      variant="secondary"
-                      onClick={() => loadRecommendedFreelancers(gig)}
-                      disabled={isLoadingRecommendations || gig.upgrade_required || gig.lifecycle !== "active"}
-                    >
-                      {isLoadingRecommendations && selectedGigId === gig.gig_id
-                        ? "Loading Recommendations"
-                        : "View Recommendations"}
-                    </Button>
-                    <Button to={`/gigs/${gig.gig_id}/parse`} variant="secondary">
-                      Parse Requirements
-                    </Button>
-                    <Button to={`/gigs/${gig.gig_id}/edit`} variant="secondary">
-                      {gig.lifecycle === "draft" ? "Complete & Publish" : gig.upgrade_required ? "Upgrade Terms" : "Edit Version"}
-                    </Button>
-                    {gig.allowed_actions.includes("close_intake") ? <Button type="button" variant="secondary" disabled={isActing} onClick={() => runAction(gig, "intake/close")}>Close Applications</Button> : null}
-                    {gig.allowed_actions.includes("reopen_intake") ? <Button type="button" variant="secondary" disabled={isActing} onClick={() => runAction(gig, "intake/reopen")}>Reopen Applications</Button> : null}
-                    {gig.allowed_actions.includes("pause") ? <Button type="button" variant="secondary" disabled={isActing || gig.effectively_active_selection_request} onClick={() => runAction(gig, "pause")}>Pause</Button> : null}
-                    {gig.allowed_actions.includes("resume") ? <Button type="button" variant="secondary" disabled={isActing} onClick={() => runAction(gig, "resume")}>Resume</Button> : null}
-                    {gig.allowed_actions.includes("cancel") ? <Button type="button" disabled={isActing} onClick={() => runAction(gig, "cancel")}>Cancel Gig</Button> : null}
-                  </div>
-                </div>
-              </article>
-            ))}
-          </div>
-        ) : null}
+      {!isLoading && !errorMessage && gigs.length > 0 ? (
+        <RecommendationRegion
+          selectedGig={selectedGig}
+          rankingContext={rankingContext}
+          freelancers={recommendedFreelancers}
+          loading={isLoadingRecommendations}
+          error={recommendationsError}
+        />
+      ) : null}
 
-        {!isLoading && !errorMessage && gigs.length > 0 ? (
-          <section className="mt-8 border-t border-line pt-8">
-            <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-              <div>
-                <p className="text-sm font-semibold uppercase tracking-wide text-accent">Recommended freelancers</p>
-                <h2 className="mt-3 text-2xl font-bold tracking-normal text-ink">
-                  {selectedGig ? String(selectedGig.terms.title ?? "Untitled gig") : "Select a gig"}
-                </h2>
-                <p className="mt-3 max-w-2xl text-sm leading-6 text-muted">
-                  {selectedGig
-                    ? (ranking?.message ?? "Freelancers are ranked by the backend matching engine and shown in the order returned by the API.")
-                    : "Select a gig to view recommended freelancers."}
-                </p>
-              </div>
-              {selectedGig ? (
-                <span className="inline-flex w-fit rounded-full border border-line bg-slate-50 px-3 py-1 text-xs font-semibold uppercase text-muted">
-                  {selectedGig.product_state}
-                </span>
-              ) : null}
-            </div>
-
-            {!selectedGig ? (
-              <div className="mt-6 rounded-lg border border-dashed border-line bg-slate-50 p-6">
-                <h3 className="text-base font-bold tracking-normal text-ink">Select a gig to view recommendations</h3>
-                <p className="mt-2 max-w-2xl text-sm leading-6 text-muted">
-                  Use the View Recommendations button on one of your gigs.
-                </p>
-              </div>
-            ) : null}
-
-            {isLoadingRecommendations ? (
-              <p className="mt-6 text-sm font-medium text-muted">Loading recommended freelancers...</p>
-            ) : null}
-
-            {recommendationsError ? (
-              <div className="mt-6 rounded-lg border border-amber-200 bg-amber-50 p-5">
-                <h3 className="text-sm font-semibold text-amber-900">Recommendations unavailable</h3>
-                <p className="mt-2 text-sm leading-6 text-amber-800">{recommendationsError}</p>
-              </div>
-            ) : null}
-
-            {selectedGig &&
-            !isLoadingRecommendations &&
-            !recommendationsError &&
-            recommendedFreelancers.length === 0 ? (
-              <div className="mt-6 rounded-lg border border-dashed border-line bg-slate-50 p-6">
-                <h3 className="text-base font-bold tracking-normal text-ink">
-                  No recommended freelancers available for this gig yet
-                </h3>
-                <p className="mt-2 max-w-2xl text-sm leading-6 text-muted">
-                  Recommendations will appear here when the matching API has eligible freelancer data to rank.
-                </p>
-              </div>
-            ) : null}
-
-            {selectedGig &&
-            !isLoadingRecommendations &&
-            !recommendationsError &&
-            recommendedFreelancers.length > 0 ? (
-              <div className="mt-6 space-y-5">
-                {recommendedFreelancers.map((freelancer) => (
-                  <RecommendedFreelancerCard
-                    key={`${freelancer.rank}-${freelancer.freelancer_id}`}
-                    freelancer={freelancer}
-                  />
-                ))}
-              </div>
-            ) : null}
-          </section>
-        ) : null}
-      </div>
-    </PageContainer>
+      {openAction ? (
+        <GigLifecycleDialog
+          action={openAction.action}
+          gigTitle={gigTitle(openAction.gig)}
+          activeApplicationCount={openAction.gig.active_application_count}
+          isSubmitting={isActing}
+          onConfirm={confirmAction}
+          onDismiss={() => setOpenAction(null)}
+        />
+      ) : null}
+    </section>
   );
 }
 
-function RecommendedFreelancerCard({ freelancer }: { freelancer: RecommendedFreelancerItem }) {
-  const ranking = rankingPresentation({
-    ranking_mode: freelancer.ranking_mode,
-    semantic_status: freelancer.semantic_status,
-    semantic_unavailable_reason: freelancer.semantic_unavailable_reason,
-  });
+function ManagedGigLane({
+  gig,
+  index,
+  isActing,
+  isLoadingRecommendations,
+  onAction,
+  onRecommendations,
+}: {
+  gig: ManagedGig;
+  index: number;
+  isActing: boolean;
+  isLoadingRecommendations: boolean;
+  onAction: (action: GigLifecycleAction) => void;
+  onRecommendations: () => void;
+}) {
+  const actions = managementActionState(gig.allowed_actions, gig.blocking_reason_codes);
+  const materialFields = latestMaterialChangedFields(gig.latest_material_change_summary);
+
   return (
-    <article className="rounded-lg border border-line bg-white p-6">
-      <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
-        <div className="min-w-0">
-          <span className="rounded-full border border-line bg-slate-50 px-3 py-1 text-xs font-semibold text-muted">
-            Rank {freelancer.rank}
-          </span>
-          <h3 className="mt-4 text-xl font-bold tracking-normal text-ink">
-            {freelancer.headline ?? "Freelancer profile"}
-          </h3>
-          {freelancer.primary_role ? (
-            <p className="mt-2 text-sm font-semibold text-accent">{freelancer.primary_role}</p>
-          ) : null}
-        </div>
-
-        <dl className={`grid min-w-full grid-cols-1 gap-2 lg:min-w-80 ${ranking.showSemanticScore ? "sm:grid-cols-3" : "sm:grid-cols-1"}`}>
-          {ranking.showHybridScore && freelancer.hybrid_score !== null ? <ScorePill label="Hybrid" value={formatScore(freelancer.hybrid_score)} /> : null}
-          <ScorePill label="Keyword" value={formatScore(freelancer.keyword_score)} />
-          {ranking.showSemanticScore && freelancer.semantic_score !== null ? <ScorePill label="Semantic" value={formatScore(freelancer.semantic_score)} /> : null}
+    <article className="manage-gig-lane">
+      <span className="manage-gig-index">{String(index + 1).padStart(2, "0")}</span>
+      <div className="manage-gig-record">
+        <div className="manage-gig-kicker"><span>{formatCode(gig.product_state)}</span><span>{category(gig)}</span></div>
+        <h2>{gigTitle(gig)}</h2>
+        <p>{description(gig)}</p>
+        <div className="manage-gig-skills"><span>Required</span>{skills(gig).map((skill) => <strong key={skill}>{skill}</strong>)}</div>
+        <dl className="manage-gig-terms">
+          <StateFact label="Commercial terms" value={commercialTerms(gig)} />
+          <StateFact label="Application deadline" value={deadline(gig)} />
         </dl>
+        <GigVersionReference
+          displayVersion={gig.current_display_version_number}
+          materialVersion={gig.current_material_version_number}
+          contractVersion={gig.terms_contract_version}
+          latestChangedFields={materialFields}
+        />
       </div>
-
-      <MatchExplanationPanel
-        explanation={freelancer.explanation}
-        title="Why this freelancer matched"
-        className="mt-6 shadow-none"
-      />
+      <div className="manage-gig-state">
+        <dl>
+          <StateFact label="Opportunity" value={gig.lifecycle} />
+          <StateFact label="Application intake" value={gig.intake} />
+          <StateFact label="Operations" value={gig.operations} />
+          <StateFact label="Deadline" value={gig.deadline_status} />
+          <StateFact label="Effective availability" value={gig.accepting_applications ? "accepting applications" : "not accepting"} />
+          <StateFact label="Active applications" value={String(gig.active_application_count)} />
+        </dl>
+        {gig.blocking_reason_codes.length ? (
+          <div className="manage-gig-blockers" role="status">
+            <span>Server blockers</span>
+            {gig.blocking_reason_codes.map((code) => <p key={code}>{stableManagementErrorMessage(code)}</p>)}
+          </div>
+        ) : null}
+        {gig.engagement_state !== "none" ? (
+          <div className="manage-gig-later-state">
+            <span>Stage 8 engagement authority</span>
+            <p>{gig.engagement_state === "current" ? "A current non-cancelled engagement owns this gig. Lifecycle controls remain in its shared workspace." : "Engagement cancelled · Gig not reopened. The eligible workspace owns one-time failed-engagement Gig Reopening; ordinary intake controls do not."}</p>
+            <Button to="/engagements" variant="secondary">Open Engagement Workspace</Button>
+          </div>
+        ) : null}
+      </div>
+      <div className="manage-gig-actions">
+        <span>Route-local controls</span>
+        <div>
+          {gig.lifecycle !== "draft" && !gig.upgrade_required ? <Button to={`/gigs/${gig.gig_id}`} variant="secondary">View shared detail</Button> : null}
+          {actions.canEdit || actions.canPublish || actions.canUpgrade ? <Button to={`/gigs/${gig.gig_id}/edit`}>{actions.canPublish ? "Complete & publish" : actions.canUpgrade ? "Upgrade terms" : "Edit gig version"}</Button> : null}
+          {actions.canCloseIntake ? <Button type="button" variant="secondary" disabled={isActing} onClick={() => onAction("intake/close")}>Close intake</Button> : null}
+          {actions.canReopenIntake ? <Button type="button" variant="secondary" disabled={isActing} onClick={() => onAction("intake/reopen")}>Reopen intake</Button> : null}
+          {actions.canPause ? <Button type="button" variant="secondary" disabled={isActing} onClick={() => onAction("pause")}>Pause operations</Button> : null}
+          {actions.canResume ? <Button type="button" variant="secondary" disabled={isActing} onClick={() => onAction("resume")}>Resume operations</Button> : null}
+          {actions.canCancel ? <Button type="button" disabled={isActing} onClick={() => onAction("cancel")}>Cancel gig</Button> : null}
+        </div>
+        <div className="manage-gig-deferred-actions">
+          <span>Later-stage destinations</span>
+          <Button to={`/gigs/${gig.gig_id}/applicants`} variant="secondary">Applicant review{gig.active_application_count ? ` (${gig.active_application_count})` : ""}</Button>
+          <Button type="button" variant="secondary" onClick={onRecommendations} disabled={isLoadingRecommendations || gig.upgrade_required || gig.lifecycle !== "active"}>{isLoadingRecommendations ? "Loading matches…" : "Freelancer matches"}</Button>
+          <Button to={`/gigs/${gig.gig_id}/parse`} variant="secondary">Legacy parser</Button>
+        </div>
+      </div>
     </article>
   );
 }
 
-function ScorePill({ label, value }: { label: string; value: string }) {
+function RecommendationRegion({ selectedGig, rankingContext, freelancers, loading, error }: {
+  selectedGig: ManagedGig | null;
+  rankingContext: RankingContext | null;
+  freelancers: RecommendedFreelancerItem[];
+  loading: boolean;
+  error: string | null;
+}) {
+  const ranking = rankingContext ? rankingPresentation(rankingContext) : null;
   return (
-    <div className="rounded-md border border-line bg-slate-50 px-3 py-2">
-      <dt className="text-xs font-medium text-muted">{label}</dt>
-      <dd className="mt-1 text-sm font-semibold tabular-nums text-ink">{value}</dd>
-    </div>
+    <section className="manage-gig-deferred-region" aria-labelledby="recommendation-region-title">
+      <header><span>Preserved later-stage integration</span><h2 id="recommendation-region-title">Freelancer recommendations</h2><p>This existing matching destination remains functional but is visually contained outside Stage 3 lifecycle controls.</p></header>
+      {!selectedGig ? <p className="manage-gig-deferred-empty">Choose “Freelancer matches” in an owned gig lane.</p> : null}
+      {selectedGig ? <div className="manage-gig-recommendation-heading"><strong>{gigTitle(selectedGig)}</strong><span>{ranking?.message ?? "Backend-ranked results"}</span></div> : null}
+      {loading ? <p className="manage-gig-deferred-empty">Loading backend-ranked freelancers…</p> : null}
+      {error ? <Notice tone="error" title="Recommendations unavailable" body={error} /> : null}
+      {selectedGig && !loading && !error && freelancers.length === 0 ? <p className="manage-gig-deferred-empty">No eligible recommendation data is available for this gig.</p> : null}
+      {freelancers.length ? <div className="manage-gig-recommendations">{freelancers.map((freelancer) => <RecommendedFreelancerCard key={`${freelancer.rank}-${freelancer.freelancer_id}`} freelancer={freelancer} />)}</div> : null}
+    </section>
   );
+}
+
+function RecommendedFreelancerCard({ freelancer }: { freelancer: RecommendedFreelancerItem }) {
+  const ranking = rankingPresentation({ ranking_mode: freelancer.ranking_mode, semantic_status: freelancer.semantic_status, semantic_unavailable_reason: freelancer.semantic_unavailable_reason });
+  return (
+    <article className="manage-gig-recommendation">
+      <div><span>Rank {freelancer.rank}</span><h3>{freelancer.headline ?? "Freelancer profile"}</h3><p>{freelancer.primary_role ?? "Role not specified"}</p></div>
+      <dl>
+        {ranking.showHybridScore && freelancer.hybrid_score !== null ? <StateFact label="Hybrid" value={formatScore(freelancer.hybrid_score)} /> : null}
+        <StateFact label="Keyword" value={formatScore(freelancer.keyword_score)} />
+        {ranking.showSemanticScore && freelancer.semantic_score !== null ? <StateFact label="Semantic" value={formatScore(freelancer.semantic_score)} /> : null}
+      </dl>
+      <MatchExplanationPanel explanation={freelancer.explanation} title="Why this freelancer matched" className="shadow-none" />
+    </article>
+  );
+}
+
+function StateFact({ label, value }: { label: string; value: string }) {
+  return <div><dt>{label}</dt><dd>{formatCode(value)}</dd></div>;
+}
+
+function StatePanel({ title, body }: { title: string; body: string }) {
+  return <div className="stage-three-state-panel" role="status"><span>Manage gigs</span><h2>{title}</h2><p>{body}</p></div>;
+}
+
+function Notice({ tone, title, body }: { tone: "error" | "success"; title: string; body: string }) {
+  return <div className={`stage-three-notice is-${tone}`} role={tone === "error" ? "alert" : "status"}><strong>{title}</strong><p>{body}</p></div>;
+}
+
+function actionSuccessMessage(action: GigLifecycleAction) {
+  return {
+    "intake/close": "Application intake is closed; existing applications and operational state were preserved.",
+    "intake/reopen": "Application intake is reopened under the current deadline and operational state.",
+    pause: "Operations are paused; application-intake state was preserved.",
+    resume: "Operations resumed; application-intake state was preserved.",
+    cancel: "The gig was cancelled through the terminal lifecycle authority.",
+  }[action];
+}
+
+function gigTitle(gig: ManagedGig) { return typeof gig.terms.title === "string" && gig.terms.title.trim() ? gig.terms.title : "Untitled gig"; }
+function description(gig: ManagedGig) { return typeof gig.terms.description === "string" && gig.terms.description.trim() ? gig.terms.description : "No description available."; }
+function category(gig: ManagedGig) { const scope = gig.terms.scope; return scope && typeof scope === "object" && !Array.isArray(scope) && typeof (scope as Record<string, unknown>).tech_category === "string" ? String((scope as Record<string, unknown>).tech_category) : "Uncategorised"; }
+function skills(gig: ManagedGig) { return Array.isArray(gig.terms.required_skills) ? gig.terms.required_skills.filter((value): value is string => typeof value === "string") : []; }
+function deadline(gig: ManagedGig) { const value = gig.terms.application_deadline; return typeof value === "string" ? new Date(value).toLocaleString(undefined, { year: "numeric", month: "short", day: "numeric", hour: "numeric", minute: "2-digit" }) : "Not supplied"; }
+function commercialTerms(gig: ManagedGig) {
+  const payment = gig.terms.client_payment;
+  if (!payment || typeof payment !== "object" || Array.isArray(payment)) return "Not supplied";
+  const record = payment as Record<string, unknown>;
+  const budget = record.budget;
+  const currency = typeof gig.terms.currency === "string" ? gig.terms.currency : "";
+  if (budget && typeof budget === "object" && !Array.isArray(budget)) {
+    const range = budget as Record<string, unknown>;
+    return `${currency} ${String(range.minimum ?? "—")}–${String(range.maximum ?? "—")} fixed price`.trim();
+  }
+  return `${currency} ${String(gig.terms.payment_structure ?? "structured terms")}`.trim();
+}
+function formatCode(value: string) { return value.replace(/_/g, " "); }
+function formatScore(score: number) { return formatScoreValue(score) ?? "Unavailable"; }
+
+function getRecommendationErrorMessage(error: unknown) {
+  if (error instanceof MatchingApiError) {
+    if (error.status === 401) return "Sign in again to load freelancer recommendations.";
+    if (error.status === 403) return "Freelancer recommendations are available only for owned client gigs.";
+    if (error.status === 404) return "This gig was not found.";
+    if (error.status === 503) return "The matching service is not available right now.";
+    return error.message;
+  }
+  return error instanceof Error ? error.message : "We could not load freelancer recommendations right now.";
 }

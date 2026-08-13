@@ -1,6 +1,5 @@
 import { useState, type FormEvent } from "react";
-import { useNavigate } from "react-router-dom";
-import { PageContainer } from "../components/PageContainer";
+import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { dashboardPathForRole, fetchUserProfile } from "../lib/auth";
 import { supabase } from "../lib/supabaseClient";
@@ -24,7 +23,7 @@ export function LoginPage() {
     });
 
     if (error || !data.user) {
-      setErrorMessage(error?.message ?? "Unable to login with those credentials.");
+      setErrorMessage("Unable to login with those credentials.");
       setIsSubmitting(false);
       return;
     }
@@ -40,51 +39,68 @@ export function LoginPage() {
 
       await refreshProfile();
       navigate(dashboardPathForRole(profile.role));
-    } catch (profileError) {
-      setErrorMessage(profileError instanceof Error ? profileError.message : "Unable to load your profile.");
+    } catch {
+      setErrorMessage("Login succeeded, but your saved account profile could not be loaded.");
       setIsSubmitting(false);
     }
   }
 
   return (
-    <PageContainer>
-      <div className="max-w-xl rounded-lg border border-line bg-white p-8 shadow-soft">
-        <h1 className="text-3xl font-bold tracking-normal text-ink">Login</h1>
-        <form className="mt-8 space-y-5" onSubmit={handleSubmit}>
-          <label className="block">
-            <span className="text-sm font-semibold text-ink">Email</span>
+    <section className="switchboard-auth-page is-login" aria-labelledby="login-title">
+      <aside className="switchboard-auth-context">
+        <span className="switchboard-public-eyebrow">ACCOUNT ACCESS / TRUSTED PROFILE</span>
+        <h1 id="login-title">Return to your switchboard.</h1>
+        <p>Sign in with your existing account. Your saved profile role—not this page—selects the dashboard and protected workflow you can access.</p>
+        <dl>
+          <div><dt>Source</dt><dd>Supabase Auth session</dd></div>
+          <div><dt>Authority</dt><dd>Persisted user profile</dd></div>
+          <div><dt>Destination</dt><dd>Role-protected dashboard</dd></div>
+        </dl>
+      </aside>
+
+      <div className="switchboard-auth-panel">
+        <header>
+          <span>LOGIN / EXISTING ACCOUNT</span>
+          <h2>Login</h2>
+          <p>Use the email and password already attached to your GigMatch account.</p>
+        </header>
+        <form onSubmit={handleSubmit} aria-describedby={errorMessage ? "login-error" : undefined}>
+          <label>
+            <span>Email</span>
             <input
               type="email"
+              name="email"
+              autoComplete="email"
               value={email}
               onChange={(event) => setEmail(event.target.value)}
               required
-              className="mt-2 w-full rounded-md border border-line bg-white px-4 py-3 text-sm text-ink outline-none transition focus:border-brand focus:ring-2 focus:ring-blue-100"
             />
           </label>
-          <label className="block">
-            <span className="text-sm font-semibold text-ink">Password</span>
+          <label>
+            <span>Password</span>
             <input
               type="password"
+              name="password"
+              autoComplete="current-password"
               value={password}
               onChange={(event) => setPassword(event.target.value)}
               required
-              className="mt-2 w-full rounded-md border border-line bg-white px-4 py-3 text-sm text-ink outline-none transition focus:border-brand focus:ring-2 focus:ring-blue-100"
             />
           </label>
           {errorMessage ? (
-            <p className="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-700">
-              {errorMessage}
-            </p>
+            <p id="login-error" className="switchboard-auth-message is-error" role="alert">{errorMessage}</p>
           ) : null}
           <button
             type="submit"
             disabled={isSubmitting}
-            className="inline-flex min-h-11 w-full items-center justify-center rounded-md bg-brand px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60"
+            className="switchboard-auth-submit"
           >
-            {isSubmitting ? "Logging in..." : "Login"}
+            <span>{isSubmitting ? "Logging in..." : "Login"}</span>
+            <b aria-hidden="true">→</b>
           </button>
         </form>
+        <p className="switchboard-auth-alternate">New to GigMatch? <Link to="/signup">Create a freelancer or client account</Link>.</p>
       </div>
-    </PageContainer>
+    </section>
   );
 }

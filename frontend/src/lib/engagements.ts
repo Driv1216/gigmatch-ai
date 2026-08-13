@@ -3,12 +3,14 @@ import {
   isEngagement,
   isEngagementList,
   isEngagementTimeline,
+  isReconsiderationContext,
   isReconsiderationInvitation,
   isRecord,
   type Engagement,
   type EngagementList,
   type EngagementTimeline,
   type ReconsiderationInvitation,
+  type ReconsiderationContext,
 } from "./engagementContracts";
 
 const apiBaseUrl = (import.meta.env.VITE_API_BASE_URL ?? "http://localhost:8000").replace(/\/$/, "");
@@ -29,7 +31,7 @@ export const fetchEngagementTimeline = (id: string): Promise<EngagementTimeline>
 
 export function transitionEngagement(
   id: string,
-  action: string,
+  action: Exclude<import("./engagementContracts").EngagementAction, "reopen_gig">,
   payload: Record<string, unknown>,
 ): Promise<Engagement> {
   const paths: Record<string, string> = {
@@ -48,8 +50,8 @@ export function transitionEngagement(
 export const reopenEngagementGig = (id: string, payload: Record<string, unknown>) =>
   request(`/engagements/${encodeURIComponent(id)}/reopen-gig`, isRecord, "POST", payload);
 
-export const fetchReconsiderationContext = (applicationId: string) =>
-  request(`/applications/${encodeURIComponent(applicationId)}/reconsideration-context`, isRecord);
+export const fetchReconsiderationContext = (applicationId: string): Promise<ReconsiderationContext> =>
+  request(`/applications/${encodeURIComponent(applicationId)}/reconsideration-context`, isReconsiderationContext);
 export const fetchReconsiderationInvitation = (id: string): Promise<ReconsiderationInvitation> =>
   request(`/reconsideration-invitations/${encodeURIComponent(id)}`, isReconsiderationInvitation);
 export const createReconsiderationInvitation = (applicationId: string, payload: Record<string, unknown>) =>
@@ -89,4 +91,4 @@ async function request<T>(
   return data;
 }
 
-export type { Engagement, EngagementTimeline, ReconsiderationInvitation };
+export type { Engagement, EngagementTimeline, ReconsiderationContext, ReconsiderationInvitation };

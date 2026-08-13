@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 import test from "node:test";
 
 import { isGigDetailResponse, isGigDiscoveryEnvelope } from "../src/lib/marketplaceContracts.ts";
@@ -84,6 +85,12 @@ test("discovery and full detail envelopes parse safe client and gig fields", () 
   }), true);
 });
 
+test("ordinary open discovery rejects recommendation and score fields", () => {
+  const pagination = { page: 1, page_size: 20, total_items: 1, total_pages: 1 };
+  assert.equal(isGigDiscoveryEnvelope({ items: [{ ...summary, ranking_score: 0.91 }], pagination }), false);
+  assert.equal(isGigDiscoveryEnvelope({ items: [{ ...summary, semantic_score: null, hybrid_score: null }], pagination }), false);
+});
+
 test("current unavailable state renders an explicit safe message", () => {
   assert.equal(
     availabilityMessage({ accepting_applications: false, availability_reason: "opportunity_paused" }),
@@ -164,4 +171,13 @@ test("route-level tombstone response parsing supports terminal detail links", ()
     product_state: "filled",
     message: "This opportunity is no longer available.",
   }), true);
+});
+
+test("discovery and route-local context stay separate from ranking and persistence", () => {
+  const discoverySource = readFileSync(new URL("../src/pages/GigDiscoveryPage.tsx", import.meta.url), "utf8");
+  const contextSource = readFileSync(new URL("../src/components/GigRouteContextRail.tsx", import.meta.url), "utf8");
+  assert.doesNotMatch(discoverySource, /from "\.\.\/lib\/matching"/);
+  assert.match(discoverySource, /not personalized recommendations/i);
+  assert.match(contextSource, /Current gig context/);
+  assert.doesNotMatch(contextSource, /localStorage|sessionStorage|material_terms_token|version_id/);
 });

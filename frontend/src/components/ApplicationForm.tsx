@@ -1,4 +1,4 @@
-import { useMemo, useState, type FormEvent, type ReactNode } from "react";
+import { useId, useMemo, useState, type FormEvent, type ReactNode } from "react";
 import { Button } from "./Button";
 import { isRecord } from "../lib/applicationContracts";
 import { lines, validateProposal } from "../lib/applicationView";
@@ -10,17 +10,25 @@ type Props = {
   initialApplication?: Record<string, unknown>;
   submitLabel: string;
   submitting: boolean;
+  submitDisabled?: boolean;
+  presentation: "switchboard-submission" | "switchboard-record" | "switchboard-revision" | "switchboard-reconsideration";
   onSubmit: (application: Record<string, unknown>) => Promise<void>;
 };
 
 type Values = Record<string, string>;
 
 export function ApplicationForm({
-  paymentStructure, currency, materialTerms, initialApplication, submitLabel, submitting, onSubmit,
+  paymentStructure, currency, materialTerms, initialApplication, submitLabel, submitting,
+  submitDisabled = false, presentation, onSubmit,
 }: Props) {
   const [values, setValues] = useState<Values>(() => initialValues(paymentStructure, initialApplication));
   const [errors, setErrors] = useState<string[]>([]);
   const postedMaximum = useMemo(() => fixedMaximum(materialTerms), [materialTerms]);
+  const errorSummaryId = useId();
+  const switchboardSubmission = presentation === "switchboard-submission";
+  const switchboardRecord = presentation === "switchboard-record";
+  const switchboardRevision = presentation === "switchboard-revision";
+  const switchboardReconsideration = presentation === "switchboard-reconsideration";
 
   function update(name: string, value: string) {
     setValues((current) => ({ ...current, [name]: value }));
@@ -38,29 +46,37 @@ export function ApplicationForm({
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
+    <form
+      onSubmit={handleSubmit}
+      className={`application-form is-${presentation}`}
+      aria-describedby={errors.length ? errorSummaryId : undefined}
+    >
       {errors.length ? (
-        <div className="rounded-md border border-red-200 bg-red-50 p-4" role="alert">
+        <div id={errorSummaryId} className="application-form-validation" role="alert">
           <p className="font-semibold text-red-800">Please review your application</p>
           <ul className="mt-2 list-disc pl-5 text-sm text-red-700">{errors.map((error) => <li key={error}>{error}</li>)}</ul>
         </div>
       ) : null}
 
-      <Field label="Cover note">
-        <textarea value={values.cover_note} onChange={(event) => update("cover_note", event.target.value)} rows={6}
-          className={controlClass} placeholder="Explain your relevant approach and experience." />
-      </Field>
+      <section className="application-form-section is-cover">
+        <SectionHeading index="01" title="Cover note" copy="Connect your approach and relevant experience to this published brief." />
+        <Field label="Cover note" visuallyHiddenLabel>
+          <textarea value={values.cover_note} onChange={(event) => update("cover_note", event.target.value)} rows={6}
+            className={controlClass} placeholder="Explain your relevant approach and experience." />
+        </Field>
+      </section>
 
-      <section className="rounded-md border border-line bg-slate-50 p-5">
-        <h2 className="font-bold text-ink">Financial proposal · {currency}</h2>
+      <section className="application-form-section is-financial">
+        <SectionHeading index="02" title={`Financial proposal · ${currency}`} copy={`Complete the existing ${paymentStructure.replace(/_/g, " ")} proposal structure.`} />
         {paymentStructure === "fixed_price" ? <FixedFields values={values} update={update} maximum={postedMaximum} /> : null}
         {paymentStructure === "hourly" ? <HourlyFields values={values} update={update} /> : null}
         {paymentStructure === "open_to_proposals" ? <OpenFields values={values} update={update} /> : null}
       </section>
 
-      <section className="grid gap-5 rounded-md border border-line p-5 md:grid-cols-2">
+      <section className="application-form-section is-timeline">
+        <SectionHeading index="03" title="Timeline and availability" copy="State when you can begin and the duration shape you are proposing." />
         <div>
-          <h2 className="font-bold text-ink">Timeline</h2>
+          <h2 className="application-form-subheading">Timeline</h2>
           <Select label="Timeline shape" value={values.timeline_mode} onChange={(value) => update("timeline_mode", value)}
             options={["exact", "range", "requires_discussion"]} />
           {values.timeline_mode !== "requires_discussion" ? (
@@ -71,13 +87,14 @@ export function ApplicationForm({
           {values.timeline_mode === "range" ? <div className="grid grid-cols-2 gap-3"><Input label="Minimum" type="number" value={values.timeline_minimum} onChange={(value) => update("timeline_minimum", value)} /><Input label="Maximum" type="number" value={values.timeline_maximum} onChange={(value) => update("timeline_maximum", value)} /></div> : null}
         </div>
         <div>
-          <h2 className="font-bold text-ink">Availability</h2>
+          <h2 className="application-form-subheading">Availability</h2>
           <Input label="Available from" type="date" value={values.available_from} onChange={(value) => update("available_from", value)} />
           {paymentStructure === "hourly" ? <div className="grid grid-cols-2 gap-3"><Input label="Weekly minimum" type="number" value={values.weekly_minimum} onChange={(value) => update("weekly_minimum", value)} /><Input label="Weekly maximum" type="number" value={values.weekly_maximum} onChange={(value) => update("weekly_maximum", value)} /></div> : null}
         </div>
       </section>
 
-      <section className="grid gap-4 rounded-md border border-line p-5 md:grid-cols-2">
+      <section className="application-form-section is-scope">
+        <SectionHeading index="04" title="Scope boundaries" copy="Make included work, exclusions, assumptions, and change factors explicit." />
         <TextList label="Included work" value={values.included_work} onChange={(value) => update("included_work", value)} />
         <TextList label="Excluded work" value={values.excluded_work} onChange={(value) => update("excluded_work", value)} />
         <TextList label="Assumptions" value={values.assumptions} onChange={(value) => update("assumptions", value)} />
@@ -85,7 +102,13 @@ export function ApplicationForm({
         <div className="md:col-span-2"><Field label="Scope notes"><textarea value={values.scope_notes} onChange={(event) => update("scope_notes", event.target.value)} rows={3} className={controlClass} /></Field></div>
       </section>
 
-      <Button type="submit" disabled={submitting}>{submitting ? "Saving application..." : submitLabel}</Button>
+      <div className="application-form-submit">
+        {switchboardSubmission ? <p>Safe retries reuse this submission attempt and will not create another application history.</p> : null}
+        {switchboardRecord ? <p>Saving appends a complete immutable proposal version. Earlier versions remain unchanged.</p> : null}
+        {switchboardRevision ? <p>This complete form targets only the linked open revision request. Discussion text is not copied into proposal fields, and the current proposal changes only after authoritative success.</p> : null}
+        {switchboardReconsideration ? <p>This complete proposal targets only the exact pending reconsideration invitation. Authoritative success creates a fresh immutable Reconsideration version in the same application history and returns it to Under Review.</p> : null}
+        <Button type="submit" disabled={submitting || submitDisabled}>{submitting ? "Saving application..." : submitLabel}</Button>
+      </div>
     </form>
   );
 }
@@ -188,8 +211,11 @@ function fixedMaximum(terms?: Record<string, unknown>): number | undefined {
 }
 
 function arrayLines(value: unknown): string { return Array.isArray(value) ? value.filter((item) => typeof item === "string").join("\n") : ""; }
-function Field({ label, children }: { label: string; children: ReactNode }) { return <label className="block text-sm font-semibold text-ink">{label}<div className="mt-2">{children}</div></label>; }
-function Input({ label, value, onChange, type = "text" }: { label: string; value: string; onChange: (value: string) => void; type?: string }) { return <Field label={label}><input type={type} min={type === "number" ? "0" : undefined} step={type === "number" ? "any" : undefined} value={value} onChange={(event) => onChange(event.target.value)} className={controlClass} /></Field>; }
+function SectionHeading({ index, title, copy }: { index: string; title: string; copy: string }) {
+  return <header className="application-form-section-heading"><span>{index}</span><div><h2>{title}</h2><p>{copy}</p></div></header>;
+}
+function Field({ label, children, visuallyHiddenLabel = false }: { label: string; children: ReactNode; visuallyHiddenLabel?: boolean }) { return <label className="block text-sm font-semibold text-ink"><span className={visuallyHiddenLabel ? "sr-only" : undefined}>{label}</span><div className="mt-2">{children}</div></label>; }
+function Input({ label, value, onChange, type = "text" }: { label: string; value: string; onChange: (value: string) => void; type?: string }) { return <Field label={label}><input type={type} min={type === "number" ? "0" : undefined} step={type === "number" ? "any" : undefined} value={value} onInput={type === "date" ? (event) => onChange(event.currentTarget.value) : undefined} onChange={(event) => onChange(event.target.value)} className={controlClass} /></Field>; }
 function Select({ label, value, onChange, options }: { label: string; value: string; onChange: (value: string) => void; options: string[] }) { return <Field label={label}><select value={value} onChange={(event) => onChange(event.target.value)} className={controlClass}>{options.map((option) => <option key={option} value={option}>{option.replace(/_/g, " ")}</option>)}</select></Field>; }
 function TextList({ label, value, onChange }: { label: string; value: string; onChange: (value: string) => void }) { return <Field label={`${label} (one per line)`}><textarea value={value} onChange={(event) => onChange(event.target.value)} rows={4} className={controlClass} /></Field>; }
 const controlClass = "w-full rounded-md border border-line bg-white px-3 py-2 text-sm text-ink outline-none focus:border-accent";

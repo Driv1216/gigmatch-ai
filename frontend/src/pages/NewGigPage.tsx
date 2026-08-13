@@ -2,7 +2,6 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { GigForm, getParsedBudgets, snapshotFromGigForm, type GigFormValues } from "../components/GigForm";
 import { Button } from "../components/Button";
-import { PageContainer } from "../components/PageContainer";
 import { useAuth } from "../context/AuthContext";
 import { createGig, type GigInput } from "../lib/gigs";
 import { csvToArray } from "../lib/profiles";
@@ -56,31 +55,29 @@ export function NewGigPage() {
   }
 
   return (
-    <PageContainer>
-      <div className="rounded-lg border border-line bg-white p-8 shadow-soft">
-        <div className="flex flex-col gap-4 border-b border-line pb-6 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <p className="text-sm font-semibold uppercase tracking-wide text-accent">Client Gig</p>
-            <h1 className="mt-3 text-3xl font-bold tracking-normal text-ink">Post a New Gig</h1>
-          </div>
-          <Button to="/gigs/manage" variant="secondary">
-            Manage Gigs
-          </Button>
+    <section className="stage-three-page gig-authoring-page">
+      <header className="stage-three-editorial-header">
+        <div>
+          <p>Client operations / New authority</p>
+          <h1>Create a Gig</h1>
         </div>
-
-        {errorMessage ? (
-          <p className="mt-8 rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-700">
-            {errorMessage}
-          </p>
-        ) : null}
-
+        <div className="stage-three-editorial-context">
+          <span>Draft → publish</span>
+          <p>A valid submission creates one genuine owned draft, then publishes complete contract-one terms. If publication fails, Retry reuses that draft.</p>
+          <Button to="/gigs/manage" variant="secondary">Manage gigs</Button>
+        </div>
+      </header>
+      {savedDraft ? <div className="stage-three-notice is-warning" role="status"><strong>Draft secured for retry</strong><p>Publication did not create another draft. Your next valid attempt will reuse the existing owned draft.</p></div> : null}
+      {errorMessage ? <div className="stage-three-notice is-error" role="alert"><strong>Publication did not complete</strong><p>{errorMessage}</p></div> : null}
+      <div className="gig-authoring-board">
+        <header><span>Canonical contract</span><h2>Complete publication terms</h2><p>All fields below form one complete version snapshot. Validation here supports entry; backend and database authority make the final decision.</p></header>
         <GigForm
           isSubmitting={isSubmitting}
-          submitLabel="Publish Gig"
-          submittingLabel="Publishing..."
+          submitLabel={savedDraft ? "Retry publication" : "Create draft & publish"}
+          submittingLabel={savedDraft ? "Retrying publication…" : "Creating and publishing…"}
           onSubmit={handleSubmit}
         />
       </div>
-    </PageContainer>
+    </section>
   );
 }

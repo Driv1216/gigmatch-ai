@@ -27,12 +27,37 @@ export function applicantScorePresentation(suitability: {
   match_label: string | null;
 }): { label: string; score: string | null } {
   if (suitability.ranking_status !== "available" || suitability.ranking_score === null) {
-    return { label: "Match score unavailable", score: null };
+    return { label: "Suitability unavailable", score: null };
   }
   return {
     label: suitability.match_label ?? "Calculated match",
     score: `${Math.round(suitability.ranking_score * 100)}%`,
   };
+}
+
+export function applicantRankingModeLabel(mode: string | null): string {
+  if (mode === "hybrid") return "Hybrid keyword + semantic evidence";
+  if (mode === "keyword_fallback") return "Keyword-only fallback evidence";
+  return "No ranking mode available";
+}
+
+export function applicantRankingUnavailableMessage(reason: string | null): string {
+  if (reason === "matching_input_unavailable") {
+    return "Current supported matching input is unavailable. This applicant remains in the complete review pool.";
+  }
+  return reason
+    ? `Suitability evidence is unavailable (${reason.replace(/_/g, " ")}).`
+    : "Current suitability evidence is unavailable.";
+}
+
+export function applicantActionBlockerMessage(code: string): string {
+  const messages: Record<string, string> = {
+    gig_read_only: "The gig is read-only for applicant-review mutations.",
+    application_terminal: "This application is in a terminal stage.",
+    pending_selection_blocks_review_action: "An effective selection request blocks Return to Review and Not Selected.",
+    gig_paused_for_stage_decisions: "The gig is paused. Private shortlist organization may continue, but applicant-visible stage decisions are blocked.",
+  };
+  return messages[code] ?? code.replace(/_/g, " ");
 }
 
 export function applicantReviewErrorMessage(error: unknown): string {
@@ -60,6 +85,8 @@ export function shouldRefreshApplicantReviewAfterError(code: string): boolean {
     "stale_review_action",
     "shortlist_capacity_reached",
     "advancement_capacity_reached",
+    "pending_selection_blocks_review_action",
+    "review_action_not_allowed",
   ].includes(code);
 }
 

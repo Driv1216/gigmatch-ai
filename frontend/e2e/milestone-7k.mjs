@@ -73,20 +73,20 @@ try {
     `${frontendOrigin}/gigs/${mainGigId}/applicants/${mainApplicationA}`;
   await clientA.goto(`${frontendOrigin}/gigs/${mainGigId}/applicants`);
   await settled(clientA, mainTitle);
-  await expectText(clientA, "Keyword ranking fallback");
+  await expectText(clientA, "Keyword-only fallback is active");
   await expectText(clientA, "Milestone 7K Freelancer A");
   await expectText(clientA, "Milestone 7K Freelancer B");
   await clientA.goto(mainApplicantAUrl);
   await settled(clientA, /Milestone 7K Freelancer A/);
-  await expectText(clientA, "Current AI-assisted suitability evidence");
+  await expectText(clientA, "Current suitability");
   await expectText(clientA, /Match|Strong|Moderate|Limited/i);
-  await clientA.getByRole("button", { name: "Add to shortlist" }).click();
-  await expectText(clientA, "Currently on the private internal shortlist.");
+  await clientA.getByRole("button", { name: "Add to Internal Shortlist" }).click();
+  await expectText(clientA, "The refreshed private review state now includes this applicant on the Internal Shortlist.");
 
-  await clientA.getByLabel("Focused plain-text message").fill(
+  await clientA.getByLabel("Focused plain-text entry").fill(
     "Please confirm the FastAPI delivery boundary.",
   );
-  await clientA.getByRole("button", { name: "Send question" }).click();
+  await clientA.getByRole("button", { name: "Send structured question" }).click();
   await expectText(clientA, "Please confirm the FastAPI delivery boundary.");
 
   await freelancerA.goto(`${frontendOrigin}/applications/${mainApplicationA}`);
@@ -96,23 +96,23 @@ try {
   await freelancerA.getByLabel("Structured answer").fill(
     "I will deliver the API boundary with contract tests.",
   );
-  await freelancerA.getByRole("button", { name: "Confirm" }).click();
+  await freelancerA.getByRole("button", { name: "Confirm structured action" }).click();
   await expectText(freelancerA, "I will deliver the API boundary with contract tests.");
 
   await clientA.reload();
   await settled(clientA, /Milestone 7K Freelancer A/);
   await expectText(clientA, "I will deliver the API boundary with contract tests.");
   await clientA.getByRole("button", { name: "Advance" }).click();
-  await clientA.getByRole("dialog").getByRole("button", { name: "Confirm" }).click();
-  await expectText(clientA, /Advanced · application v1/i);
+  await clientA.getByRole("dialog").getByRole("button", { name: "Advance", exact: true }).click();
+  await expectText(clientA, "Advanced");
   await clientA.reload();
-  await settled(clientA, /Advanced · application v1/i);
+  await settled(clientA, "Advanced");
   await clientA.getByRole("button", { name: "Send revision request" }).click();
-  await expectText(clientA, "Open proposal-revision request");
+  await expectVisible(clientA.locator("article.stage-six-open-revision").getByText("Open", { exact: true }));
 
   await freelancerA.reload();
   await settled(freelancerA, mainTitle);
-  await freelancerA.getByRole("link", { name: "Open complete proposal update" }).click();
+  await freelancerA.getByRole("link", { name: "Submit complete updated proposal" }).click();
   await settled(freelancerA, "Submit complete proposal revision");
   await freelancerA.getByLabel("Cover note").fill(
     "Primary revised complete proposal from Freelancer A.",
@@ -125,19 +125,20 @@ try {
   await requireSuccessfulResponse(await revisionSubmission, "revision submission");
   await settled(freelancerA, mainTitle);
   await expectText(freelancerA, /application v2/i);
-  await expectText(freelancerA, "Version 2");
+  await expectVisible(freelancerA.locator("details").filter({ hasText: "Application v2" }).locator("summary"));
 
   await clientA.reload();
   await settled(clientA, /Milestone 7K Freelancer A/);
   await expectText(clientA, /application v2/i);
-  await clientA.getByRole("button", { name: "Send selection request" }).click();
+  await clientA.getByRole("button", { name: "Send Exact-Version Request" }).click();
   await expectText(clientA, /Pending/i);
 
   await freelancerA.reload();
   await settled(freelancerA, mainTitle);
-  await acceptDialog(
+  await confirmNativeDialog(
     freelancerA,
     freelancerA.getByRole("button", { name: "Accept Exact Terms" }),
+    "Confirm Exact Terms",
   );
   await expectText(freelancerA, "Engagement confirmed");
 
@@ -161,21 +162,21 @@ try {
   await clientA.goto(secondApplicantUrl);
   await settled(clientA, /Milestone 7K Freelancer A/);
   await clientA.getByRole("button", { name: "Advance" }).click();
-  await clientA.getByRole("dialog").getByRole("button", { name: "Confirm" }).click();
-  await expectText(clientA, /Advanced · application v1/i);
+  await clientA.getByRole("dialog").getByRole("button", { name: "Advance", exact: true }).click();
+  await expectText(clientA, "Advanced");
   await clientA.reload();
-  await settled(clientA, /Advanced · application v1/i);
-  await clientA.getByRole("button", { name: "Send selection request" }).click();
+  await settled(clientA, "Advanced");
+  await clientA.getByRole("button", { name: "Send Exact-Version Request" }).click();
   await expectText(clientA, /Pending/i);
 
   await freelancerA.goto(`${frontendOrigin}/applications/${secondApplicationA}`);
   await settled(freelancerA, secondTitle);
   await expectVisible(freelancerA.getByRole("button", { name: "Accept Exact Terms" }));
-  await freelancerA.getByRole("link", { name: "Edit application" }).click();
+  await freelancerA.getByRole("link", { name: "Edit as new version" }).click();
   await settled(freelancerA, "Edit application");
   await freelancerA.getByLabel("Cover note").fill("Invalidation scenario proposal v2.");
   await freelancerA.getByLabel("Scope notes").fill("Invalidation scope v2");
-  await freelancerA.getByRole("button", { name: "Save new version" }).click();
+  await freelancerA.getByRole("button", { name: "Save new proposal version" }).click();
   await settled(freelancerA, secondTitle);
   await expectText(freelancerA, /application v2/i);
   await expectAbsent(freelancerA.getByRole("button", { name: "Accept Exact Terms" }));
@@ -185,7 +186,7 @@ try {
   await settled(clientA, /Milestone 7K Freelancer A/);
   await expectText(clientA, /application v2/i);
   await expectText(clientA, /Invalidated/i);
-  await clientA.getByRole("button", { name: "Send selection request" }).click();
+  await clientA.getByRole("button", { name: "Send Exact-Version Request" }).click();
   await expectText(clientA, /Pending/i);
 
   await proveIsolation(
@@ -197,21 +198,23 @@ try {
   );
 
   const engagementUrl = await openEngagement(clientA, mainTitle);
-  await clientA.getByRole("button", { name: "Prepare for Kickoff" }).click();
+  await confirmNativeDialog(clientA, clientA.getByRole("button", { name: "Prepare for Kickoff" }), "Prepare for Kickoff");
   await expectText(clientA, /Kickoff Pending/i);
 
   await freelancerA.goto(engagementUrl);
   await settled(freelancerA, mainTitle);
-  await freelancerA.getByRole("button", { name: "Mark Work Started" }).click();
+  await confirmNativeDialog(freelancerA, freelancerA.getByRole("button", { name: "Mark Work Started" }), "Mark Work Started");
   await expectText(freelancerA, /In Progress/i);
-  await freelancerA.getByRole("button", { name: "Request Completion" }).click();
+  await confirmNativeDialog(freelancerA, freelancerA.getByRole("button", { name: "Request Completion" }), "Request Completion");
   await expectText(freelancerA, /Completion Pending/i);
 
   await clientA.reload();
   await settled(clientA, mainTitle);
-  await acceptDialog(
+  await confirmNativeDialog(
     clientA,
     clientA.getByRole("button", { name: "Confirm Completion" }),
+    "Confirm Completion",
+    { confirmTerminal: true },
   );
   await expectText(clientA, /Completed/i);
   await clientA.reload();
@@ -224,7 +227,7 @@ try {
   await revealAndHide(freelancerA, "Meeting Link", meetingUrl);
 
   const staleMeeting = contactCard(freelancerA, "Meeting Link");
-  const staleReveal = staleMeeting.getByRole("button", { name: "Reveal" });
+  const staleReveal = staleMeeting.getByRole("button", { name: "Reveal Through Server" });
   await expectVisible(staleReveal);
   await revokeMeeting(clientA);
   const denied = freelancerA.waitForResponse(
@@ -241,7 +244,7 @@ try {
   await freelancerA.reload();
   await settled(freelancerA, mainTitle);
   await expectAbsentText(freelancerA, meetingUrl);
-  await expectAbsent(contactCard(freelancerA, "Meeting Link").getByRole("button", { name: "Reveal" }));
+  await expectAbsent(contactCard(freelancerA, "Meeting Link").getByRole("button", { name: "Reveal Through Server" }));
 
   await proveLogoutBackDenial(clientB);
   await proveLazyFailure();
@@ -360,45 +363,45 @@ async function proveWrongRoleRedirects(client, freelancer) {
 
 async function publishAndReviewGig(page, title) {
   await page.goto(`${frontendOrigin}/gigs/new`);
-  await settled(page, "Post a New Gig");
+  await settled(page, "Create a Gig");
   const applicationDeadline = localDateTime(14);
   const projectDeadline = localDateTime(45);
   await page.getByLabel("Title").fill(title);
   await page.getByLabel("Description").fill(
     "Build a React and TypeScript workspace backed by FastAPI and PostgreSQL.",
   );
-  await page.getByLabel("Tech Category").fill("full-stack");
-  await page.getByLabel("Required Skills").fill("React, TypeScript, FastAPI");
-  await page.getByLabel("Preferred Skills").fill("PostgreSQL");
-  await page.getByLabel("Budget Min").fill("1200");
-  await page.getByLabel("Budget Max").fill("1800");
-  await page.getByLabel("Difficulty Level").selectOption("advanced");
-  await page.getByLabel("Seniority Needed").selectOption("senior");
+  await page.getByLabel("Tech category").fill("full-stack");
+  await page.getByLabel("Required skills").fill("React, TypeScript, FastAPI");
+  await page.getByLabel("Preferred skills").fill("PostgreSQL");
+  await page.getByLabel("Budget minimum").fill("1200");
+  await page.getByLabel("Budget maximum").fill("1800");
+  await page.getByLabel("Difficulty level").selectOption("advanced");
+  await page.getByLabel("Experience requirement").selectOption("senior");
   await page.getByLabel("Deliverables").fill("Working application, Contract tests");
-  await page.getByLabel("Work Mode").selectOption("remote");
-  await page.getByLabel("Application Deadline").fill(applicationDeadline);
-  await page.getByLabel("Project Deadline").fill(projectDeadline);
-  await page.getByLabel("Location / Timezone Requirements").fill("Remote UTC ± 6");
-  await page.getByRole("button", { name: "Publish Gig" }).click();
+  await page.getByLabel("Work mode").selectOption("remote");
+  await page.getByLabel("Application deadline").fill(applicationDeadline);
+  await page.getByLabel("Project deadline").fill(projectDeadline);
+  await page.getByLabel("Location / timezone requirements").fill("Remote UTC ± 6");
+  await page.getByRole("button", { name: "Create draft & publish" }).click();
   await page.waitForURL(/\/gigs\/manage$/);
   await settled(page, title);
   const article = page.getByRole("article").filter({ hasText: title });
-  const parseLink = article.getByRole("link", { name: "Parse Requirements" });
+  const parseLink = article.getByRole("link", { name: "Legacy parser" });
   const href = await parseLink.getAttribute("href");
   const match = href?.match(/^\/gigs\/([^/]+)\/parse$/);
   if (!match) throw new Error("published gig id was not exposed by the UI");
   await parseLink.click();
-  await settled(page, "Gig Requirement Parser");
-  await page.getByRole("button", { name: "Extract Requirements" }).click();
-  await expectVisible(page.getByLabel("Required Skills"));
-  await page.getByLabel("Required Skills").fill("React, TypeScript, FastAPI");
-  await page.getByLabel("Preferred Skills").fill("PostgreSQL");
+  await settled(page, "Review the signals. Leave gig authority intact.");
+  await page.getByRole("button", { name: "Extract requirements candidate" }).click();
+  await expectVisible(page.getByLabel("Required skills"));
+  await page.getByLabel("Required skills").fill("React, TypeScript, FastAPI");
+  await page.getByLabel("Preferred skills").fill("PostgreSQL");
   await page.getByLabel("Categories").fill("frontend, backend");
-  await page.getByLabel("Matched Terms").fill("react, typescript, fastapi, postgresql");
-  await page.getByLabel("Seniority Level").selectOption("senior");
+  await page.getByLabel("Matched terms").fill("react, typescript, fastapi, postgresql");
+  await page.getByLabel("Seniority level").selectOption("senior");
   await page.getByLabel("Deliverables").fill("Working application, Contract tests");
-  await page.getByRole("button", { name: "Save Reviewed Requirements" }).click();
-  await expectText(page, "Reviewed gig parse saved.");
+  await page.getByRole("button", { name: "Save reviewed gig input" }).click();
+  await expectText(page, "Reviewed gig input saved.");
   return match[1];
 }
 
@@ -450,11 +453,11 @@ async function proveIsolation(
     );
     await settled(clientB, /not found|could not be found|unavailable/i);
     await freelancerB.goto(`${frontendOrigin}/applications/${mainApplicationA}`);
-    await settled(freelancerB, /application not found/i);
+    await settled(freelancerB, /application unavailable|unable to load application|application not found/i);
     await freelancerB.goto(
       `${frontendOrigin}/applications/00000000-0000-4000-8000-000000000007`,
     );
-    await settled(freelancerB, /application not found/i);
+    await settled(freelancerB, /application unavailable|unable to load application|application not found/i);
   } finally {
     expectedFailurePages.delete(clientB);
     expectedFailurePages.delete(freelancerB);
@@ -464,8 +467,7 @@ async function proveIsolation(
 async function openEngagement(page, title) {
   await page.goto(`${frontendOrigin}/engagements`);
   await settled(page, "Engagements");
-  const article = page.getByRole("article").filter({ hasText: title });
-  const link = article.getByRole("link", { name: "Open workspace" });
+  const link = page.locator("article.engagement-register-lane").filter({ hasText: title }).getByRole("link", { name: "Open Workspace" });
   const href = await link.getAttribute("href");
   if (!href) throw new Error("engagement link missing");
   await link.click();
@@ -477,25 +479,25 @@ async function shareContactMethods(page) {
   await settled(page, "Secure Contact Exchange");
   const email = page
     .getByText("Verified Email", { exact: true })
-    .locator("xpath=ancestor::div[contains(@class,'rounded-md')][1]");
-  await email.getByRole("button", { name: "Share", exact: true }).click();
+    .locator("xpath=ancestor::article[contains(@class,'contact-method-row')][1]");
+  await email.getByRole("button", { name: "Share Method" }).click();
   await expectText(
-    page.getByRole("heading", { name: "Your sharing history" }).locator(".."),
+    page.getByRole("heading", { name: "Your share history" }).locator("../.."),
     "Verified Email",
   );
   const meeting = page
     .getByText("Meeting Link", { exact: true })
-    .locator("xpath=ancestor::div[contains(@class,'rounded-md')][1]");
+    .locator("xpath=ancestor::article[contains(@class,'contact-method-row')][1]");
   await meeting.getByLabel("HTTPS URL").fill(meetingUrl);
-  await meeting.getByRole("button", { name: "Share Provided URL" }).click();
-  await expectText(page, /Meeting Link ·/i);
+  await meeting.getByRole("button", { name: "Share URL" }).click();
+  await expectText(page.getByRole("heading", { name: "Your share history" }).locator("../.."), "Meeting Link");
 }
 
 function contactCard(page, method) {
   return page
-    .getByRole("heading", { name: "Shared with you" })
-    .locator("..")
-    .locator("div.rounded-md")
+    .getByRole("heading", { name: "Incoming share history" })
+    .locator("../..")
+    .locator("article.contact-share-row")
     .filter({ has: page.getByText(method, { exact: true }) });
 }
 
@@ -507,7 +509,7 @@ async function revealAndHide(page, method, expectedValue) {
       response.url().endsWith("/reveal") &&
       response.status() === 200,
   );
-  await card.getByRole("button", { name: "Reveal" }).click();
+  await card.getByRole("button", { name: "Reveal Through Server" }).click();
   const response = await revealed;
   const cacheControl = response.headers()["cache-control"] ?? "";
   const pragma = response.headers().pragma ?? "";
@@ -525,11 +527,11 @@ async function revealAndHide(page, method, expectedValue) {
 async function revokeMeeting(page) {
   await page.reload();
   await settled(page, "Secure Contact Exchange");
-  const history = page.getByRole("heading", { name: "Your sharing history" }).locator("..");
-  const meeting = history.locator("div.rounded-md").filter({
-    has: page.getByText(/Meeting Link ·/i),
+  const history = page.getByRole("heading", { name: "Your share history" }).locator("../..");
+  const meeting = history.locator("article.contact-share-row").filter({
+    has: page.getByText("Meeting Link", { exact: true }),
   });
-  await acceptDialog(page, meeting.getByRole("button", { name: "Revoke Sharing" }));
+  await confirmNativeDialog(page, meeting.getByRole("button", { name: "Revoke Future Reveals" }), "Revoke Future Reveals");
   await expectText(meeting, /Revoked/i);
 }
 
@@ -671,9 +673,14 @@ async function expectAbsent(locator) {
   });
 }
 
-async function acceptDialog(page, action) {
-  page.once("dialog", (dialog) => dialog.accept());
+async function confirmNativeDialog(page, action, confirmName, { confirmTerminal = false } = {}) {
   await action.click();
+  const dialog = page.getByRole("dialog");
+  await expectVisible(dialog);
+  if (confirmTerminal) {
+    await dialog.getByRole("checkbox").check();
+  }
+  await dialog.getByRole("button", { name: confirmName, exact: true }).click();
 }
 
 function localDateTime(days) {

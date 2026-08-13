@@ -4,19 +4,22 @@ type EvaluationLimitationsPanelProps = {
 
 export function EvaluationLimitationsPanel({ limitations }: EvaluationLimitationsPanelProps) {
   return (
-    <section aria-labelledby="evaluation-limitations-title" className="rounded-lg border border-line bg-white p-6 shadow-soft">
-      <p className="text-sm font-semibold uppercase tracking-wide text-accent">Limitations</p>
-      <h2 id="evaluation-limitations-title" className="mt-2 text-2xl font-bold tracking-normal text-ink">
-        Evaluation boundaries
-      </h2>
+    <section aria-labelledby="evaluation-limitations-title" className="admin-evaluation-section admin-evaluation-limitations">
+      <header className="admin-evaluation-section-header">
+        <span>05 / LIMITATIONS</span>
+        <div>
+          <h2 id="evaluation-limitations-title">Evaluation boundaries</h2>
+          <p>These limitations are returned by the backend evaluation runner and remain attached to the evidence.</p>
+        </div>
+      </header>
 
-      <ul className="mt-4 space-y-3 text-sm leading-6 text-muted">
-        {limitations.map((limitation) => (
-          <li key={limitation} className="rounded-md border border-line bg-slate-50 px-4 py-3">
-            {limitation}
-          </li>
-        ))}
-      </ul>
+      {limitations.length > 0 ? (
+        <ol>
+          {limitations.map((limitation, index) => (
+            <li key={`${index}-${limitation}`}><span>{String(index + 1).padStart(2, "0")}</span><p>{limitation}</p></li>
+          ))}
+        </ol>
+      ) : <p className="admin-evaluation-empty">No backend limitations were returned.</p>}
     </section>
   );
 }

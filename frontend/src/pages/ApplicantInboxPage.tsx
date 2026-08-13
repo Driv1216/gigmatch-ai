@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import { ApplicantReviewContextRail } from "../components/ApplicantReviewContextRail";
 import { Button } from "../components/Button";
-import { PageContainer } from "../components/PageContainer";
+import { WorkflowStatusBadge } from "../components/WorkflowStatusBadge";
 import {
   fetchApplicants,
   setApplicantShortlist,
@@ -10,16 +11,31 @@ import {
   type ApplicantView,
 } from "../lib/applicantReview";
 import {
+  applicantActionBlockerMessage,
   applicantInboxState,
+  applicantRankingModeLabel,
+  applicantRankingUnavailableMessage,
   applicantReviewErrorMessage,
   applicantScorePresentation,
   formatReviewDate,
   validApplicantViews,
 } from "../lib/applicantReviewView";
 import { isRecord } from "../lib/applicationContracts";
-import { statusLabel } from "../lib/applicationView";
 
-const statuses: ApplicantStatus[] = ["active", "not_selected", "withdrawn", "closed", "all"];
+const statuses: Array<[ApplicantStatus, string]> = [
+  ["active", "Active review"],
+  ["not_selected", "Not Selected"],
+  ["withdrawn", "Withdrawn"],
+  ["closed", "Closed history"],
+  ["all", "All records"],
+];
+
+const viewLabels: Record<ApplicantView, string> = {
+  best_match: "Best Match",
+  newest: "Newest",
+  internal_shortlist: "Internal Shortlist",
+  advanced: "Advanced",
+};
 
 export function ApplicantInboxPage() {
   const { gigId } = useParams();
@@ -29,6 +45,7 @@ export function ApplicantInboxPage() {
   const [data, setData] = useState<ApplicantListEnvelope | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [actionError, setActionError] = useState<string | null>(null);
   const [workingId, setWorkingId] = useState<string | null>(null);
 
   const load = useCallback(async () => {
@@ -46,171 +63,131 @@ export function ApplicantInboxPage() {
 
   useEffect(() => { void load(); }, [load]);
 
-  const state = applicantInboxState(loading, error, data?.items.length ?? 0, status);
+  const staleRecord = Boolean(data && gigId && String(data.gig.gig_id ?? "") !== gigId);
+  const state = applicantInboxState(loading || staleRecord, error, data?.items.length ?? 0, status);
   const views = validApplicantViews(status, true);
+  const gigTitle = String(data?.gig.title ?? "Applicant review");
+  const gigState = String(data?.gig.product_state ?? data?.gig.lifecycle ?? "Loading");
+
   function chooseStatus(next: ApplicantStatus) {
     setStatus(next);
     setPage(1);
+    setActionError(null);
     if (!validApplicantViews(next, true).includes(view)) setView("best_match");
   }
 
   async function toggleShortlist(applicationId: string, shortlisted: boolean, token: string) {
     setWorkingId(applicationId);
-    setError(null);
+    setActionError(null);
     try {
       await setApplicantShortlist(applicationId, shortlisted, token);
       await load();
     } catch (value) {
       const message = applicantReviewErrorMessage(value);
       await load().catch(() => undefined);
-      setError(message);
+      setActionError(message);
     } finally {
       setWorkingId(null);
     }
   }
 
   return (
-    <PageContainer className="space-y-6">
-      <header className="rounded-lg border border-line bg-white p-7 shadow-soft">
-        <p className="text-xs font-semibold uppercase tracking-wide text-accent">Client applicant inbox</p>
-        <h1 className="mt-2 text-3xl font-bold text-ink">
-          {String(data?.gig.title ?? "Review applicants")}
-        </h1>
-        <p className="mt-3 max-w-3xl text-sm leading-6 text-muted">
-          Review every submitted application. Suitability evidence is current and AI-assisted; commercial
-          terms remain tied to the exact application and gig versions shown.
-        </p>
-        {data?.gig.product_state ? (
-          <p className="mt-3 text-xs font-semibold uppercase text-muted">
-            Gig state: {String(data.gig.product_state).replace(/_/g, " ")}
-          </p>
-        ) : null}
+    <section className="stage-five-page applicant-inbox-page" aria-busy={loading}>
+      <ApplicantReviewContextRail
+        gigTitle={gigTitle}
+        gigState={gigState}
+        returnTo="/gigs/manage"
+        returnLabel="Return to managed gigs"
+      />
+
+      <header className="stage-five-editorial-header">
+        <div><p>Client operations / Complete applicant pool</p><h1>{gigTitle}</h1></div>
+        <div className="stage-five-editorial-context">
+          <span>Rank, organize, then decide</span>
+          <p>Every real application remains in this register. Current suitability evidence and exact commercial proposal evidence stay separate.</p>
+          <strong>{data?.counts.all ?? "—"} total application record{data?.counts.all === 1 ? "" : "s"}</strong>
+        </div>
       </header>
 
-      <section aria-label="Applicant filters" className="rounded-lg border border-line bg-white p-5">
-        <div className="flex flex-wrap gap-2">
-          {statuses.map((item) => (
-            <button
-              key={item}
-              type="button"
-              onClick={() => chooseStatus(item)}
-              aria-pressed={status === item}
-              className={`rounded-full border px-4 py-2 text-sm font-semibold ${
-                status === item ? "border-brand bg-blue-50 text-brand" : "border-line text-muted"
-              }`}
-            >
-              {item.replace(/_/g, " ")} {data?.counts[item] !== undefined ? `(${data.counts[item]})` : ""}
+      <section className="applicant-filter-board" aria-label="Applicant register controls">
+        <div className="applicant-status-tabs" role="group" aria-label="Application stage groups">
+          {statuses.map(([value, label]) => (
+            <button key={value} type="button" onClick={() => chooseStatus(value)} aria-pressed={status === value}>
+              <span>{label}</span><strong>{data?.counts[value] ?? "—"}</strong>
             </button>
           ))}
         </div>
-        <div className="mt-4 flex flex-wrap gap-2 border-t border-line pt-4">
+        <div className="applicant-view-tabs" role="group" aria-label="Authoritative applicant ordering">
+          <span>Order / focused view</span>
           {views.map((item) => (
-            <button
-              key={item}
-              type="button"
-              onClick={() => { setView(item); setPage(1); }}
-              aria-pressed={view === item}
-              className={`rounded-md px-4 py-2 text-sm font-semibold ${
-                view === item ? "bg-ink text-white" : "bg-slate-100 text-muted"
-              }`}
-            >
-              {item.replace(/_/g, " ")}
+            <button key={item} type="button" onClick={() => { setView(item); setPage(1); setActionError(null); }} aria-pressed={view === item}>
+              {viewLabels[item]}
             </button>
           ))}
         </div>
       </section>
 
       {data?.ranking_context.ranking_mode === "keyword_fallback" ? (
-        <div className="rounded-lg border border-amber-200 bg-amber-50 p-5">
-          <h2 className="font-bold text-amber-950">Keyword ranking fallback</h2>
-          <p className="mt-2 text-sm text-amber-900">
-            Semantic matching is unavailable ({String(data.ranking_context.semantic_unavailable_reason).replace(/_/g, " ")}).
-            Scores shown are keyword-only.
-          </p>
-        </div>
+        <section className="applicant-ranking-notice" aria-labelledby="keyword-fallback-title">
+          <span>Ranking context / Entire rankable subset</span>
+          <h2 id="keyword-fallback-title">Keyword-only fallback is active</h2>
+          <p>Semantic matching is unavailable ({String(data.ranking_context.semantic_unavailable_reason ?? "provider unavailable").replace(/_/g, " ")}). Every score shown in this context is keyword-only; no hybrid or semantic score is implied.</p>
+        </section>
       ) : null}
 
-      {state === "loading" ? <p className="text-sm font-medium text-muted">Loading applicants...</p> : null}
-      {state === "error" ? <div role="alert" className="rounded-lg border border-red-200 bg-red-50 p-6 text-red-700">{error}</div> : null}
+      {actionError ? <Notice title="Applicant organization stopped" body={actionError} /> : null}
+      {state === "loading" ? <StatePanel title="Loading applicant register" body="Retrieving the complete pool, authoritative ordering, private review state, and current evidence…" /> : null}
+      {state === "error" ? <StatePanel title="Applicant register unavailable" body={error ?? "Unable to load applicant review."} retry={() => void load()} error /> : null}
       {state === "empty_active" ? (
-        <div className="rounded-lg border border-dashed border-line bg-white p-8">
-          <h2 className="text-xl font-bold text-ink">No active applicants</h2>
-          <p className="mt-2 text-sm text-muted">New submitted applications will appear here without requiring a ranking score.</p>
-        </div>
+        view === "internal_shortlist" || view === "advanced"
+          ? <StatePanel title={`No applicants in ${viewLabels[view]}`} body="The complete active applicant pool is unchanged. This authoritative focused view currently contains no records." />
+          : <StatePanel title="No active applicants" body="No application is currently Under Review or Advanced. Real submitted applications will appear here even when suitability evidence is unavailable." />
       ) : null}
-      {state === "empty_history" ? (
-        <div className="rounded-lg border border-dashed border-line bg-white p-8">
-          <h2 className="text-xl font-bold text-ink">No applications in this history view</h2>
-          <p className="mt-2 text-sm text-muted">Choose another status to continue reviewing application history.</p>
-        </div>
-      ) : null}
+      {state === "empty_history" ? <StatePanel title="No records in this history view" body="This authoritative filter returned no application records. Choose another stage group to continue." /> : null}
 
       {state === "ready" && data ? (
-        <div className="space-y-4">
-          {data.items.map((applicant) => {
+        <div className="applicant-register" aria-label="Applicant review register">
+          <div className="applicant-register-heading" aria-hidden="true"><span>Lane</span><span>Applicant record</span><span>Current suitability</span><span>Commercial / private state</span><span>Destination</span></div>
+          {data.items.map((applicant, index) => {
             const score = applicantScorePresentation(applicant.suitability);
             const freelancer = applicant.freelancer;
             const commercial = applicant.commercial;
             const proposal = isRecord(commercial.proposal) ? commercial.proposal : {};
             const timeline = isRecord(commercial.timeline) ? commercial.timeline : {};
             const availability = isRecord(commercial.availability) ? commercial.availability : {};
+            const isShortlisted = applicant.review_state.is_shortlisted;
             return (
-              <article key={applicant.application_id} className="rounded-lg border border-line bg-white p-6 shadow-sm">
-                <div className="flex flex-col gap-5 lg:flex-row lg:justify-between">
-                  <div className="min-w-0 flex-1">
-                    <div className="flex flex-wrap items-center gap-3">
-                      <h2 className="text-xl font-bold text-ink">{String(freelancer.display_name ?? "Applicant")}</h2>
-                      <span className="rounded-full border border-line bg-slate-50 px-3 py-1 text-xs font-semibold text-muted">
-                        {statusLabel(applicant.stage)}
-                      </span>
-                    </div>
-                    <p className="mt-2 text-sm font-semibold text-accent">{String(freelancer.headline ?? "Profile headline unavailable")}</p>
-                    <p className="mt-2 text-sm text-muted">
-                      {String(freelancer.experience_level ?? "Experience not specified")} · {String(freelancer.location ?? "Location not specified")}
-                    </p>
-                    <p className="mt-3 text-sm text-muted">
-                      Skills: {Array.isArray(freelancer.skills) && freelancer.skills.length ? freelancer.skills.join(", ") : "Not listed"}
-                    </p>
-                  </div>
-                  <div className="min-w-48 rounded-lg bg-slate-50 p-4">
-                    <p className="text-xs font-semibold uppercase text-muted">{applicant.suitability.evidence_label}</p>
-                    <p className="mt-2 text-lg font-bold text-ink">{score.label}{score.score ? ` · ${score.score}` : ""}</p>
-                    <p className="mt-2 text-xs text-muted">Generated {formatReviewDate(applicant.suitability.ranking_generated_at)}</p>
-                  </div>
+              <article key={applicant.application_id} className="applicant-register-lane">
+                <span className="applicant-register-index">{String((page - 1) * data.pagination.page_size + index + 1).padStart(2, "0")}</span>
+                <div className="applicant-register-record">
+                  <div className="applicant-register-kicker"><WorkflowStatusBadge status={applicant.stage} /><span>Application v{String(commercial.application_version_number ?? "—")}</span></div>
+                  <h2>{String(freelancer.display_name ?? "Applicant")}</h2>
+                  <p>{String(freelancer.headline ?? "Profile headline unavailable")}</p>
+                  <small>{String(freelancer.experience_level ?? "Experience not specified")} · {String(freelancer.location ?? "Location not specified")}</small>
+                  <p className="applicant-register-skills">{skillSummary(freelancer.skills)}</p>
                 </div>
-                <div className="mt-5 grid gap-4 border-t border-line pt-5 md:grid-cols-3">
-                  <Summary label="Proposal" value={String(proposal.mode ?? proposal.payment_structure ?? "Review full proposal")} />
-                  <Summary label="Timeline" value={String(timeline.mode ?? "Not specified")} />
-                  <Summary label="Availability" value={String(availability.available_from ?? "Not specified")} />
+                <div className={`applicant-register-suitability${score.score ? " is-available" : " is-unavailable"}`}>
+                  <span>{applicant.suitability.evidence_label}</span>
+                  <strong>{score.label}</strong>
+                  {score.score ? <b>{score.score}</b> : <p>{applicantRankingUnavailableMessage(applicant.suitability.ranking_unavailable_reason)}</p>}
+                  <small>{applicantRankingModeLabel(applicant.suitability.ranking_mode)}</small>
+                  {applicant.suitability.strongest_matching_evidence ? <p>Strongest evidence: {applicant.suitability.strongest_matching_evidence}</p> : null}
                 </div>
-                <p className="mt-4 line-clamp-2 text-sm leading-6 text-muted">{String(commercial.cover_note_preview ?? "")}</p>
-                {commercial.response_to_updated_gig_required === true ? (
-                  <p className="mt-4 rounded-md border border-amber-200 bg-amber-50 p-3 text-sm font-semibold text-amber-900">
-                    Response to the updated gig is required. Suitability still reflects current requirements.
-                  </p>
-                ) : null}
-                {applicant.qa && (
-                  applicant.qa.awaiting_other_participant_response_count > 0 ||
-                  applicant.qa.open_revision_request_count > 0
-                ) ? (
-                  <p className="mt-3 text-sm font-semibold text-brand">
-                    {applicant.qa.awaiting_other_participant_response_count > 0
-                      ? `Awaiting ${applicant.qa.awaiting_other_participant_response_count} freelancer response${applicant.qa.awaiting_other_participant_response_count === 1 ? "" : "s"}`
-                      : "Proposal revision request open"}
-                  </p>
-                ) : null}
-                <div className="mt-5 flex flex-wrap items-center justify-between gap-3">
-                  <p className="text-xs text-muted">
-                    Submitted {formatReviewDate(applicant.submitted_at)} · Application v{String(commercial.application_version_number ?? "")}
-                  </p>
-                  <div className="flex flex-wrap gap-3">
-                    {applicant.allowed_actions.includes("add_to_internal_shortlist") ? (
-                      <Button variant="secondary" disabled={workingId === applicant.application_id} onClick={() => void toggleShortlist(applicant.application_id, true, applicant.shortlist_action_token)}>Add to shortlist</Button>
-                    ) : null}
-                    {applicant.allowed_actions.includes("remove_from_internal_shortlist") ? (
-                      <Button variant="secondary" disabled={workingId === applicant.application_id} onClick={() => void toggleShortlist(applicant.application_id, false, applicant.shortlist_action_token)}>Remove shortlist</Button>
-                    ) : null}
-                    <Button to={`/gigs/${gigId}/applicants/${applicant.application_id}`}>View full application</Button>
+                <div className="applicant-register-commercial">
+                  <span>Current commercial proposal</span>
+                  <strong>{proposalSummary(proposal)}</strong>
+                  <dl><Fact label="Timeline" value={String(timeline.mode ?? "Not specified")} /><Fact label="Available" value={String(availability.available_from ?? "Not specified")} /></dl>
+                  <p className="applicant-private-state"><b>Private organization</b>{isShortlisted ? "Included on Internal Shortlist" : "Not on Internal Shortlist"}</p>
+                  {commercial.response_to_updated_gig_required === true ? <p className="applicant-updated-warning">Answers gig v{String(commercial.answered_gig_version_number ?? "—")}; current material terms are v{String(commercial.current_material_gig_version_number ?? "—")}.</p> : null}
+                  {applicant.action_blockers.map((blocker) => <p className="applicant-inline-blocker" key={blocker}>{applicantActionBlockerMessage(blocker)}</p>)}
+                </div>
+                <div className="applicant-register-action">
+                  <small>Submitted {formatReviewDate(applicant.submitted_at)}</small>
+                  {applicant.qa?.qa_requires_attention ? <p>Later-stage Q&amp;A attention is attached to this record.</p> : null}
+                  <div>
+                    {applicant.allowed_actions.includes("add_to_internal_shortlist") ? <Button type="button" variant="secondary" disabled={workingId === applicant.application_id} onClick={() => void toggleShortlist(applicant.application_id, true, applicant.shortlist_action_token)}>Add to Internal Shortlist</Button> : null}
+                    {applicant.allowed_actions.includes("remove_from_internal_shortlist") ? <Button type="button" variant="secondary" disabled={workingId === applicant.application_id} onClick={() => void toggleShortlist(applicant.application_id, false, applicant.shortlist_action_token)}>Remove from Internal Shortlist</Button> : null}
+                    <Button to={`/gigs/${encodeURIComponent(gigId ?? "")}/applicants/${encodeURIComponent(applicant.application_id)}`}>Open review record</Button>
                   </div>
                 </div>
               </article>
@@ -220,16 +197,35 @@ export function ApplicantInboxPage() {
       ) : null}
 
       {data && data.pagination.total_pages > 1 ? (
-        <nav aria-label="Applicant pages" className="flex items-center justify-between rounded-lg border border-line bg-white p-4">
-          <Button variant="secondary" disabled={page <= 1} onClick={() => setPage((value) => Math.max(1, value - 1))}>Previous</Button>
-          <p className="text-sm text-muted">Page {page} of {data.pagination.total_pages}</p>
-          <Button variant="secondary" disabled={page >= data.pagination.total_pages} onClick={() => setPage((value) => value + 1)}>Next</Button>
+        <nav aria-label="Applicant register pages" className="applicant-pagination">
+          <Button type="button" variant="secondary" disabled={page <= 1} onClick={() => setPage((value) => Math.max(1, value - 1))}>Previous page</Button>
+          <p>Page {data.pagination.page} of {data.pagination.total_pages} · {data.pagination.total_items} filtered records</p>
+          <Button type="button" variant="secondary" disabled={page >= data.pagination.total_pages} onClick={() => setPage((value) => value + 1)}>Next page</Button>
         </nav>
       ) : null}
-    </PageContainer>
+    </section>
   );
 }
 
-function Summary({ label, value }: { label: string; value: string }) {
-  return <div><p className="text-xs font-semibold uppercase text-muted">{label}</p><p className="mt-1 text-sm font-medium text-ink">{value.replace(/_/g, " ")}</p></div>;
+function Fact({ label, value }: { label: string; value: string }) { return <div><dt>{label}</dt><dd>{value.replace(/_/g, " ")}</dd></div>; }
+
+function StatePanel({ title, body, retry, error = false }: { title: string; body: string; retry?: () => void; error?: boolean }) {
+  return <div className={`stage-five-state-panel${error ? " is-error" : ""}`} role={error ? "alert" : "status"}><span>Applicant register</span><h2>{title}</h2><p>{body}</p>{retry ? <Button type="button" variant="secondary" onClick={retry}>Try again</Button> : null}</div>;
+}
+
+function Notice({ title, body }: { title: string; body: string }) { return <div className="stage-five-notice is-error" role="alert"><strong>{title}</strong><p>{body}</p></div>; }
+
+function skillSummary(value: unknown): string {
+  const skills = Array.isArray(value) ? value.filter((item): item is string => typeof item === "string" && Boolean(item.trim())) : [];
+  return skills.length ? `Current skills · ${skills.join(" · ")}` : "Current skills unavailable";
+}
+
+function proposalSummary(proposal: Record<string, unknown>): string {
+  const currency = typeof proposal.currency === "string" ? proposal.currency : "";
+  if (proposal.exact_total !== undefined) return `${currency} ${String(proposal.exact_total)} total`.trim();
+  if (proposal.requested_hourly_rate !== undefined) return `${currency} ${String(proposal.requested_hourly_rate)} / hour`.trim();
+  if (proposal.hourly_rate !== undefined) return `${currency} ${String(proposal.hourly_rate)} / hour`.trim();
+  if (proposal.mode === "comfortable_within_posted_budget") return "Comfortable within posted budget";
+  if (Array.isArray(proposal.phases)) return `${proposal.phases.length} structured pricing phase${proposal.phases.length === 1 ? "" : "s"}`;
+  return String(proposal.mode ?? proposal.payment_structure ?? "Open complete proposal").replace(/_/g, " ");
 }

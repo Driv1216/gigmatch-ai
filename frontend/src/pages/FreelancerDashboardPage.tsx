@@ -50,7 +50,7 @@ export function FreelancerDashboardPage() {
       {dashboard.data ? (
         <>
           <DashboardSection title="Summary" description="Complete current totals; preview limits do not affect these counts.">
-            <dl className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            <dl className="dashboard-summary-grid">
               <DashboardSummaryCard label="All applications" value={dashboard.data.summary.total_applications} />
               <DashboardSummaryCard label="Under review" value={dashboard.data.summary.under_review_applications} />
               <DashboardSummaryCard label="Advanced" value={dashboard.data.summary.advanced_applications} />
@@ -73,20 +73,21 @@ export function FreelancerDashboardPage() {
             action={<Button to="/applications" variant="secondary">View all applications</Button>}
           >
             {dashboard.data.recent_applications.items.length === 0 ? (
-              <p className="text-sm text-muted">No applications yet.</p>
+              <p className="dashboard-empty-row">No applications yet.</p>
             ) : (
-              <ul className="divide-y divide-line">
-                {dashboard.data.recent_applications.items.map((application) => (
-                  <li key={application.application_id} className="py-4 first:pt-0 last:pb-0">
-                    <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+              <ul className="dashboard-record-list">
+                {dashboard.data.recent_applications.items.map((application, index) => (
+                  <li key={application.application_id} className="dashboard-record-row">
+                    <span className="dashboard-row-index" aria-hidden="true">{String(index + 1).padStart(2, "0")}</span>
+                    <div className="dashboard-row-content">
                       <div>
-                        <div className="flex flex-wrap gap-2">
+                        <div className="dashboard-status-line">
                           <WorkflowStatusBadge status={application.stage} />
                           {application.updated_gig_response_required ? <WorkflowStatusBadge status="Updated terms response required" tone="attention" /> : null}
                           {application.has_effective_selection_request ? <WorkflowStatusBadge status="Selection response available" tone="attention" /> : null}
                         </div>
-                        <h3 className="mt-2 font-semibold text-ink">{application.gig_title}</h3>
-                        <p className="mt-1 text-xs text-muted">
+                        <h3>{application.gig_title}</h3>
+                        <p className="dashboard-row-meta">
                           Version {application.application_version_number} · {application.qa_action_count} Q&amp;A responses · Updated {formatDashboardDate(application.last_updated_at)}
                         </p>
                       </div>
@@ -106,17 +107,22 @@ export function FreelancerDashboardPage() {
             action={<Button to="/engagements" variant="secondary">View all engagements</Button>}
           >
             {dashboard.data.active_engagements.items.length === 0 ? (
-              <p className="text-sm text-muted">No active engagements.</p>
+              <p className="dashboard-empty-row">No active engagements.</p>
             ) : (
-              <ul className="grid gap-3 md:grid-cols-2">
-                {dashboard.data.active_engagements.items.map((engagement) => (
-                  <li key={engagement.engagement_id} className="rounded-md border border-line p-4">
-                    <WorkflowStatusBadge status={engagement.status} tone={engagement.response_required ? "attention" : "active"} />
-                    <h3 className="mt-3 font-semibold text-ink">{engagement.gig_title}</h3>
-                    <p className="mt-1 text-xs text-muted">Activity {formatDashboardDate(engagement.latest_activity_at)}</p>
-                    <Button className="mt-4 w-full" to={`/engagements/${encodeURIComponent(engagement.engagement_id)}`} variant="secondary">
-                      Open workspace
-                    </Button>
+              <ul className="dashboard-record-list">
+                {dashboard.data.active_engagements.items.map((engagement, index) => (
+                  <li key={engagement.engagement_id} className="dashboard-record-row">
+                    <span className="dashboard-row-index" aria-hidden="true">{String(index + 1).padStart(2, "0")}</span>
+                    <div className="dashboard-row-content">
+                      <div>
+                        <WorkflowStatusBadge status={engagement.status} tone={engagement.response_required ? "attention" : "active"} />
+                        <h3>{engagement.gig_title}</h3>
+                        <p className="dashboard-row-meta">Activity {formatDashboardDate(engagement.latest_activity_at)}</p>
+                      </div>
+                      <Button to={`/engagements/${encodeURIComponent(engagement.engagement_id)}`} variant="secondary">
+                        Open workspace
+                      </Button>
+                    </div>
                   </li>
                 ))}
               </ul>
@@ -130,35 +136,38 @@ export function FreelancerDashboardPage() {
         description="This independent section uses the existing matching service. Its availability does not affect your workflow dashboard."
         action={<Button to="/gigs" variant="secondary">Browse all gigs</Button>}
       >
-        {recommendations.loading ? <p className="text-sm text-muted" aria-live="polite">Loading recommendations…</p> : null}
+        {recommendations.loading ? <p className="dashboard-loading-row" aria-live="polite">Loading recommendations…</p> : null}
         {recommendations.error ? (
           <DashboardStatePanel title="Recommendations unavailable" body={recommendations.error} retry={recommendations.retry} />
         ) : null}
         {!recommendations.loading && !recommendations.error && recommendations.data?.items.length === 0 ? (
-          <p className="rounded-md border border-dashed border-line bg-slate-50 p-5 text-sm text-muted">
+          <p className="dashboard-empty-row">
             No eligible recommendations are available right now.
           </p>
         ) : null}
         {!recommendations.loading && !recommendations.error && recommendations.data?.items.length ? (
-          <ul className="space-y-4">
-            {recommendations.data.items.map((gig) => {
+          <ul className="dashboard-record-list dashboard-recommendations">
+            {recommendations.data.items.map((gig, index) => {
               const ranking = rankingPresentation(gig);
               return (
-                <li key={gig.gig_id} className="rounded-md border border-line p-4">
-                  <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-                    <div>
-                      <WorkflowStatusBadge status={`${ranking.label} · Rank ${gig.rank}`} />
-                      <h3 className="mt-2 font-semibold text-ink">{gig.title ?? "Untitled gig"}</h3>
-                      {gig.category ? <p className="mt-1 text-xs text-muted">{gig.category}</p> : null}
+                <li key={gig.gig_id} className="dashboard-record-row is-recommendation">
+                  <span className="dashboard-row-index" aria-hidden="true">{String(index + 1).padStart(2, "0")}</span>
+                  <div className="dashboard-recommendation-content">
+                    <div className="dashboard-row-content">
+                      <div>
+                        <WorkflowStatusBadge status={`${ranking.label} · Rank ${gig.rank}`} />
+                        <h3>{gig.title ?? "Untitled gig"}</h3>
+                        {gig.category ? <p className="dashboard-row-meta">{gig.category}</p> : null}
+                      </div>
+                      <dl className="dashboard-score-list">
+                        {ranking.showHybridScore && gig.hybrid_score !== null ? <Score label="Hybrid" value={gig.hybrid_score} /> : null}
+                        <Score label="Keyword" value={gig.keyword_score} />
+                        {ranking.showSemanticScore && gig.semantic_score !== null ? <Score label="Semantic" value={gig.semantic_score} /> : null}
+                      </dl>
                     </div>
-                    <dl className="flex flex-wrap gap-2 text-xs">
-                      {ranking.showHybridScore && gig.hybrid_score !== null ? <Score label="Hybrid" value={gig.hybrid_score} /> : null}
-                      <Score label="Keyword" value={gig.keyword_score} />
-                      {ranking.showSemanticScore && gig.semantic_score !== null ? <Score label="Semantic" value={gig.semantic_score} /> : null}
-                    </dl>
+                    <MatchExplanationPanel explanation={gig.explanation} className="dashboard-match-explanation shadow-none" />
+                    <Button to={`/gigs/${encodeURIComponent(gig.gig_id)}`} variant="secondary">View gig details</Button>
                   </div>
-                  <MatchExplanationPanel explanation={gig.explanation} className="mt-4 shadow-none" />
-                  <Button className="mt-4" to={`/gigs/${encodeURIComponent(gig.gig_id)}`} variant="secondary">View gig details</Button>
                 </li>
               );
             })}
@@ -171,9 +180,9 @@ export function FreelancerDashboardPage() {
 
 function Score({ label, value }: { label: string; value: number }) {
   return (
-    <div className="rounded-md border border-line bg-slate-50 px-3 py-2">
-      <dt className="text-muted">{label}</dt>
-      <dd className="font-semibold tabular-nums text-ink">{formatScoreValue(value) ?? "Unavailable"}</dd>
+    <div className="dashboard-score">
+      <dt>{label}</dt>
+      <dd>{formatScoreValue(value) ?? "Unavailable"}</dd>
     </div>
   );
 }

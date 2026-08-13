@@ -2,9 +2,12 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { ApplicationForm } from "../components/ApplicationForm";
 import { Button } from "../components/Button";
-import { PageContainer } from "../components/PageContainer";
+import { GigRouteContextRail } from "../components/GigRouteContextRail";
 import { ApplicationApiError, fetchApplicationContext, submitApplication, type ApplicationContext } from "../lib/applications";
-import { blockerMessage } from "../lib/applicationView";
+import { applicationSubmissionErrorMessage, blockerMessage } from "../lib/applicationView";
+import { formatDateTime } from "../lib/marketplaceView";
+
+type TermsReviewState = "current" | "refreshing" | "review_required" | "refresh_failed";
 
 export function ApplyToGigPage() {
   const { gigId } = useParams();
@@ -14,6 +17,7 @@ export function ApplyToGigPage() {
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [termsReviewState, setTermsReviewState] = useState<TermsReviewState>("current");
 
   useEffect(() => {
     let active = true;
@@ -25,8 +29,22 @@ export function ApplyToGigPage() {
     return () => { active = false; };
   }, [gigId]);
 
+  async function refreshTermsAfterStale() {
+    if (!gigId) return;
+    setTermsReviewState("refreshing");
+    setError(null);
+    try {
+      const nextContext = await fetchApplicationContext(gigId);
+      setContext(nextContext);
+      setTermsReviewState(nextContext.can_apply ? "review_required" : "current");
+    } catch (reason) {
+      setTermsReviewState("refresh_failed");
+      setError(message(reason));
+    }
+  }
+
   async function handleSubmit(application: Record<string, unknown>) {
-    if (!gigId || !context?.material_terms_token) return;
+    if (!gigId || !context?.material_terms_token || termsReviewState !== "current") return;
     setSubmitting(true);
     setError(null);
     try {
@@ -37,36 +55,124 @@ export function ApplyToGigPage() {
       });
       navigate(`/applications/${saved.application_id}`, { replace: true });
     } catch (reason) {
-      setError(message(reason));
       if (reason instanceof ApplicationApiError && reason.code === "stale_gig_terms") {
-        try { setContext(await fetchApplicationContext(gigId)); } catch { /* keep the actionable mutation error */ }
+        await refreshTermsAfterStale();
+      } else {
+        setError(message(reason));
       }
     } finally { setSubmitting(false); }
   }
 
-  if (loading) return <PageContainer><p className="text-sm text-muted">Loading application terms...</p></PageContainer>;
-  if (!context) return <PageContainer><ErrorPanel message={error ?? "Application terms are unavailable."} /></PageContainer>;
+  if (loading) return <section className="stage-two-page"><StatePanel title="Loading application terms" body="Confirming the current gig and application context…" /></section>;
+  if (!context) return <section className="stage-two-page"><ErrorPanel message={error ?? "Application terms are unavailable."} gigId={gigId} /></section>;
   if (!context.can_apply || !context.material_terms_token) {
-    return <PageContainer><ErrorPanel message={blockerMessage(context.blocker)} existingId={context.existing_application_id} /></PageContainer>;
+    return <section className="stage-two-page"><ErrorPanel message={blockerMessage(context.blocker)} existingId={context.existing_application_id} gigId={gigId} /></section>;
   }
+
+  const title = textField(context.gig, "title") ?? "Current gig";
+  const clientName = textField(context.client, "company_name") ?? textField(context.client, "display_name") ?? "Client";
+  const requiredSkills = stringList(context.gig.required_skills);
+
   return (
-    <PageContainer className="space-y-6">
-      <header><p className="text-sm font-semibold text-accent">Application · gig terms v{context.material_gig_version_number}</p><h1 className="mt-2 text-3xl font-bold text-ink">Apply to {String(context.gig.title ?? "gig")}</h1><p className="mt-3 text-sm text-muted">Your proposal will be bound to these published terms. Deadline: {new Date(context.application_deadline).toLocaleString()}.</p></header>
-      {error ? <div role="alert" className="rounded-md border border-red-200 bg-red-50 p-4 text-sm text-red-700">{error}</div> : null}
-      <ApplicationForm paymentStructure={context.payment_structure} currency={context.currency} materialTerms={context.material_terms}
-        submitLabel="Submit application" submitting={submitting} onSubmit={handleSubmit} />
-    </PageContainer>
+    <section className="stage-two-page application-submission-page">
+      <GigRouteContextRail title={title} state="accepting applications" phase="Application submission" returnTo={`/gigs/${encodeURIComponent(gigId ?? "")}`} returnLabel="Return to gig detail" />
+      <header className="stage-two-editorial-header application-submission-header">
+        <div>
+          <p>APPLICATION / COMPLETE PROPOSAL</p>
+          <h1>Make the promise inspectable.</h1>
+        </div>
+        <div className="stage-two-editorial-context">
+          <span>Apply to {title}</span>
+          <p>Your authenticated freelancer identity is used automatically. The complete proposal is bound to the current reviewed gig terms when submitted.</p>
+        </div>
+      </header>
+
+      <div className="application-terms-strip" aria-label="Current application terms">
+        <div><span>Client</span><strong>{clientName}</strong></div>
+        <div><span>Payment basis</span><strong>{context.payment_structure.replace(/_/g, " ")} · {context.currency}</strong></div>
+        <div><span>Apply by</span><strong>{formatDateTime(context.application_deadline)}</strong></div>
+        <div><span>Required skills</span><strong>{requiredSkills.length ? requiredSkills.join(" · ") : "None specified"}</strong></div>
+      </div>
+
+      {termsReviewState !== "current" ? (
+        <TermsReviewNotice
+          state={termsReviewState}
+          onConfirm={() => setTermsReviewState("current")}
+          onRetry={refreshTermsAfterStale}
+        />
+      ) : null}
+
+      {error && termsReviewState === "current" ? <div role="alert" className="application-submission-error"><strong>Application not submitted</strong><p>{error}</p></div> : null}
+
+      <div className="application-form-board">
+        <div className="application-form-board-heading">
+          <span>Draft</span>
+          <p>All fields below belong to the existing complete proposal contract. Submission creates one application history for this gig.</p>
+        </div>
+        <ApplicationForm
+          paymentStructure={context.payment_structure}
+          currency={context.currency}
+          materialTerms={context.material_terms}
+          presentation="switchboard-submission"
+          submitDisabled={termsReviewState !== "current"}
+          submitLabel="Submit application"
+          submitting={submitting}
+          onSubmit={handleSubmit}
+        />
+      </div>
+    </section>
   );
 }
 
-function ErrorPanel({ message: value, existingId }: { message: string; existingId?: string | null }) {
-  return <div className="rounded-lg border border-line bg-white p-8"><h1 className="text-2xl font-bold text-ink">Application unavailable</h1><p className="mt-3 text-sm text-muted">{value}</p><div className="mt-6 flex gap-3">{existingId ? <Button to={`/applications/${existingId}`}>View your application</Button> : null}<Button to="/gigs" variant="secondary">Browse gigs</Button></div></div>;
+function TermsReviewNotice({ state, onConfirm, onRetry }: { state: TermsReviewState; onConfirm: () => void; onRetry: () => Promise<void> }) {
+  const refreshing = state === "refreshing";
+  const failed = state === "refresh_failed";
+  return (
+    <div className="application-terms-changed" role="alert" aria-live="assertive">
+      <span>Terms changed</span>
+      <h2>{refreshing ? "Refreshing the authoritative terms…" : failed ? "Current terms could not be refreshed" : "Review the refreshed terms before resubmitting"}</h2>
+      <p>
+        {refreshing
+          ? "Submission is paused while the current application context is reloaded."
+          : failed
+            ? "Your draft remains in this form, but submission stays blocked until the current terms can be loaded."
+            : "Your form draft was preserved. Check the updated terms strip and visible proposal fields, then confirm your review before trying again with the same submission request."}
+      </p>
+      {!refreshing && !failed ? <Button type="button" onClick={onConfirm}>I reviewed the refreshed terms</Button> : null}
+      {failed ? <Button type="button" variant="secondary" onClick={onRetry}>Retry terms refresh</Button> : null}
+    </div>
+  );
+}
+
+function ErrorPanel({ message: value, existingId, gigId }: { message: string; existingId?: string | null; gigId?: string }) {
+  return (
+    <div className="stage-two-state-panel is-application-blocked" role="alert">
+      <span>Application context</span>
+      <h1>Application unavailable</h1>
+      <p>{value}</p>
+      <div className="stage-two-state-actions">
+        {existingId ? <Button to={`/applications/${encodeURIComponent(existingId)}`}>View your application</Button> : null}
+        {gigId ? <Button to={`/gigs/${encodeURIComponent(gigId)}`} variant="secondary">Return to gig detail</Button> : null}
+        <Button to="/gigs" variant="secondary">Browse gigs</Button>
+      </div>
+    </div>
+  );
+}
+
+function StatePanel({ title, body }: { title: string; body: string }) {
+  return <div className="stage-two-state-panel" role="status"><span>Application submission</span><h1>{title}</h1><p>{body}</p></div>;
 }
 
 function message(reason: unknown) {
-  if (reason instanceof ApplicationApiError) {
-    const copy: Record<string, string> = { stale_gig_terms: "The gig terms changed. Review the refreshed terms and submit again; your form values were preserved.", application_already_exists: "You already have an application for this gig.", application_deadline_passed: "The application deadline has passed.", invalid_financial_proposal: "The proposal does not satisfy the published financial terms." };
-    return copy[reason.code] ?? reason.message;
-  }
+  if (reason instanceof ApplicationApiError) return applicationSubmissionErrorMessage(reason.code);
   return reason instanceof Error ? reason.message : "Unable to load or submit the application.";
+}
+
+function textField(record: Record<string, unknown>, key: string): string | null {
+  const value = record[key];
+  return typeof value === "string" && value.trim() ? value : null;
+}
+
+function stringList(value: unknown): string[] {
+  return Array.isArray(value) ? value.filter((item): item is string => typeof item === "string") : [];
 }

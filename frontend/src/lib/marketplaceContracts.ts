@@ -109,6 +109,12 @@ function isGigSummary(value: unknown): value is GigSummary {
   if (!isRecord(value)) {
     return false;
   }
+  const rankingFields = [
+    "rank", "ranking_mode", "ranking_score", "keyword_score", "semantic_score", "hybrid_score", "explanation",
+  ];
+  if (rankingFields.some((field) => field in value)) {
+    return false;
+  }
   return (
     typeof value.gig_id === "string" &&
     typeof value.title === "string" &&

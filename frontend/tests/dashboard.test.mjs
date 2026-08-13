@@ -10,9 +10,17 @@ import {
 import {
   attentionDestination,
   compareAttention,
-  dashboardNavigation,
   dashboardViewState,
 } from "../src/lib/dashboardView.ts";
+import {
+  filterParticipantDestinations,
+  participantDestinations,
+  participantPrimaryNavigation,
+  participantShellOwnsPath,
+  participantStageThreeOwnsPath,
+  participantStageTwoOwnsPath,
+  resolveParticipantShortcut,
+} from "../src/lib/participantNavigation.ts";
 
 const ids = {
   application: "11111111-1111-4111-8111-111111111111",
@@ -192,13 +200,114 @@ test("attention links target existing authoritative pages", () => {
 
 test("role navigation has the exact consolidated workflow order", () => {
   assert.deepEqual(
-    dashboardNavigation("freelancer").map((item) => item.label),
-    ["Dashboard", "Find Gigs", "My Applications", "Engagements"],
+    participantPrimaryNavigation("freelancer").map((item) => item.label),
+    ["Dashboard", "Find Gigs", "Applications", "Engagements"],
   );
   assert.deepEqual(
-    dashboardNavigation("client").map((item) => item.label),
+    participantPrimaryNavigation("client").map((item) => item.label),
     ["Dashboard", "Manage Gigs", "Engagements", "Create Gig"],
   );
+});
+
+test("participant command filtering is finite, role-aware, and route-only", () => {
+  assert.deepEqual(
+    filterParticipantDestinations("freelancer", "proposal submissions")
+      .map((item) => item.to),
+    ["/applications"],
+  );
+  assert.deepEqual(
+    filterParticipantDestinations("client", "new gig").map((item) => item.to),
+    ["/gigs/new"],
+  );
+  assert.equal(
+    participantDestinations("freelancer").some((item) => item.to === "/gigs/manage"),
+    false,
+  );
+  assert.equal(
+    participantDestinations("client").some((item) => item.to === "/applications"),
+    false,
+  );
+  for (const role of ["freelancer", "client"]) {
+    for (const destination of participantDestinations(role)) {
+      assert.match(destination.to, /^\//);
+      assert.notEqual(destination.to, "/login");
+      assert.equal("action" in destination, false);
+      assert.equal("loader" in destination, false);
+    }
+  }
+});
+
+test("participant shell path ownership excludes public, auth, admin, and unknown routes", () => {
+  for (const pathname of [
+    "/dashboard/freelancer",
+    "/dashboard/client",
+    "/gigs",
+    "/gigs/123/applicants",
+    "/applications/123/edit",
+    "/engagements/123",
+    "/profile/resume-parse",
+  ]) {
+    assert.equal(participantShellOwnsPath(pathname), true, pathname);
+  }
+  for (const pathname of [
+    "/", "/login", "/signup", "/dashboard/admin", "/unknown",
+    "/gigs/123/unknown", "/gigs/123/apply/extra",
+    "/applications/123/history", "/applications/123/edit/extra",
+    "/engagements/123/extra", "/profile/freelancer/extra",
+  ]) {
+    assert.equal(participantShellOwnsPath(pathname), false, pathname);
+  }
+});
+
+test("Stage 2 shell emergence is limited to discovery, detail, and submission routes", () => {
+  assert.equal(participantStageTwoOwnsPath("/gigs"), true);
+  assert.equal(participantStageTwoOwnsPath("/gigs/gig-1"), true);
+  assert.equal(participantStageTwoOwnsPath("/gigs/gig-1/apply"), true);
+  assert.equal(participantStageTwoOwnsPath("/gigs/new"), false);
+  assert.equal(participantStageTwoOwnsPath("/gigs/manage"), false);
+  assert.equal(participantStageTwoOwnsPath("/gigs/gig-1/edit"), false);
+  assert.equal(participantStageTwoOwnsPath("/gigs/gig-1/applicants"), false);
+});
+
+test("Stage 3 shell emergence owns only creation, management, and canonical editing", () => {
+  for (const pathname of ["/gigs/new", "/gigs/manage", "/gigs/gig-1/edit"]) {
+    assert.equal(participantStageThreeOwnsPath(pathname), true, pathname);
+  }
+  for (const pathname of [
+    "/gigs",
+    "/gigs/gig-1",
+    "/gigs/gig-1/parse",
+    "/gigs/gig-1/applicants",
+    "/gigs/gig-1/applicants/application-1",
+    "/gigs/gig-1/apply",
+    "/gigs/new/edit",
+    "/gigs/manage/edit",
+  ]) {
+    assert.equal(participantStageThreeOwnsPath(pathname), false, pathname);
+  }
+});
+
+test("participant command keyboard rules respect editable controls, modifiers, dialogs, and Escape", () => {
+  const shortcut = (overrides = {}) => resolveParticipantShortcut({
+    key: "/",
+    metaKey: false,
+    ctrlKey: false,
+    altKey: false,
+    shiftKey: false,
+    editableTarget: false,
+    dialogOwnsKeyboard: false,
+    commandOpen: false,
+    ...overrides,
+  });
+  assert.equal(shortcut(), "open");
+  assert.equal(shortcut({ editableTarget: true }), null);
+  assert.equal(shortcut({ ctrlKey: true }), null);
+  assert.equal(shortcut({ dialogOwnsKeyboard: true }), null);
+  assert.equal(shortcut({ key: "k", metaKey: true }), "open");
+  assert.equal(shortcut({ key: "k", ctrlKey: true, editableTarget: true }), "open");
+  assert.equal(shortcut({ key: "k", metaKey: true, dialogOwnsKeyboard: true }), null);
+  assert.equal(shortcut({ key: "Escape", commandOpen: true }), "close");
+  assert.equal(shortcut({ key: "Escape", commandOpen: false }), null);
 });
 
 test("historical engagement statuses are rejected from active previews", () => {
@@ -224,4 +333,21 @@ test("dashboard copy makes no unread, unseen, or notification claims", () => {
     source,
     /\bunread\b|\bunseen\b|waiting for review|proposal needs review|recently viewed|\bnotification\b/i,
   );
+});
+
+test("Stage 1 shell sources contain no concept import, role switching, persistence, or action tokens", () => {
+  const participantShellSource = readFileSync(new URL("../src/components/ParticipantShell.tsx", import.meta.url), "utf8");
+  const appLayoutSource = readFileSync(new URL("../src/components/AppLayout.tsx", import.meta.url), "utf8");
+  const source = [
+    participantShellSource,
+    appLayoutSource,
+    readFileSync(new URL("../src/components/ParticipantCommandSurface.tsx", import.meta.url), "utf8"),
+    readFileSync(new URL("../src/lib/participantNavigation.ts", import.meta.url), "utf8"),
+  ].join("\n");
+  assert.doesNotMatch(
+    source,
+    /concepts-gpt-2|switchRole|action_token|localStorage|sessionStorage|active record/i,
+  );
+  assert.doesNotMatch(participantShellSource, /is-legacy|switchboard-legacy-boundary/);
+  assert.doesNotMatch(appLayoutSource, /Navbar/);
 });

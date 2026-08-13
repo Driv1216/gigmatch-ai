@@ -1,4 +1,5 @@
 import { supabase } from "./supabaseClient";
+import { isManagedGig, isManagedGigEnvelope } from "./gigManagementContract";
 import { stableManagementErrorMessage } from "./gigManagementView";
 
 export type ManagedGig = {
@@ -43,12 +44,17 @@ export class GigManagementApiError extends Error {
 }
 
 export async function fetchManagedGigs(): Promise<ManagedGig[]> {
-  const data = await request<{ items: ManagedGig[] }>("/gigs/manage");
+  const data = await request<unknown>("/gigs/manage");
+  if (!isManagedGigEnvelope(data)) {
+    throw new GigManagementApiError("invalid_owner_gig_response", 502, data);
+  }
   return data.items;
 }
 
-export function fetchManagedGig(gigId: string): Promise<ManagedGig> {
-  return request(`/gigs/${encodeURIComponent(gigId)}/manage`);
+export async function fetchManagedGig(gigId: string): Promise<ManagedGig> {
+  const data = await request<unknown>(`/gigs/${encodeURIComponent(gigId)}/manage`);
+  if (!isManagedGig(data)) throw new GigManagementApiError("invalid_owner_gig_response", 502, data);
+  return data;
 }
 
 export function publishManagedGig(gigId: string, expected: string, snapshot: Record<string, unknown>) {

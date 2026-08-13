@@ -1,5 +1,5 @@
 /* eslint-disable react-refresh/only-export-components */
-import { useState, type FormEvent } from "react";
+import { useState, type FormEvent, type ReactNode } from "react";
 import { arrayToCsv, csvToArray } from "../lib/profiles";
 import type { DifficultyLevel, Gig, SeniorityNeeded, WorkMode } from "../lib/gigs";
 import { Button } from "./Button";
@@ -50,8 +50,7 @@ export const emptyGigForm: GigFormValues = {
   locationRequirements: "",
 };
 
-const inputClasses =
-  "mt-2 w-full rounded-md border border-line bg-white px-4 py-3 text-sm text-ink outline-none transition focus:border-brand focus:ring-2 focus:ring-blue-100";
+const inputClasses = "gig-form-control";
 
 export function formFromGig(gig: Gig): GigFormValues {
   return {
@@ -220,156 +219,52 @@ export function GigForm({ initialValues = emptyGigForm, isSubmitting, submitLabe
   }
 
   return (
-    <form className="mt-8 space-y-8" onSubmit={handleSubmit}>
-      <div className="grid gap-5 md:grid-cols-2">
-        <label className="block md:col-span-2">
-          <span className="text-sm font-semibold text-ink">Title</span>
-          <input
-            value={values.title}
-            onChange={(event) => updateField("title", event.target.value)}
-            className={inputClasses}
-          />
-        </label>
-        <label className="block md:col-span-2">
-          <span className="text-sm font-semibold text-ink">Description</span>
-          <textarea
-            value={values.description}
-            onChange={(event) => updateField("description", event.target.value)}
-            rows={6}
-            className={inputClasses}
-          />
-        </label>
-        <label className="block">
-          <span className="text-sm font-semibold text-ink">Tech Category</span>
-          <input
-            value={values.techCategory}
-            onChange={(event) => updateField("techCategory", event.target.value)}
-            className={inputClasses}
-          />
-        </label>
-        <label className="block">
-          <span className="text-sm font-semibold text-ink">Currency</span>
-          <input maxLength={3} value={values.currency} onChange={(event) => updateField("currency", event.target.value)} className={inputClasses} />
-        </label>
-        <label className="block">
-          <span className="text-sm font-semibold text-ink">Required Skills</span>
-          <input
-            value={values.requiredSkills}
-            onChange={(event) => updateField("requiredSkills", event.target.value)}
-            className={inputClasses}
-          />
-        </label>
-        <label className="block">
-          <span className="text-sm font-semibold text-ink">Budget Flexibility</span>
-          <select value={values.budgetFlexibility} onChange={(event) => updateField("budgetFlexibility", event.target.value)} className={inputClasses}>
-            <option value="fixed">Fixed</option><option value="negotiable">Negotiable</option><option value="depends_on_scope">Depends on scope</option>
-          </select>
-        </label>
-        <label className="block">
-          <span className="text-sm font-semibold text-ink">Preferred Skills</span>
-          <input
-            value={values.preferredSkills}
-            onChange={(event) => updateField("preferredSkills", event.target.value)}
-            className={inputClasses}
-          />
-        </label>
-        <label className="block">
-          <span className="text-sm font-semibold text-ink">Budget Min</span>
-          <input
-            inputMode="numeric"
-            value={values.budgetMin}
-            onChange={(event) => updateField("budgetMin", event.target.value)}
-            className={inputClasses}
-          />
-        </label>
-        <label className="block">
-          <span className="text-sm font-semibold text-ink">Budget Max</span>
-          <input
-            inputMode="numeric"
-            value={values.budgetMax}
-            onChange={(event) => updateField("budgetMax", event.target.value)}
-            className={inputClasses}
-          />
-        </label>
-        <label className="block">
-          <span className="text-sm font-semibold text-ink">Difficulty Level</span>
-          <select
-            value={values.difficultyLevel}
-            onChange={(event) => updateField("difficultyLevel", event.target.value as GigFormValues["difficultyLevel"])}
-            className={inputClasses}
-          >
-            <option value="">Select difficulty</option>
-            <option value="beginner">Beginner</option>
-            <option value="intermediate">Intermediate</option>
-            <option value="advanced">Advanced</option>
-          </select>
-        </label>
-        <label className="block">
-          <span className="text-sm font-semibold text-ink">Seniority Needed</span>
-          <select
-            value={values.seniorityNeeded}
-            onChange={(event) => updateField("seniorityNeeded", event.target.value as GigFormValues["seniorityNeeded"])}
-            className={inputClasses}
-          >
-            <option value="">Select seniority</option>
-            <option value="student">Student</option>
-            <option value="junior">Junior</option>
-            <option value="mid">Mid</option>
-            <option value="senior">Senior</option>
-            <option value="any">Any</option>
-          </select>
-        </label>
-        <label className="block md:col-span-2">
-          <span className="text-sm font-semibold text-ink">Deliverables</span>
-          <input
-            value={values.deliverables}
-            onChange={(event) => updateField("deliverables", event.target.value)}
-            className={inputClasses}
-          />
-        </label>
-        <label className="block">
-          <span className="text-sm font-semibold text-ink">Work Mode</span>
-          <select
-            value={values.workMode}
-            onChange={(event) => updateField("workMode", event.target.value as GigFormValues["workMode"])}
-            className={inputClasses}
-          >
-            <option value="">Select work mode</option>
-            <option value="remote">Remote</option>
-            <option value="hybrid">Hybrid</option>
-            <option value="onsite">Onsite</option>
-          </select>
-        </label>
-        <label className="block">
-          <span className="text-sm font-semibold text-ink">Application Deadline</span>
-          <input
-            type="datetime-local"
-            value={values.deadline}
-            onChange={(event) => updateField("deadline", event.target.value)}
-            className={inputClasses}
-          />
-        </label>
-        <label className="block">
-          <span className="text-sm font-semibold text-ink">Project Deadline</span>
-          <input type="datetime-local" value={values.projectDeadline} onChange={(event) => updateField("projectDeadline", event.target.value)} className={inputClasses} />
-        </label>
-        <label className="block md:col-span-2">
-          <span className="text-sm font-semibold text-ink">Location / Timezone Requirements</span>
-          <input value={values.locationRequirements} onChange={(event) => updateField("locationRequirements", event.target.value)} className={inputClasses} />
-        </label>
-      </div>
-
+    <form className="gig-form" onSubmit={handleSubmit} aria-describedby={validationErrors.length ? "gig-form-errors" : undefined}>
       {validationErrors.length > 0 ? (
-        <div className="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-700">
+        <div id="gig-form-errors" className="gig-form-errors" role="alert">
+          <strong>Complete these terms before continuing</strong>
           {validationErrors.map((error) => (
             <p key={error}>{error}</p>
           ))}
         </div>
       ) : null}
+      <FormSection index="01" title="Opportunity brief" consequence="These fields define the published record and its discovery context." className="is-bone">
+        <Field label="Title" wide><input required value={values.title} onChange={(event) => updateField("title", event.target.value)} className={inputClasses} /></Field>
+        <Field label="Description" wide><textarea required value={values.description} onChange={(event) => updateField("description", event.target.value)} rows={7} className={inputClasses} /></Field>
+        <Field label="Tech category"><input required value={values.techCategory} onChange={(event) => updateField("techCategory", event.target.value)} className={inputClasses} /></Field>
+        <Field label="Difficulty level"><select value={values.difficultyLevel} onChange={(event) => updateField("difficultyLevel", event.target.value as GigFormValues["difficultyLevel"])} className={inputClasses}><option value="">Select difficulty</option><option value="beginner">Beginner</option><option value="intermediate">Intermediate</option><option value="advanced">Advanced</option></select></Field>
+      </FormSection>
 
-      <Button type="submit" disabled={isSubmitting}>
-        {isSubmitting ? submittingLabel : submitLabel}
-      </Button>
+      <FormSection index="02" title="Skills & delivery" consequence="Required skills and deliverables are applicant-relevant material terms." className="is-glass">
+        <Field label="Required skills" hint="Comma-separated; at least one."><input required value={values.requiredSkills} onChange={(event) => updateField("requiredSkills", event.target.value)} className={inputClasses} /></Field>
+        <Field label="Preferred skills" hint="Comma-separated; optional."><input value={values.preferredSkills} onChange={(event) => updateField("preferredSkills", event.target.value)} className={inputClasses} /></Field>
+        <Field label="Deliverables" hint="Comma-separated; at least one." wide><input required value={values.deliverables} onChange={(event) => updateField("deliverables", event.target.value)} className={inputClasses} /></Field>
+        <Field label="Experience requirement"><select required value={values.seniorityNeeded} onChange={(event) => updateField("seniorityNeeded", event.target.value as GigFormValues["seniorityNeeded"])} className={inputClasses}><option value="">Select experience</option><option value="student">Student</option><option value="junior">Junior</option><option value="mid">Mid</option><option value="senior">Senior</option><option value="any">Any</option></select></Field>
+        <Field label="Work mode"><select required value={values.workMode} onChange={(event) => updateField("workMode", event.target.value as GigFormValues["workMode"])} className={inputClasses}><option value="">Select work mode</option><option value="remote">Remote</option><option value="hybrid">Hybrid</option><option value="onsite">Onsite</option></select></Field>
+        <Field label="Location / timezone requirements" wide><input value={values.locationRequirements} onChange={(event) => updateField("locationRequirements", event.target.value)} className={inputClasses} /></Field>
+      </FormSection>
+
+      <FormSection index="03" title="Commercial terms" consequence="Stage 3 preserves the existing complete fixed-price authoring contract." className="is-ocean">
+        <Field label="Currency" hint="Three-letter code."><input required maxLength={3} value={values.currency} onChange={(event) => updateField("currency", event.target.value)} className={inputClasses} /></Field>
+        <Field label="Budget flexibility"><select value={values.budgetFlexibility} onChange={(event) => updateField("budgetFlexibility", event.target.value)} className={inputClasses}><option value="fixed">Fixed</option><option value="negotiable">Negotiable</option><option value="depends_on_scope">Depends on scope</option></select></Field>
+        <Field label="Budget minimum"><input required inputMode="numeric" value={values.budgetMin} onChange={(event) => updateField("budgetMin", event.target.value)} className={inputClasses} /></Field>
+        <Field label="Budget maximum"><input required inputMode="numeric" value={values.budgetMax} onChange={(event) => updateField("budgetMax", event.target.value)} className={inputClasses} /></Field>
+      </FormSection>
+
+      <FormSection index="04" title="Authoritative deadlines" consequence="The server requires a timezone-aware future application deadline; project deadline, when set, follows it." className="is-coral">
+        <Field label="Application deadline"><input required type="datetime-local" value={values.deadline} onInput={(event) => updateField("deadline", event.currentTarget.value)} onChange={(event) => updateField("deadline", event.target.value)} className={inputClasses} /></Field>
+        <Field label="Project deadline"><input type="datetime-local" value={values.projectDeadline} onInput={(event) => updateField("projectDeadline", event.currentTarget.value)} onChange={(event) => updateField("projectDeadline", event.target.value)} className={inputClasses} /></Field>
+      </FormSection>
+
+      <footer className="gig-form-submit"><p>Submission sends one complete candidate snapshot. The backend normalizes and validates it before any immutable version or lifecycle transition is committed.</p><Button type="submit" disabled={isSubmitting}>{isSubmitting ? submittingLabel : submitLabel}</Button></footer>
     </form>
   );
+}
+
+function FormSection({ index, title, consequence, className, children }: { index: string; title: string; consequence: string; className: string; children: ReactNode }) {
+  return <section className={`gig-form-section ${className}`}><header><span>{index}</span><div><h3>{title}</h3><p>{consequence}</p></div></header><div className="gig-form-fields">{children}</div></section>;
+}
+
+function Field({ label, hint, wide = false, children }: { label: string; hint?: string; wide?: boolean; children: ReactNode }) {
+  return <label className={wide ? "is-wide" : undefined}><span>{label}</span>{children}{hint ? <small>{hint}</small> : null}</label>;
 }
