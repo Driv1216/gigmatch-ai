@@ -6,7 +6,7 @@ import { DashboardStatePanel } from "../components/DashboardStatePanel";
 import { DashboardSummaryCard } from "../components/DashboardSummaryCard";
 import { WorkflowStatusBadge } from "../components/WorkflowStatusBadge";
 import { fetchClientDashboard } from "../lib/dashboard";
-import { dashboardViewState, formatDashboardDate } from "../lib/dashboardView";
+import { dashboardHeaderContext, dashboardViewState, formatDashboardDate } from "../lib/dashboardView";
 import { useDashboardResource } from "../lib/useDashboardResource";
 
 export function ClientDashboardPage() {
@@ -18,6 +18,7 @@ export function ClientDashboardPage() {
       eyebrow="Client workspace"
       title="Hiring and engagement workflow"
       description="Review current applicant work, explicit response obligations, selection requests, and active engagements without changing workflow state from the dashboard."
+      headerContext={dashboardHeaderContext("client", state, dashboard.data)}
       actions={(
         <>
           <Button to="/gigs/new">Create gig</Button>

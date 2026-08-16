@@ -1,11 +1,13 @@
 import { useEffect, useState, type FormEvent } from "react";
 import { Button } from "../components/Button";
+import { GigSelect } from "../components/GigSelect";
 import { useAuth } from "../context/AuthContext";
 import { profileWorkspaceState } from "../lib/profileParsingView";
 import { arrayToCsv, csvToArray, emptyToNull, fetchClientProfile, saveClientProfile, type ClientProfile, type CompanySize } from "../lib/profiles";
 
 type ClientProfileForm = { companyName: string; contactName: string; websiteUrl: string; industry: string; companySize: "" | CompanySize; hiringFocus: string; bio: string };
 const emptyForm: ClientProfileForm = { companyName: "", contactName: "", websiteUrl: "", industry: "", companySize: "", hiringFocus: "", bio: "" };
+const companySizeOptions = ["solo", "small", "medium", "large", "enterprise"].map((value) => ({ value: value as CompanySize, label: value[0].toUpperCase() + value.slice(1) }));
 
 function formFromProfile(profile: ClientProfile): ClientProfileForm {
   return { companyName: profile.company_name ?? "", contactName: profile.contact_name ?? "", websiteUrl: profile.website_url ?? "", industry: profile.industry ?? "", companySize: profile.company_size ?? "", hiringFocus: arrayToCsv(profile.hiring_focus), bio: profile.bio ?? "" };
@@ -81,7 +83,7 @@ export function ClientProfilePage() {
                 <label><span>Contact name</span><input value={form.contactName} onChange={(event) => updateField("contactName", event.target.value)} /><small>Ordinary profile field, not contact-share consent</small></label>
                 <label><span>Website URL</span><input type="url" value={form.websiteUrl} onChange={(event) => updateField("websiteUrl", event.target.value)} /></label>
                 <label><span>Industry</span><input value={form.industry} onChange={(event) => updateField("industry", event.target.value)} /></label>
-                <label><span>Company size</span><select value={form.companySize} onChange={(event) => updateField("companySize", event.target.value as ClientProfileForm["companySize"])}><option value="">Select size</option><option value="solo">Solo</option><option value="small">Small</option><option value="medium">Medium</option><option value="large">Large</option><option value="enterprise">Enterprise</option></select></label>
+                <label><span>Company size</span><GigSelect value={form.companySize} onValueChange={(value) => updateField("companySize", value)} options={companySizeOptions} placeholder="Select size" /></label>
                 <label><span>Hiring focus</span><input value={form.hiringFocus} onChange={(event) => updateField("hiringFocus", event.target.value)} /><small>Comma-separated</small></label>
                 <label className="is-wide"><span>Bio</span><textarea value={form.bio} onChange={(event) => updateField("bio", event.target.value)} rows={7} /></label>
               </div>

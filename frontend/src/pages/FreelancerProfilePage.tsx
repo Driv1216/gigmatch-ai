@@ -1,5 +1,6 @@
 import { useEffect, useState, type FormEvent } from "react";
 import { Button } from "../components/Button";
+import { GigSelect } from "../components/GigSelect";
 import { useAuth } from "../context/AuthContext";
 import { profileWorkspaceState } from "../lib/profileParsingView";
 import {
@@ -47,6 +48,16 @@ const emptyForm: FreelancerProfileForm = {
   availability: "",
   preferredGigType: "",
 };
+
+const experienceOptions = ["beginner", "intermediate", "advanced"].map((value) => ({ value: value as ExperienceLevel, label: value[0].toUpperCase() + value.slice(1) }));
+const availabilityOptions = ["available", "limited", "unavailable"].map((value) => ({ value: value as Availability, label: value[0].toUpperCase() + value.slice(1) }));
+const preferredGigTypeOptions: Array<{ value: PreferredGigType; label: string }> = [
+  { value: "short_term", label: "Short term" },
+  { value: "long_term", label: "Long term" },
+  { value: "internship", label: "Internship" },
+  { value: "part_time", label: "Part time" },
+  { value: "any", label: "Any" },
+];
 
 function formFromProfile(profile: FreelancerProfile): FreelancerProfileForm {
   return {
@@ -175,7 +186,7 @@ export function FreelancerProfilePage() {
                 <label className="is-wide"><span>Headline</span><input value={form.headline} onChange={(event) => updateField("headline", event.target.value)} /></label>
                 <label className="is-wide"><span>Bio</span><textarea value={form.bio} onChange={(event) => updateField("bio", event.target.value)} rows={6} /></label>
                 <label><span>Location</span><input value={form.location} onChange={(event) => updateField("location", event.target.value)} /></label>
-                <label><span>Experience level</span><select value={form.experienceLevel} onChange={(event) => updateField("experienceLevel", event.target.value as FreelancerProfileForm["experienceLevel"])}><option value="">Select level</option><option value="beginner">Beginner</option><option value="intermediate">Intermediate</option><option value="advanced">Advanced</option></select></label>
+                <label><span>Experience level</span><GigSelect value={form.experienceLevel} onValueChange={(value) => updateField("experienceLevel", value)} options={experienceOptions} placeholder="Select level" /></label>
                 <label><span>Primary role</span><input value={form.primaryRole} onChange={(event) => updateField("primaryRole", event.target.value)} /></label>
                 <label><span>Tech categories</span><input value={form.techCategories} onChange={(event) => updateField("techCategories", event.target.value)} /><small>Comma-separated</small></label>
               </div>
@@ -196,8 +207,8 @@ export function FreelancerProfilePage() {
             <section className="stage-ten-form-section">
               <div className="stage-ten-section-heading"><span>03 / Work preferences</span><p>Availability and preferred gig type remain ordinary profile fields.</p></div>
               <div className="stage-ten-form-grid">
-                <label><span>Availability</span><select value={form.availability} onChange={(event) => updateField("availability", event.target.value as FreelancerProfileForm["availability"])}><option value="">Select availability</option><option value="available">Available</option><option value="limited">Limited</option><option value="unavailable">Unavailable</option></select></label>
-                <label><span>Preferred gig type</span><select value={form.preferredGigType} onChange={(event) => updateField("preferredGigType", event.target.value as FreelancerProfileForm["preferredGigType"])}><option value="">Select gig type</option><option value="short_term">Short term</option><option value="long_term">Long term</option><option value="internship">Internship</option><option value="part_time">Part time</option><option value="any">Any</option></select></label>
+                <label><span>Availability</span><GigSelect value={form.availability} onValueChange={(value) => updateField("availability", value)} options={availabilityOptions} placeholder="Select availability" /></label>
+                <label><span>Preferred gig type</span><GigSelect value={form.preferredGigType} onValueChange={(value) => updateField("preferredGigType", value)} options={preferredGigTypeOptions} placeholder="Select gig type" /></label>
               </div>
             </section>
 

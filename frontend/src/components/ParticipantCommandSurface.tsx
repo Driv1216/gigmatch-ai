@@ -7,12 +7,14 @@ import {
   type KeyboardEvent as ReactKeyboardEvent,
   type PointerEvent as ReactPointerEvent,
 } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
+import { useParticipantHeaderContext } from "../context/ParticipantHeaderContext";
 import {
   filterParticipantDestinations,
   resolveParticipantShortcut,
   type ParticipantRole,
 } from "../lib/participantNavigation";
+import { useDismissibleLayer } from "../lib/useDismissibleLayer";
 
 type ParticipantCommandSurfaceProps = {
   role: ParticipantRole;
@@ -33,8 +35,11 @@ function dialogOwnsKeyboard(): boolean {
 
 export function ParticipantCommandSurface({ role }: ParticipantCommandSurfaceProps) {
   const navigate = useNavigate();
+  const location = useLocation();
+  const { headerContext } = useParticipantHeaderContext();
   const [query, setQuery] = useState("");
   const [open, setOpen] = useState(false);
+  const commandRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const openerRef = useRef<HTMLElement | null>(null);
   const resultRefs = useRef<Array<HTMLButtonElement | null>>([]);
@@ -57,6 +62,12 @@ export function ParticipantCommandSurface({ role }: ParticipantCommandSurfacePro
     openerRef.current = null;
   }, []);
 
+  useDismissibleLayer({
+    open,
+    layerRef: commandRef,
+    onDismiss: (reason) => closeCommand(reason === "escape"),
+  });
+
   function openDestination(to: string) {
     setOpen(false);
     setQuery("");
@@ -76,11 +87,6 @@ export function ParticipantCommandSurface({ role }: ParticipantCommandSurfacePro
         dialogOwnsKeyboard: dialogOwnsKeyboard(),
         commandOpen: open,
       });
-      if (shortcut === "close") {
-        event.preventDefault();
-        closeCommand(true);
-        return;
-      }
       if (shortcut === "open") {
         event.preventDefault();
         focusCommand(document.activeElement instanceof HTMLElement ? document.activeElement : null);
@@ -90,6 +96,12 @@ export function ParticipantCommandSurface({ role }: ParticipantCommandSurfacePro
     document.addEventListener("keydown", handleGlobalKeyDown);
     return () => document.removeEventListener("keydown", handleGlobalKeyDown);
   }, [closeCommand, focusCommand, open]);
+
+  useEffect(() => {
+    setOpen(false);
+    setQuery("");
+    openerRef.current = null;
+  }, [location.pathname]);
 
   function handleFocus(event: FocusEvent<HTMLInputElement>) {
     if (!open) {
@@ -126,8 +138,8 @@ export function ParticipantCommandSurface({ role }: ParticipantCommandSurfacePro
   }
 
   return (
-    <div className="switchboard-command-band">
-      <div className="switchboard-command">
+    <div className={headerContext ? "switchboard-command-band has-context" : "switchboard-command-band"}>
+      <div className="switchboard-command" ref={commandRef}>
         <form
           className="switchboard-command-form"
           role="search"
@@ -191,11 +203,13 @@ export function ParticipantCommandSurface({ role }: ParticipantCommandSurfacePro
           </div>
         ) : null}
       </div>
-      <div className="switchboard-command-context" aria-label="Command scope">
-        <span>Context</span>
-        <strong>Navigation only</strong>
-        <small>No record search or workflow actions</small>
-      </div>
+      {headerContext ? (
+        <div className="switchboard-command-context" aria-label={`${headerContext.eyebrow} context`}>
+          <span>{headerContext.eyebrow}</span>
+          <strong>{headerContext.title}</strong>
+          <small>{headerContext.detail}</small>
+        </div>
+      ) : null}
     </div>
   );
 }

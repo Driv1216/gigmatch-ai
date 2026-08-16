@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import { Button } from "./Button";
+import { GigSelect } from "./GigSelect";
 
 export type ApplicationWithdrawalReason =
   | "accepted_another_opportunity"
@@ -49,12 +50,12 @@ export function ApplicationWithdrawalDialog({ gigTitle, isSubmitting, onConfirm,
 
   const invalid = isSubmitting || !confirmed || (reason === "other" && !explanation.trim());
   return (
-    <dialog ref={dialogRef} className="application-withdrawal-dialog" onClose={onDismiss} onKeyDown={(event) => { if (event.key === "Escape") { event.preventDefault(); dialogRef.current?.close(); } }} aria-labelledby="application-withdrawal-title" aria-describedby="application-withdrawal-consequence">
+    <dialog ref={dialogRef} className="application-withdrawal-dialog" onClose={onDismiss} onKeyDown={(event) => { if (event.key === "Escape" && !event.defaultPrevented) { event.preventDefault(); dialogRef.current?.close(); } }} aria-labelledby="application-withdrawal-title" aria-describedby="application-withdrawal-consequence">
       <form onSubmit={submit}>
         <header><span>Application record control</span><h2 id="application-withdrawal-title">Withdraw this application</h2><p>{gigTitle}</p></header>
         <div className="application-withdrawal-body">
           <p id="application-withdrawal-consequence" className="application-withdrawal-consequence">This closes the active application. Every immutable proposal version and the withdrawal reason remain in the same history; this does not delete your record.</p>
-          <label><span>Structured reason</span><select autoFocus value={reason} onChange={(event) => setReason(event.target.value as ApplicationWithdrawalReason)}>{reasons.map(([value, label]) => <option key={value} value={value}>{label}</option>)}</select></label>
+          <label><span>Structured reason</span><GigSelect autoFocus value={reason} onValueChange={setReason} options={reasons.map(([value, label]) => ({ value, label }))} /></label>
           {reason === "other" ? <label><span>Reason explanation</span><textarea required rows={3} value={explanation} onChange={(event) => setExplanation(event.target.value)} /></label> : null}
           <label className="application-withdrawal-confirmation"><input type="checkbox" checked={confirmed} onChange={(event) => setConfirmed(event.target.checked)} /><span>I understand this closes the active application while preserving its immutable history.</span></label>
         </div>

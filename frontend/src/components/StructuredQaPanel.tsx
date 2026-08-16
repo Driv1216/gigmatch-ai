@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useRef, useState, type FormEvent, type ReactNode } from "react";
 import { Button } from "./Button";
+import { ChoiceGroup } from "./ChoiceGroup";
+import { GigSelect } from "./GigSelect";
 import { revisionEditPath } from "../lib/applicationEditMode";
 import {
   addClarification,
@@ -369,7 +371,7 @@ export function StructuredQaPanel({ applicationId, authorityRefreshKey = 0, onAt
         <form onSubmit={submitComposer} className="stage-six-composer">
           <header><span>02 / Authorized composer</span><h3>{visibleThread.mode === "initial_clarification" ? "Use one focused clarification turn" : "Add a structured discussion entry"}</h3><p>Server permission, allowance, rate limits, exact time, and write sequence are rechecked on submission.</p></header>
           <div className="stage-six-form-grid">
-            {visibleThread.mode === "advanced_discussion" ? <SelectField label="Entry type" value={kind} onChange={(value) => setKind(value as "question" | "clarification")} values={["question", "clarification"]} /> : null}
+            {visibleThread.mode === "advanced_discussion" ? <ChoiceGroup legend="Entry type" name="qa_entry_type" value={kind} onValueChange={setKind} options={[{ value: "question", label: "Question" }, { value: "clarification", label: "Clarification" }]} /> : null}
             <SelectField label="One job-related topic" value={topic} onChange={(value) => setTopic(value as (typeof topics)[number])} values={topics} />
           </div>
           {topic === "other_job_related" ? <InputField label="Short topic description" value={otherTopic} onChange={setOtherTopic} maxLength={120} /> : null}
@@ -539,7 +541,7 @@ function QaState({ title, body, error = false, onRetry }: { title: string; body:
 }
 
 function SelectField({ label: title, value, onChange, values, autoFocus = false }: { label: string; value: string; onChange: (value: string) => void; values: readonly string[]; autoFocus?: boolean }) {
-  return <label className="stage-six-field"><span>{title}</span><select autoFocus={autoFocus} value={value} onChange={(event) => onChange(event.target.value)}>{values.map((item) => <option key={item} value={item}>{label(item)}</option>)}</select></label>;
+  return <label className="stage-six-field"><span>{title}</span><GigSelect autoFocus={autoFocus} value={value} onValueChange={onChange} options={values.map((item) => ({ value: item, label: label(item) }))} /></label>;
 }
 
 function InputField({ label: title, value, onChange, maxLength }: { label: string; value: string; onChange: (value: string) => void; maxLength: number }) {

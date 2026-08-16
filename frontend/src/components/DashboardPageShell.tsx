@@ -1,9 +1,15 @@
 import type { ReactNode } from "react";
+import {
+  useParticipantHeaderContextRegistration,
+  type ParticipantHeaderContextValue,
+} from "../context/ParticipantHeaderContext";
+
 type DashboardPageShellProps = {
   eyebrow: string;
   title: string;
   description: string;
   actions: ReactNode;
+  headerContext?: ParticipantHeaderContextValue;
   children: ReactNode;
 };
 
@@ -12,8 +18,11 @@ export function DashboardPageShell({
   title,
   description,
   actions,
+  headerContext,
   children,
 }: DashboardPageShellProps) {
+  useParticipantHeaderContextRegistration(headerContext);
+
   return (
     <section className="dashboard-page">
       <header className="dashboard-editorial-header">

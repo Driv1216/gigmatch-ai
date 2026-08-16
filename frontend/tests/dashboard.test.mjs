@@ -10,6 +10,7 @@ import {
 import {
   attentionDestination,
   compareAttention,
+  dashboardHeaderContext,
   dashboardViewState,
 } from "../src/lib/dashboardView.ts";
 import {
@@ -163,6 +164,27 @@ test("loading, error, onboarding empty, and ready states are pure", () => {
   empty.attention = { items: [], attention_action_count: 0, attention_resource_count: 0, limit: 8, has_more: false };
   assert.equal(dashboardViewState(false, null, empty), "empty");
   assert.equal(dashboardViewState(false, null, freelancerDashboard()), "ready");
+});
+
+test("dashboard header context uses only real attention action and resource counts", () => {
+  assert.deepEqual(
+    dashboardHeaderContext("freelancer", "ready", freelancerDashboard()),
+    {
+      eyebrow: "Freelancer dashboard",
+      title: "1 response action",
+      detail: "Across 1 workflow resource.",
+    },
+  );
+  assert.deepEqual(
+    dashboardHeaderContext("client", "empty", clientDashboard()),
+    {
+      eyebrow: "Client dashboard",
+      title: "0 response actions",
+      detail: "Across 0 workflow resources.",
+    },
+  );
+  assert.doesNotMatch(JSON.stringify(dashboardHeaderContext("client", "loading", null)), /\b0\b/);
+  assert.doesNotMatch(JSON.stringify(dashboardHeaderContext("client", "error", null)), /\b0\b/);
 });
 
 test("attention ordering uses deadline then engagement and selection priority", () => {

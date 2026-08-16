@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import { Button } from "./Button";
+import { GigSelect } from "./GigSelect";
 
 export type GigLifecycleAction = "intake/close" | "intake/reopen" | "pause" | "resume" | "cancel";
 
@@ -91,7 +92,7 @@ export function GigLifecycleDialog({
     || (action === "cancel" && (!applicantExplanation.trim() || !confirmed));
 
   return (
-    <dialog ref={dialogRef} className={`gig-action-dialog is-${action.replace("/", "-")}`} onClose={onDismiss} onKeyDown={(event) => { if (event.key === "Escape") { event.preventDefault(); dialogRef.current?.close(); } }} aria-labelledby="gig-action-title" aria-describedby="gig-action-consequence">
+    <dialog ref={dialogRef} className={`gig-action-dialog is-${action.replace("/", "-")}`} onClose={onDismiss} onKeyDown={(event) => { if (event.key === "Escape" && !event.defaultPrevented) { event.preventDefault(); dialogRef.current?.close(); } }} aria-labelledby="gig-action-title" aria-describedby="gig-action-consequence">
       <form onSubmit={handleSubmit}>
         <header>
           <span>Gig lifecycle control</span>
@@ -103,9 +104,7 @@ export function GigLifecycleDialog({
           {reasons ? (
             <label>
               <span>Structured reason</span>
-              <select autoFocus value={reason} onChange={(event) => setReason(event.target.value)}>
-                {reasons.map(([value, label]) => <option key={value} value={value}>{label}</option>)}
-              </select>
+              <GigSelect autoFocus value={reason} onValueChange={setReason} options={reasons.map(([value, label]) => ({ value, label }))} />
             </label>
           ) : null}
           {needsOther ? (

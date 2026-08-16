@@ -7,6 +7,18 @@ import type {
 
 export type DashboardViewState = "loading" | "error" | "empty" | "ready";
 export type DashboardRole = "client" | "freelancer";
+export type DashboardHeaderContext = {
+  eyebrow: string;
+  title: string;
+  detail: string;
+};
+
+type DashboardAttentionCounts = {
+  attention: {
+    attention_action_count: number;
+    attention_resource_count: number;
+  };
+};
 
 const actionPriority: Record<AttentionKind, number> = {
   engagement_response_required: 1,
@@ -28,6 +40,38 @@ export function dashboardViewState(
   const summary = data.summary;
   const hasWorkflow = Object.values(summary).some((value) => value > 0);
   return hasWorkflow ? "ready" : "empty";
+}
+
+export function dashboardHeaderContext(
+  role: DashboardRole,
+  state: DashboardViewState,
+  data: DashboardAttentionCounts | null,
+): DashboardHeaderContext {
+  const eyebrow = role === "freelancer" ? "Freelancer dashboard" : "Client dashboard";
+
+  if (state === "loading") {
+    return {
+      eyebrow,
+      title: "Response summary loading",
+      detail: "Current response counts will appear when the dashboard is ready.",
+    };
+  }
+
+  if (state === "error" || !data) {
+    return {
+      eyebrow,
+      title: "Response summary unavailable",
+      detail: "Current response counts could not be loaded.",
+    };
+  }
+
+  const actions = data.attention.attention_action_count;
+  const resources = data.attention.attention_resource_count;
+  return {
+    eyebrow,
+    title: `${actions} response action${actions === 1 ? "" : "s"}`,
+    detail: `Across ${resources} workflow resource${resources === 1 ? "" : "s"}.`,
+  };
 }
 
 export function attentionDestination(role: DashboardRole, item: AttentionItem): string {

@@ -2,6 +2,7 @@ import { useEffect, useRef, useState, type FormEvent } from "react";
 import type { EngagementAction } from "../lib/engagementContracts";
 import { lifecycleActionPresentation } from "../lib/engagementView";
 import { Button } from "./Button";
+import { GigSelect } from "./GigSelect";
 
 const cancellationReasons = [
   "scope_could_not_be_agreed",
@@ -61,7 +62,7 @@ export function EngagementActionDialog({ action, gigTitle, working, onConfirm, o
           <p id="engagement-action-consequence" className="engagement-action-consequence">{presentation.consequence}</p>
           {needsReason ? (
             <>
-              <label><span>Structured cancellation reason</span><select autoFocus value={reasonCode} onChange={(event) => setReasonCode(event.target.value)}>{cancellationReasons.map((reason) => <option key={reason} value={reason}>{humanize(reason)}</option>)}</select></label>
+              <label><span>Structured cancellation reason</span><GigSelect autoFocus value={reasonCode} onValueChange={setReasonCode} options={cancellationReasons.map((reason) => ({ value: reason, label: humanize(reason) }))} /></label>
               <label><span>{reasonCode === "other" ? "Explanation (required)" : "Explanation (optional)"}</span><textarea maxLength={800} rows={4} value={explanation} onChange={(event) => setExplanation(event.target.value)} /></label>
             </>
           ) : null}

@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import { Button } from "./Button";
+import { GigSelect } from "./GigSelect";
 
 export type ApplicantReviewDialogMode = "advance" | "return" | "not_selected" | "reopen";
 
@@ -107,7 +108,7 @@ export function ApplicantReviewDialog({
       className="applicant-review-dialog"
       onClose={onDismiss}
       onKeyDown={(event) => {
-        if (event.key === "Escape" && !isSubmitting) {
+        if (event.key === "Escape" && !event.defaultPrevented && !isSubmitting) {
           event.preventDefault();
           dialogRef.current?.close();
         }
@@ -131,9 +132,7 @@ export function ApplicantReviewDialog({
           {mode === "not_selected" ? (
             <>
               <label><span>Primary structured reason</span>
-                <select autoFocus value={reason} onChange={(event) => setReason(event.target.value)}>
-                  {notSelectedReasons.map(([value, label]) => <option key={value} value={value}>{label}</option>)}
-                </select>
+                <GigSelect autoFocus value={reason} onValueChange={setReason} options={notSelectedReasons.map(([value, label]) => ({ value, label }))} />
               </label>
               {reason === "other" ? <label><span>Other reason explanation</span><textarea required rows={3} maxLength={500} value={otherExplanation} onChange={(event) => setOtherExplanation(event.target.value)} /></label> : null}
               {advancedDecision ? <label><span>Meaningful applicant feedback</span><textarea required rows={4} maxLength={500} value={feedback} onChange={(event) => setFeedback(event.target.value)} /><small>Advanced decisions require at least one meaningful feedback point.</small></label> : null}
@@ -146,9 +145,7 @@ export function ApplicantReviewDialog({
           {mode === "reopen" ? (
             <>
               <label><span>Controlled reopen reason</span>
-                <select autoFocus value={reopenReason} onChange={(event) => setReopenReason(event.target.value)}>
-                  {reopenReasons.map(([value, label]) => <option key={value} value={value}>{label}</option>)}
-                </select>
+                <GigSelect autoFocus value={reopenReason} onValueChange={setReopenReason} options={reopenReasons.map(([value, label]) => ({ value, label }))} />
               </label>
               <label><span>Explanation {reopenReason === "other" ? "(required)" : "(optional)"}</span><textarea required={reopenReason === "other"} rows={4} maxLength={1000} value={reopenExplanation} onChange={(event) => setReopenExplanation(event.target.value)} /></label>
               <p className="applicant-review-structural-note">This is the 7E review action, not a reconsideration invitation or failed-engagement Gig Reopening.</p>

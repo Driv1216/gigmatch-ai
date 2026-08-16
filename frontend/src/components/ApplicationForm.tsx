@@ -1,5 +1,7 @@
 import { useId, useMemo, useState, type FormEvent, type ReactNode } from "react";
 import { Button } from "./Button";
+import { ChoiceGroup } from "./ChoiceGroup";
+import { GigSelect } from "./GigSelect";
 import { isRecord } from "../lib/applicationContracts";
 import { lines, validateProposal } from "../lib/applicationView";
 
@@ -16,6 +18,26 @@ type Props = {
 };
 
 type Values = Record<string, string>;
+
+const fixedProposalOptions = [
+  { value: "comfortable_within_posted_budget", label: "Comfortable within posted budget" },
+  { value: "exact_total", label: "Exact total" },
+  { value: "total_range", label: "Total range" },
+  { value: "requires_scope_clarification", label: "Requires scope clarification" },
+] as const;
+const openProposalOptions = [
+  { value: "estimated_fixed_price_range", label: "Estimated fixed-price range" },
+  { value: "proposed_hourly_rate", label: "Proposed hourly rate" },
+  { value: "phased_estimate", label: "Phased estimate" },
+  { value: "initial_discovery_phase", label: "Initial discovery phase" },
+] as const;
+const timelineShapeOptions = [
+  { value: "exact", label: "Exact" },
+  { value: "range", label: "Range" },
+  { value: "requires_discussion", label: "Requires discussion" },
+] as const;
+const timelineUnitOptions = ["days", "weeks", "months"] as const;
+const rateFlexibilityOptions = ["fixed", "negotiable", "depends_on_weekly_commitment"] as const;
 
 export function ApplicationForm({
   paymentStructure, currency, materialTerms, initialApplication, submitLabel, submitting,
@@ -77,11 +99,10 @@ export function ApplicationForm({
         <SectionHeading index="03" title="Timeline and availability" copy="State when you can begin and the duration shape you are proposing." />
         <div>
           <h2 className="application-form-subheading">Timeline</h2>
-          <Select label="Timeline shape" value={values.timeline_mode} onChange={(value) => update("timeline_mode", value)}
-            options={["exact", "range", "requires_discussion"]} />
+          <ChoiceGroup legend="Timeline shape" name="timeline_mode" layout="cards" value={values.timeline_mode} onValueChange={(value) => update("timeline_mode", value)} options={timelineShapeOptions} />
           {values.timeline_mode !== "requires_discussion" ? (
             <Select label="Unit" value={values.timeline_unit} onChange={(value) => update("timeline_unit", value)}
-              options={["days", "weeks", "months"]} />
+              options={timelineUnitOptions} />
           ) : null}
           {values.timeline_mode === "exact" ? <Input label="Exact duration" type="number" value={values.timeline_exact} onChange={(value) => update("timeline_exact", value)} /> : null}
           {values.timeline_mode === "range" ? <div className="grid grid-cols-2 gap-3"><Input label="Minimum" type="number" value={values.timeline_minimum} onChange={(value) => update("timeline_minimum", value)} /><Input label="Maximum" type="number" value={values.timeline_maximum} onChange={(value) => update("timeline_maximum", value)} /></div> : null}
@@ -115,8 +136,14 @@ export function ApplicationForm({
 
 function FixedFields({ values, update, maximum }: { values: Values; update: (name: string, value: string) => void; maximum?: number }) {
   return <div className="mt-4 space-y-4">
-    <Select label="Proposal type" value={values.proposal_mode} onChange={(value) => update("proposal_mode", value)}
-      options={["comfortable_within_posted_budget", "exact_total", "total_range", "requires_scope_clarification"]} />
+    <ChoiceGroup
+      legend="Proposal type"
+      name="proposal_mode"
+      layout="cards"
+      value={values.proposal_mode}
+      onValueChange={(value) => update("proposal_mode", value)}
+      options={fixedProposalOptions}
+    />
     {maximum ? <p className="text-xs text-muted">Posted maximum: {maximum}</p> : null}
     {values.proposal_mode === "exact_total" ? <Input label="Exact total" type="number" value={values.exact_total} onChange={(value) => update("exact_total", value)} /> : null}
     {values.proposal_mode === "total_range" ? <div className="grid grid-cols-2 gap-3"><Input label="Minimum total" type="number" value={values.minimum} onChange={(value) => update("minimum", value)} /><Input label="Maximum total" type="number" value={values.maximum} onChange={(value) => update("maximum", value)} /></div> : null}
@@ -127,7 +154,7 @@ function FixedFields({ values, update, maximum }: { values: Values; update: (nam
 function HourlyFields({ values, update }: { values: Values; update: (name: string, value: string) => void }) {
   return <div className="mt-4 grid gap-4 md:grid-cols-2">
     <Input label="Requested hourly rate" type="number" value={values.hourly_rate} onChange={(value) => update("hourly_rate", value)} />
-    <Select label="Rate flexibility" value={values.rate_flexibility} onChange={(value) => update("rate_flexibility", value)} options={["fixed", "negotiable", "depends_on_weekly_commitment"]} />
+    <Select label="Rate flexibility" value={values.rate_flexibility} onChange={(value) => update("rate_flexibility", value)} options={rateFlexibilityOptions} />
     <Input label="Available from" type="date" value={values.available_from} onChange={(value) => update("available_from", value)} />
     <Field label="Out-of-range explanation"><textarea value={values.range_explanation} onChange={(event) => update("range_explanation", event.target.value)} rows={2} className={controlClass} /></Field>
   </div>;
@@ -135,8 +162,7 @@ function HourlyFields({ values, update }: { values: Values; update: (name: strin
 
 function OpenFields({ values, update }: { values: Values; update: (name: string, value: string) => void }) {
   return <div className="mt-4 space-y-4">
-    <Select label="Proposal form" value={values.proposal_mode} onChange={(value) => update("proposal_mode", value)}
-      options={["estimated_fixed_price_range", "proposed_hourly_rate", "phased_estimate", "initial_discovery_phase"]} />
+    <ChoiceGroup legend="Proposal form" name="proposal_mode" layout="cards" value={values.proposal_mode} onValueChange={(value) => update("proposal_mode", value)} options={openProposalOptions} />
     {values.proposal_mode === "estimated_fixed_price_range" ? <div className="grid grid-cols-2 gap-3"><Input label="Minimum" type="number" value={values.minimum} onChange={(value) => update("minimum", value)} /><Input label="Maximum" type="number" value={values.maximum} onChange={(value) => update("maximum", value)} /></div> : null}
     {values.proposal_mode === "proposed_hourly_rate" ? <Input label="Hourly rate" type="number" value={values.hourly_rate} onChange={(value) => update("hourly_rate", value)} /> : null}
     {values.proposal_mode === "phased_estimate" ? <div className="grid gap-3 md:grid-cols-2"><Input label="Phase name" value={values.phase_name} onChange={(value) => update("phase_name", value)} /><Input label="Phase amount" type="number" value={values.phase_amount} onChange={(value) => update("phase_amount", value)} /></div> : null}
@@ -216,6 +242,6 @@ function SectionHeading({ index, title, copy }: { index: string; title: string; 
 }
 function Field({ label, children, visuallyHiddenLabel = false }: { label: string; children: ReactNode; visuallyHiddenLabel?: boolean }) { return <label className="block text-sm font-semibold text-ink"><span className={visuallyHiddenLabel ? "sr-only" : undefined}>{label}</span><div className="mt-2">{children}</div></label>; }
 function Input({ label, value, onChange, type = "text" }: { label: string; value: string; onChange: (value: string) => void; type?: string }) { return <Field label={label}><input type={type} min={type === "number" ? "0" : undefined} step={type === "number" ? "any" : undefined} value={value} onInput={type === "date" ? (event) => onChange(event.currentTarget.value) : undefined} onChange={(event) => onChange(event.target.value)} className={controlClass} /></Field>; }
-function Select({ label, value, onChange, options }: { label: string; value: string; onChange: (value: string) => void; options: string[] }) { return <Field label={label}><select value={value} onChange={(event) => onChange(event.target.value)} className={controlClass}>{options.map((option) => <option key={option} value={option}>{option.replace(/_/g, " ")}</option>)}</select></Field>; }
+function Select({ label, value, onChange, options }: { label: string; value: string; onChange: (value: string) => void; options: readonly string[] }) { return <Field label={label}><GigSelect value={value} onValueChange={onChange} options={options.map((option) => ({ value: option, label: option.replace(/_/g, " ") }))} className={controlClass} /></Field>; }
 function TextList({ label, value, onChange }: { label: string; value: string; onChange: (value: string) => void }) { return <Field label={`${label} (one per line)`}><textarea value={value} onChange={(event) => onChange(event.target.value)} rows={4} className={controlClass} /></Field>; }
 const controlClass = "w-full rounded-md border border-line bg-white px-3 py-2 text-sm text-ink outline-none focus:border-accent";

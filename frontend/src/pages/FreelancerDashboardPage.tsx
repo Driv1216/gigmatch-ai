@@ -7,7 +7,7 @@ import { DashboardSummaryCard } from "../components/DashboardSummaryCard";
 import { MatchExplanationPanel } from "../components/MatchExplanationPanel";
 import { WorkflowStatusBadge } from "../components/WorkflowStatusBadge";
 import { fetchFreelancerDashboard } from "../lib/dashboard";
-import { dashboardViewState, formatDashboardDate } from "../lib/dashboardView";
+import { dashboardHeaderContext, dashboardViewState, formatDashboardDate } from "../lib/dashboardView";
 import { fetchRecommendedGigs } from "../lib/matching";
 import { formatScoreValue } from "../lib/matchingExplanations";
 import { rankingPresentation } from "../lib/marketplaceView";
@@ -23,6 +23,7 @@ export function FreelancerDashboardPage() {
       eyebrow="Freelancer workspace"
       title="Your marketplace workflow"
       description="Track responses, applications, active engagements, and independent matching recommendations from one current view."
+      headerContext={dashboardHeaderContext("freelancer", state, dashboard.data)}
       actions={(
         <>
           <Button to="/gigs">Find gigs</Button>

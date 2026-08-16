@@ -375,10 +375,10 @@ async function publishAndReviewGig(page, title) {
   await page.getByLabel("Preferred skills").fill("PostgreSQL");
   await page.getByLabel("Budget minimum").fill("1200");
   await page.getByLabel("Budget maximum").fill("1800");
-  await page.getByLabel("Difficulty level").selectOption("advanced");
-  await page.getByLabel("Experience requirement").selectOption("senior");
+  await chooseSelectOption(page, "Difficulty level", "Advanced");
+  await chooseSelectOption(page, "Experience requirement", "Senior");
   await page.getByLabel("Deliverables").fill("Working application, Contract tests");
-  await page.getByLabel("Work mode").selectOption("remote");
+  await chooseSelectOption(page, "Work mode", "Remote");
   await page.getByLabel("Application deadline").fill(applicationDeadline);
   await page.getByLabel("Project deadline").fill(projectDeadline);
   await page.getByLabel("Location / timezone requirements").fill("Remote UTC ± 6");
@@ -398,7 +398,7 @@ async function publishAndReviewGig(page, title) {
   await page.getByLabel("Preferred skills").fill("PostgreSQL");
   await page.getByLabel("Categories").fill("frontend, backend");
   await page.getByLabel("Matched terms").fill("react, typescript, fastapi, postgresql");
-  await page.getByLabel("Seniority level").selectOption("senior");
+  await chooseSelectOption(page, "Seniority level", "Senior");
   await page.getByLabel("Deliverables").fill("Working application, Contract tests");
   await page.getByRole("button", { name: "Save reviewed gig input" }).click();
   await expectText(page, "Reviewed gig input saved.");
@@ -419,10 +419,10 @@ async function apply(page, gigId, cover, scopeNotes, total) {
 
 async function fillApplication(page, cover, scopeNotes, total) {
   await page.getByLabel("Cover note").fill(cover);
-  await page.getByLabel("Proposal type").selectOption("exact_total");
+  await page.getByRole("radio", { name: "Exact total", exact: true }).check();
   await page.getByRole("spinbutton", { name: "Exact total", exact: true }).fill(total);
-  await page.getByLabel("Timeline shape").selectOption("exact");
-  await page.getByLabel("Unit").selectOption("weeks");
+  await page.getByRole("radio", { name: "Exact", exact: true }).check();
+  await chooseSelectOption(page, "Unit", "weeks");
   await page.getByRole("spinbutton", { name: "Exact duration", exact: true }).fill("4");
   await page.getByLabel("Available from").fill(futureDate(5));
   await page.getByLabel("Included work (one per line)").fill(
@@ -538,6 +538,7 @@ async function revokeMeeting(page) {
 async function proveLogoutBackDenial(page) {
   await page.goto(`${frontendOrigin}/dashboard/client`);
   await settled(page, "Hiring and engagement workflow");
+  await page.getByRole("button", { name: /account$/i }).click();
   await page.getByRole("button", { name: "Logout" }).click();
   await page.waitForURL(/\/login$/);
   await page.goBack();
@@ -671,6 +672,11 @@ async function expectAbsent(locator) {
       if (visible) throw new Error("expected element to be absent");
     }
   });
+}
+
+async function chooseSelectOption(page, label, optionName) {
+  await page.getByRole("combobox", { name: label }).click();
+  await page.getByRole("option", { name: optionName, exact: true }).click();
 }
 
 async function confirmNativeDialog(page, action, confirmName, { confirmTerminal = false } = {}) {

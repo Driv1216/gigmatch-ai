@@ -18,6 +18,7 @@ import {
 } from "../src/lib/selectionView.ts";
 
 const panelSource = readFileSync(new URL("../src/components/SelectionPanel.tsx", import.meta.url), "utf8");
+const choiceGroupSource = readFileSync(new URL("../src/components/ChoiceGroup.tsx", import.meta.url), "utf8");
 const applicationPageSource = readFileSync(new URL("../src/pages/ApplicationDetailPage.tsx", import.meta.url), "utf8");
 const applicantPageSource = readFileSync(new URL("../src/pages/ClientApplicantDetailPage.tsx", import.meta.url), "utf8");
 
@@ -181,8 +182,11 @@ test("the countdown uses authoritative time plus elapsed duration, never browser
 
 test("deadline choices are exactly 24, 48, and 72 hours with a 48-hour UI default", () => {
   assert.deepEqual(SELECTION_DURATION_OPTIONS, [24, 48, 72]);
-  assert.match(panelSource, /useState\(48\)/);
+  assert.match(panelSource, /useState<\(typeof SELECTION_DURATION_OPTIONS\)\[number\]>\(48\)/);
+  assert.match(panelSource, /onValueChange=\{setDuration\}/);
   assert.match(panelSource, /48 \? " · default"/);
+  assert.match(choiceGroupSource, /onChange=\{\(\) => onValueChange\(option\.value\)\}/);
+  assert.doesNotMatch(choiceGroupSource, /event\.target\.value/);
 });
 
 test("one logical mutation reuses its UUID and a settled or changed operation gets a fresh UUID", () => {

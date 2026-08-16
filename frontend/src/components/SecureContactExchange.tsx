@@ -7,6 +7,7 @@ import {
   type FormEvent,
 } from "react";
 import { Button } from "./Button";
+import { GigSelect } from "./GigSelect";
 import {
   blockEngagementContact,
   ContactExchangeApiError,
@@ -579,20 +580,15 @@ export function SecureContactExchange({
             </div>
             <label>
               Category
-              <select
+              <GigSelect
                 value={reportCategory}
                 disabled={working || reportSent}
-                onChange={(event) => {
-                  setReportCategory(event.target.value as ContactReportCategory);
+                onValueChange={(value) => {
+                  setReportCategory(value);
                   reportAttemptRef.current = null;
                 }}
-              >
-                {contactReportCategories.map((category) => (
-                  <option key={category} value={category}>
-                    {humanizeContactMetadata(category)}
-                  </option>
-                ))}
-              </select>
+                options={contactReportCategories.map((category) => ({ value: category, label: humanizeContactMetadata(category) }))}
+              />
             </label>
             <label>
               Detail {reportCategory === "other" ? "(required)" : "(optional)"}

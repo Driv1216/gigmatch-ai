@@ -6,6 +6,8 @@ import {
   useState,
 } from "react";
 import { Button } from "./Button";
+import { ChoiceGroup } from "./ChoiceGroup";
+import { GigSelect } from "./GigSelect";
 import {
   cancelSelectionRequest,
   fetchSelectionContext,
@@ -68,7 +70,7 @@ export function SelectionPanel({ applicationId, authorityRefreshKey = 0, onChang
   const [context, setContext] = useState<SelectionContext | null>(null);
   const [history, setHistory] = useState<SelectionRequestHistory | null>(null);
   const [requestDetails, setRequestDetails] = useState<SelectionRequestDetail[]>([]);
-  const [duration, setDuration] = useState(48);
+  const [duration, setDuration] = useState<(typeof SELECTION_DURATION_OPTIONS)[number]>(48);
   const [acknowledged, setAcknowledged] = useState(false);
   const [cancelReason, setCancelReason] = useState<string>("client_withdrew_request");
   const [cancelDetail, setCancelDetail] = useState("");
@@ -309,12 +311,13 @@ export function SelectionPanel({ applicationId, authorityRefreshKey = 0, onChang
             <h3 id="selection-send-title">Send these exact terms</h3>
             <p>The request is bound to the versions above. It does not edit the proposal or create an engagement.</p>
           </div>
-          <label>
-            Response deadline
-            <select value={duration} onChange={(event) => setDuration(Number(event.target.value))}>
-              {SELECTION_DURATION_OPTIONS.map((hours) => <option key={hours} value={hours}>{hours} hours{hours === 48 ? " · default" : ""}</option>)}
-            </select>
-          </label>
+          <ChoiceGroup
+            legend="Response deadline"
+            name="selection_response_deadline"
+            value={duration}
+            onValueChange={setDuration}
+            options={SELECTION_DURATION_OPTIONS.map((hours) => ({ value: hours, label: `${hours} hours${hours === 48 ? " · default" : ""}` }))}
+          />
           {context.commercial_acknowledgement_required ? (
             <label className="selection-check">
               <input type="checkbox" checked={acknowledged} onChange={(event) => setAcknowledged(event.target.checked)} />
@@ -504,7 +507,7 @@ function ConsequenceList({ items }: { items: string[] }) { return <div className
 function VersionFact({ value, changed, current }: { value: string; changed: boolean; current: string | null }) { return <div className={changed ? "is-changed" : ""}><strong>{value}</strong><span>{current ?? "Bound version is current"}</span></div>; }
 function StatusBadge({ status, attention = false }: { status: string; attention?: boolean }) { return <span className={`selection-status${attention ? " is-pending" : ""}`}>{status}</span>; }
 function Fact({ label, value }: { label: string; value: ReactNode }) { return <div><dt>{label}</dt><dd>{value}</dd></div>; }
-function SelectField({ label, value, onChange, values }: { label: string; value: string; onChange: (value: string) => void; values: readonly string[] }) { return <label className="selection-field">{label}<select value={value} onChange={(event) => onChange(event.target.value)}>{values.map((item) => <option key={item} value={item}>{humanize(item)}</option>)}</select></label>; }
+function SelectField({ label, value, onChange, values }: { label: string; value: string; onChange: (value: string) => void; values: readonly string[] }) { return <label className="selection-field">{label}<GigSelect value={value} onValueChange={onChange} options={values.map((item) => ({ value: item, label: humanize(item) }))} /></label>; }
 function DetailInput({ value, onChange, required }: { value: string; onChange: (value: string) => void; required: boolean }) { return <label className="selection-field">Detail {required ? "(required)" : "(optional)"}<textarea value={value} onChange={(event) => onChange(event.target.value)} maxLength={800} /></label>; }
 
 function formatDate(value: string): string {

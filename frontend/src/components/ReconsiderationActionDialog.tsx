@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, type FormEvent, type ReactNode } from "react";
 import { Button } from "./Button";
+import { GigSelect } from "./GigSelect";
 
 export type ReconsiderationDialogAction = "create" | "cancel" | "reaffirm" | "decline";
 
@@ -38,7 +39,7 @@ export function ReconsiderationActionDialog({ action, gigTitle, working, onConfi
         <header><span>Failed-engagement recovery</span><h2 id="reconsideration-dialog-title">{content.title}</h2><p>{gigTitle}</p></header>
         <div className="reconsideration-dialog-body">
           <div id="reconsideration-dialog-consequence" className="reconsideration-dialog-consequence"><strong>Exact consequence</strong>{content.consequence}</div>
-          {action === "create" ? <><label><span>Structured invitation reason</span><select autoFocus value={reasonCode} onChange={(event) => setReasonCode(event.target.value)}>{reasons.map((reason) => <option key={reason} value={reason}>{humanize(reason)}</option>)}</select></label><label><span>{reasonCode === "other" ? "Explanation (required)" : "Explanation (optional)"}</span><textarea rows={4} maxLength={800} value={explanation} onChange={(event) => setExplanation(event.target.value)} /></label></> : null}
+          {action === "create" ? <><label><span>Structured invitation reason</span><GigSelect autoFocus value={reasonCode} onValueChange={setReasonCode} options={reasons.map((reason) => ({ value: reason, label: humanize(reason) }))} /></label><label><span>{reasonCode === "other" ? "Explanation (required)" : "Explanation (optional)"}</span><textarea rows={4} maxLength={800} value={explanation} onChange={(event) => setExplanation(event.target.value)} /></label></> : null}
         </div>
         <footer><Button type="button" variant="secondary" disabled={working} onClick={() => dialogRef.current?.close()}>Keep Invitation Unchanged</Button><Button type="submit" disabled={invalid}>{working ? "Waiting for server…" : content.confirm}</Button></footer>
       </form>

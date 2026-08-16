@@ -1,6 +1,7 @@
 import { useEffect, useState, type FormEvent } from "react";
 import { useParams } from "react-router-dom";
 import { Button } from "../components/Button";
+import { GigSelect } from "../components/GigSelect";
 import { useAuth } from "../context/AuthContext";
 import { buildGigParseInput, extractGigSkills, fetchGigParse, saveGigParse, type GigParse, type SkillExtractionResult } from "../lib/gigParses";
 import { fetchGigForClient, type Gig, type SeniorityNeeded } from "../lib/gigs";
@@ -9,6 +10,7 @@ import { arrayToCsv, csvToArray } from "../lib/profiles";
 
 type ReviewForm = { requiredSkills: string; preferredSkills: string; categories: string; matchedTerms: string; deliverables: string; seniorityLevel: "" | SeniorityNeeded };
 const emptyReviewForm: ReviewForm = { requiredSkills: "", preferredSkills: "", categories: "", matchedTerms: "", deliverables: "", seniorityLevel: "" };
+const seniorityOptions = ["student", "junior", "mid", "senior", "any"].map((value) => ({ value: value as SeniorityNeeded, label: value[0].toUpperCase() + value.slice(1) }));
 
 function getErrorMessage(error: unknown, fallback: string) {
   if (error instanceof Error) return error.message;
@@ -141,7 +143,7 @@ export function GigParsePage() {
                 <label className="is-wide"><span>Preferred skills</span><input value={reviewForm.preferredSkills} onChange={(event) => updateField("preferredSkills", event.target.value)} placeholder="Docker, AWS" /></label>
                 <label><span>Categories</span><input value={reviewForm.categories} onChange={(event) => updateField("categories", event.target.value)} placeholder="frontend, backend" /></label>
                 <label><span>Matched terms</span><input value={reviewForm.matchedTerms} onChange={(event) => updateField("matchedTerms", event.target.value)} placeholder="react, fastapi" /></label>
-                <label><span>Seniority level</span><select value={reviewForm.seniorityLevel} onChange={(event) => updateField("seniorityLevel", event.target.value as ReviewForm["seniorityLevel"])}><option value="">Select seniority</option><option value="student">Student</option><option value="junior">Junior</option><option value="mid">Mid</option><option value="senior">Senior</option><option value="any">Any</option></select></label>
+                <label><span>Seniority level</span><GigSelect value={reviewForm.seniorityLevel} onValueChange={(value) => updateField("seniorityLevel", value)} options={seniorityOptions} placeholder="Select seniority" /></label>
                 <label><span>Deliverables</span><input value={reviewForm.deliverables} onChange={(event) => updateField("deliverables", event.target.value)} placeholder="API routes, dashboard" /></label>
               </div>
               <div className="stage-ten-candidate-meta"><span>Method · deterministic_v1</span><span>Confidence label · deterministic</span><span>Unmatched keywords · {unmatchedKeywords.length}</span></div>

@@ -111,10 +111,10 @@ test("protected-route and logout authority remain intact, including final browse
 });
 
 test("landing copy is truthful and does not fetch private marketplace data", () => {
-  assert.match(landingSource, /reviewed resume extraction/i);
-  assert.match(landingSource, /Keyword, semantic, and hybrid matching/i);
+  assert.match(landingSource, /reviewed resume input/i);
+  assert.match(landingSource, /Keyword, semantic, or hybrid ranking/i);
   assert.match(landingSource, /version-bound selection/i);
-  assert.match(landingSource, /Secure Contact Exchange/i);
+  assert.match(landingSource, /contact sharing remains method-specific, consent-based, and revocable/i);
   assert.match(landingSource, /Marketplace discovery and participant workflow data require an account/i);
   assert.doesNotMatch(landingSource, /supabase|fetch\(|axios|apiRequest|useEffect/);
   assert.doesNotMatch(

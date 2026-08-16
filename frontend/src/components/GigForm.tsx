@@ -3,6 +3,7 @@ import { useState, type FormEvent, type ReactNode } from "react";
 import { arrayToCsv, csvToArray } from "../lib/profiles";
 import type { DifficultyLevel, Gig, SeniorityNeeded, WorkMode } from "../lib/gigs";
 import { Button } from "./Button";
+import { GigSelect } from "./GigSelect";
 
 export type GigFormValues = {
   title: string;
@@ -51,6 +52,28 @@ export const emptyGigForm: GigFormValues = {
 };
 
 const inputClasses = "gig-form-control";
+const difficultyOptions = [
+  { value: "beginner", label: "Beginner" },
+  { value: "intermediate", label: "Intermediate" },
+  { value: "advanced", label: "Advanced" },
+] as const;
+const seniorityOptions = [
+  { value: "student", label: "Student" },
+  { value: "junior", label: "Junior" },
+  { value: "mid", label: "Mid" },
+  { value: "senior", label: "Senior" },
+  { value: "any", label: "Any" },
+] as const;
+const workModeOptions = [
+  { value: "remote", label: "Remote" },
+  { value: "hybrid", label: "Hybrid" },
+  { value: "onsite", label: "Onsite" },
+] as const;
+const budgetFlexibilityOptions = [
+  { value: "fixed", label: "Fixed" },
+  { value: "negotiable", label: "Negotiable" },
+  { value: "depends_on_scope", label: "Depends on scope" },
+] as const;
 
 export function formFromGig(gig: Gig): GigFormValues {
   return {
@@ -232,21 +255,21 @@ export function GigForm({ initialValues = emptyGigForm, isSubmitting, submitLabe
         <Field label="Title" wide><input required value={values.title} onChange={(event) => updateField("title", event.target.value)} className={inputClasses} /></Field>
         <Field label="Description" wide><textarea required value={values.description} onChange={(event) => updateField("description", event.target.value)} rows={7} className={inputClasses} /></Field>
         <Field label="Tech category"><input required value={values.techCategory} onChange={(event) => updateField("techCategory", event.target.value)} className={inputClasses} /></Field>
-        <Field label="Difficulty level"><select value={values.difficultyLevel} onChange={(event) => updateField("difficultyLevel", event.target.value as GigFormValues["difficultyLevel"])} className={inputClasses}><option value="">Select difficulty</option><option value="beginner">Beginner</option><option value="intermediate">Intermediate</option><option value="advanced">Advanced</option></select></Field>
+        <Field label="Difficulty level"><GigSelect value={values.difficultyLevel} onValueChange={(value) => updateField("difficultyLevel", value)} options={difficultyOptions} placeholder="Select difficulty" className={inputClasses} /></Field>
       </FormSection>
 
       <FormSection index="02" title="Skills & delivery" consequence="Required skills and deliverables are applicant-relevant material terms." className="is-glass">
         <Field label="Required skills" hint="Comma-separated; at least one."><input required value={values.requiredSkills} onChange={(event) => updateField("requiredSkills", event.target.value)} className={inputClasses} /></Field>
         <Field label="Preferred skills" hint="Comma-separated; optional."><input value={values.preferredSkills} onChange={(event) => updateField("preferredSkills", event.target.value)} className={inputClasses} /></Field>
         <Field label="Deliverables" hint="Comma-separated; at least one." wide><input required value={values.deliverables} onChange={(event) => updateField("deliverables", event.target.value)} className={inputClasses} /></Field>
-        <Field label="Experience requirement"><select required value={values.seniorityNeeded} onChange={(event) => updateField("seniorityNeeded", event.target.value as GigFormValues["seniorityNeeded"])} className={inputClasses}><option value="">Select experience</option><option value="student">Student</option><option value="junior">Junior</option><option value="mid">Mid</option><option value="senior">Senior</option><option value="any">Any</option></select></Field>
-        <Field label="Work mode"><select required value={values.workMode} onChange={(event) => updateField("workMode", event.target.value as GigFormValues["workMode"])} className={inputClasses}><option value="">Select work mode</option><option value="remote">Remote</option><option value="hybrid">Hybrid</option><option value="onsite">Onsite</option></select></Field>
+        <Field label="Experience requirement"><GigSelect required value={values.seniorityNeeded} onValueChange={(value) => updateField("seniorityNeeded", value)} options={seniorityOptions} placeholder="Select experience" className={inputClasses} invalid={validationErrors.includes("Experience requirement is required.")} aria-describedby={validationErrors.length ? "gig-form-errors" : undefined} /></Field>
+        <Field label="Work mode"><GigSelect required value={values.workMode} onValueChange={(value) => updateField("workMode", value)} options={workModeOptions} placeholder="Select work mode" className={inputClasses} invalid={validationErrors.includes("Work mode is required.")} aria-describedby={validationErrors.length ? "gig-form-errors" : undefined} /></Field>
         <Field label="Location / timezone requirements" wide><input value={values.locationRequirements} onChange={(event) => updateField("locationRequirements", event.target.value)} className={inputClasses} /></Field>
       </FormSection>
 
       <FormSection index="03" title="Commercial terms" consequence="Stage 3 preserves the existing complete fixed-price authoring contract." className="is-ocean">
         <Field label="Currency" hint="Three-letter code."><input required maxLength={3} value={values.currency} onChange={(event) => updateField("currency", event.target.value)} className={inputClasses} /></Field>
-        <Field label="Budget flexibility"><select value={values.budgetFlexibility} onChange={(event) => updateField("budgetFlexibility", event.target.value)} className={inputClasses}><option value="fixed">Fixed</option><option value="negotiable">Negotiable</option><option value="depends_on_scope">Depends on scope</option></select></Field>
+        <Field label="Budget flexibility"><GigSelect value={values.budgetFlexibility} onValueChange={(value) => updateField("budgetFlexibility", value)} options={budgetFlexibilityOptions} className={inputClasses} /></Field>
         <Field label="Budget minimum"><input required inputMode="numeric" value={values.budgetMin} onChange={(event) => updateField("budgetMin", event.target.value)} className={inputClasses} /></Field>
         <Field label="Budget maximum"><input required inputMode="numeric" value={values.budgetMax} onChange={(event) => updateField("budgetMax", event.target.value)} className={inputClasses} /></Field>
       </FormSection>
