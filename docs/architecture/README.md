@@ -1,64 +1,112 @@
 # GigMatch AI Architecture
 
-## Initial System Overview
+This guide describes the current runtime product. Historical designs and closure records are indexed in [Documentation](../README.md).
 
-GigMatch AI is planned as a developer-focused AI SaaS prototype for matching freelancers, students, and developers with relevant tech gigs.
+## System responsibilities
 
-This milestone creates only the project foundation:
+GigMatch AI uses three cooperating layers:
 
-- A React + Vite + TypeScript frontend
-- A FastAPI backend
-- Placeholder frontend pages for role-specific flows
-- Placeholder backend routers for planned modules
-- Documentation and environment templates
+1. The React application renders public and role-specific experiences, acquires Supabase sessions, and calls typed data helpers.
+2. FastAPI verifies identity, enforces role/ownership policy, coordinates marketplace commands, returns safe read models, and runs parsing, matching, and evaluation.
+3. Supabase Auth and PostgreSQL provide identity, persistence, Row Level Security, immutable history, constraints, and atomic transitions.
 
-No real authentication, database, AI, resume parsing, or matching logic is implemented in this milestone.
+```text
+Browser
+  ├─ Supabase Auth: signup, login, OAuth, session refresh
+  ├─ Supabase Data API: narrowly permitted owner-scoped operations
+  └─ FastAPI: marketplace, matching, parsing and evaluation
+          ├─ verified identity and trusted role lookup
+          ├─ domain policy and safe response assembly
+          └─ PostgreSQL protected by RLS, grants and constraints
+```
 
-## Planned Architecture
+## Frontend
 
-### Frontend
+The canonical application is `frontend/`, built with React 19, TypeScript, Vite, React Router, Tailwind CSS, and Radix UI.
 
-The frontend will provide role-specific experiences for:
+Route boundaries distinguish public, setup, freelancer, client, participant, and administrator surfaces. Protected routes use the authenticated profile role. Account-setup and public-account boundaries handle incomplete profiles, verification states, and redirects. Pages are lazy-loaded and delegate transport behavior to `src/lib` modules.
 
-- Freelancers and students creating smart profiles
-- Clients posting tech gigs
-- Admins reviewing system and evaluation views
+Product surfaces include authentication and setup; role-aware dashboards; profiles and resume parsing; gig discovery and lifecycle management; applications and proposal versioning; applicant review; Q&A and revisions; selection and reconsideration; engagement workspaces; secure contact exchange; and administrator evaluation.
 
-Current frontend scope is limited to routing, layout primitives, and placeholder pages.
+The frontend never re-ranks recommendations or generates explanation claims. It renders backend-authoritative order and evidence.
 
-### Backend
+## FastAPI service
 
-The FastAPI backend will eventually expose APIs for:
+The backend separates HTTP transport from domain behavior:
 
-- Auth session support
-- Profile management
-- Gig management
-- Matching workflows
-- Evaluation metrics
+- `app/api/routes`: request validation, authentication dependencies, status mapping, and response contracts.
+- `app/marketplace`: gigs, applications, review, Q&A, selection, engagements, contact, dashboards, policy, and data access.
+- `app/matching`: normalized entities, keyword/semantic/hybrid ranking, explanations, and candidate loading.
+- `app/parsing`: normalization, skill taxonomy, deterministic extraction, and document services.
+- `app/evaluation`: seeded fixtures, ranking comparisons, and information-retrieval metrics.
 
-Current backend scope is limited to a health endpoint and planned-module status routes.
+Route groups cover health, auth/profile status, gigs, applications, applicant review, Q&A, selections, engagements, contact exchange, dashboards, parsing, matching, and evaluation. Generated schemas are available at `/docs` and `/openapi.json`.
 
-### Database
+## Data model and authority
 
-Supabase PostgreSQL is planned for later milestones. It will eventually store users, profiles, gigs, extracted skills, matching results, and evaluation artifacts.
+The ordered files in `supabase/migrations/` are authoritative. The model covers users/profiles; gigs and version history; parsed resume/gig data; applications and immutable proposal versions; applicant review and Q&A; selection requests; engagements and lifecycle events; reconsideration; encrypted contact shares; and dashboard projections.
 
-No database models or migrations are included yet.
+PostgreSQL constraints and triggers protect cross-record invariants even if a caller is faulty. Critical commands use expected-version tokens, unique request IDs, deterministic lock ordering, and transactional functions to reject stale, duplicate, or conflicting actions.
 
-### AI Layer
+## Authentication and authorization
 
-Future AI modules may include:
+Supabase Auth establishes identity. FastAPI validates bearer tokens through Supabase Auth and loads the trusted role from `user_profiles`; browser-supplied roles are never authorization evidence.
 
-- Resume parsing
-- Gig parsing
-- Skill extraction
-- Transformer embeddings
-- pgvector semantic search
-- Hybrid ranking
-- Explainability
-- Skill-gap analysis
+Authorization is layered:
 
-No AI logic or mock AI output is included yet.
+- Route policy restricts actions by role or engagement participation.
+- Ownership checks bind records to the authenticated subject.
+- RLS limits direct Data API access.
+- Grants protect sensitive columns and functions.
+- Database functions re-check identity and state for atomic workflows.
+- Public models omit raw/private fields.
 
-## Milestone Note
+Public signup cannot create an administrator. Account completion uses database authority to prevent role escalation and partial setup.
 
-This milestone intentionally creates a clean, runnable foundation only. Product features will be introduced in later milestones after the project structure is stable.
+## Marketplace lifecycle
+
+```text
+Gig draft -> published/open -> paused or intake closed -> filled/cancelled
+                        |
+                        v
+Application -> review/Q&A/revision -> selection request
+                                         |
+                                  accept exact version
+                                         |
+                                         v
+                                     engagement
+                                         |
+                          kickoff -> in progress -> completed
+                                         |
+                          cancellation/reopen/reconsideration
+```
+
+Material gig edits preserve versions and require affected applicants to reaffirm, update, withdraw, or reapply as policy allows. Selection requests point to an exact application version and expire after a bounded duration. Acceptance atomically closes competing paths and creates an immutable accepted-terms snapshot.
+
+## Matching and explainability
+
+Keyword ranking scores skill coverage and structured alignment. Semantic ranking builds stable allowed text and compares embeddings with cosine similarity. Hybrid ranking combines them with default weights of 55% keyword and 45% semantic score.
+
+A configured sentence-transformers provider supplies runtime embeddings; deterministic providers exist for tests. Missing or invalid providers produce typed failures/fallback metadata, not invented similarity.
+
+Explanations are built after ranking and cannot alter order. They include reason codes, scores, matched/missing skills, gap severity, and deterministic text. Raw resume content, source text, vectors, and private fields stay internal.
+
+## Secure contact exchange
+
+Contact sharing is limited to eligible engagement participants and explicit consent. Values are encrypted before persistence; a separately keyed fingerprint supports equality/abuse controls without searchable plaintext. Reveal re-authorizes the caller, applies limits, and records access. Shares can be revoked, blocked, or reported.
+
+Encryption keys are versioned. Rotation activates a new key while retaining previous keys only long enough to decrypt and migrate existing records.
+
+## Failure behavior
+
+- Missing/invalid authentication fails closed.
+- Role and ownership failures do not expose private resource details.
+- Version conflicts reject stale commands and require refresh.
+- Request IDs support idempotent critical workflows.
+- Semantic unavailability is explicit.
+- Invalid/oversized documents and scanned PDFs produce safe validation or warning responses.
+- Database constraints remain the final guard against contradictory state.
+
+## Operational boundaries
+
+Managed secrets, monitoring, backups, email delivery, OCR, payment processing, moderation operations, and disaster recovery are environment-specific integration boundaries, not claimed repository capabilities.

@@ -1,356 +1,218 @@
 # GigMatch AI
 
-An AI-powered tech gig discovery and matching platform for freelancers, students, developers, and clients.
+**An explainable, security-conscious marketplace that takes technical freelance work from discovery to engagement.**
 
-This repository currently contains the BE project foundation, Supabase authentication, role-based frontend routing, structured profile setup for freelancers and clients, client-side gig posting, deterministic skill extraction, parsing persistence, document text extraction, verified backend matching APIs, frontend recommendation/explanation UI, and a seeded internal admin evaluation console. Production-scale retrieval, saved match history, marketplace operations, deployment, and black book materials are planned for later milestones.
+GigMatch AI connects freelancers with relevant technology gigs and gives clients a structured path to publish work, evaluate applicants, agree on exact proposal terms, and manage the resulting engagement. It combines hybrid skill matching with a versioned marketplace workflow, so recommendations are understandable and commercial decisions remain auditable.
 
-## Tech Stack
+This repository contains the complete product implementation: a role-aware React application, FastAPI service, Supabase/PostgreSQL data layer, database-enforced authorization, matching and evaluation systems, and automated verification across the stack.
 
-- Frontend: React, Vite, TypeScript, Tailwind CSS, React Router, Supabase JS
-- Backend: FastAPI, Python, Uvicorn
-- Database/Auth: Supabase PostgreSQL and Supabase Auth
-- AI later: sentence-transformers, pgvector, skill extraction
+## Product capabilities
 
-## Folder Structure
+### Freelancers
+
+- Build a structured technical profile and extract skills from pasted text, PDF, or DOCX resumes.
+- Discover gigs with evidence-based recommendations and skill-gap analysis.
+- Submit fixed-price, hourly, phased, or discovery proposals; revise, withdraw, and track version history.
+- Handle material gig changes, structured client Q&A, and exact-version selection requests.
+- Manage confirmed engagements and share contact details through explicit, revocable consent.
+
+### Clients
+
+- Create, publish, edit, pause, resume, close, reopen, and cancel gigs through guarded lifecycle transitions.
+- Parse gig descriptions into reviewable skills, categories, deliverables, and seniority requirements.
+- Review ranked applicants, shortlist or advance candidates, request clarification, and manage revisions.
+- Send time-bound selection requests and atomically convert an accepted proposal into an engagement.
+- Manage engagement status, cancellation, gig reopening, reconsideration, and secure contact exchange.
+
+### Administrators
+
+- Compare keyword, semantic, and hybrid ranking strategies against seeded relevance judgments.
+- Inspect Precision@K, Recall@K, NDCG@K, Average Precision, and MAP availability through an authenticated evaluation console.
+
+## Engineering highlights
+
+- **Explainable hybrid matching:** deterministic keyword scoring and optional semantic similarity combine with a default `0.55 / 0.45` weighting. Recommendations include reasons, score evidence, matched skills, missing skills, and gap severity.
+- **Version-safe workflows:** immutable proposal snapshots, material-term tokens, request IDs, idempotency controls, and guarded state transitions prevent stale or ambiguous commercial actions.
+- **Atomic selection:** PostgreSQL functions and locking enforce one accepted selection per gig and create an engagement from the exact accepted proposal version.
+- **Defense in depth:** Supabase Auth, trusted role and ownership checks, Row Level Security, restricted grants, and backend authorization protect every data path.
+- **Private contact exchange:** contact data is encrypted at rest, fingerprinted with a separate key, revealed only after authorization, rate-limited, revocable, and supported by block/report controls.
+- **Privacy-aware parsing:** PDF/DOCX extraction is stateless, uploads are not retained, and users review structured output before persistence.
+- **Layered verification:** 15 ordered database migrations, 31 backend test modules, 13 frontend test modules, and 11 SQL test suites, plus browser and concurrency artifacts.
+
+## Architecture
+
+```text
+React 19 + TypeScript + Vite
+        | Supabase sessions + bearer tokens
+        v
+FastAPI application -----------------> Matching and evaluation
+        | verified identity             | keyword + semantic + hybrid
+        v                               v
+Supabase Auth + PostgreSQL <------- versioned marketplace records
+        |
+        +-- RLS, grants, constraints, triggers and transactions
+```
+
+The browser owns presentation and session acquisition. FastAPI owns authenticated marketplace commands, privacy-safe read models, matching, parsing, evaluation, and cross-record rules. PostgreSQL is the final authority for ownership, integrity, concurrency, and atomic transitions.
+
+Read the [architecture guide](docs/architecture/README.md), [matching guide](docs/matching.md), [parsing guide](docs/parsing.md), or [documentation index](docs/README.md).
+
+## Technology stack
+
+| Layer | Technologies |
+| --- | --- |
+| Frontend | React 19, TypeScript, Vite, React Router, Tailwind CSS, Radix UI |
+| Backend | Python, FastAPI, Pydantic, Uvicorn |
+| Data and identity | Supabase Auth, PostgreSQL 17, RLS, SQL functions and triggers |
+| Matching | Skill taxonomy, keyword scoring, cosine similarity, pluggable embeddings, hybrid ranking |
+| Documents | PyMuPDF, python-docx, multipart validation |
+| Security | Verified tokens, role/ownership policy, contact encryption, keyed fingerprints, rate limits |
+| Quality | `unittest`, Node test runner, ESLint, TypeScript, SQL suites, browser and concurrency checks |
+
+## Repository map
 
 ```text
 gigmatch-ai/
-  frontend/              React + Vite application
-  backend/               FastAPI application
-  docs/
-    architecture/        Architecture notes
-    database/            Supabase SQL setup files
-    evaluation/          Future evaluation documentation
-    blackbook/           Future academic report materials
-    milestones.md        Project milestone plan
-  scripts/               Future helper scripts
-  README.md
-  .gitignore
-  .env.example
+├── frontend/                 Product React application and tests
+├── backend/                  FastAPI routes, domain services and tests
+├── supabase/
+│   ├── migrations/           Authoritative ordered database schema
+│   └── tests/                Policy, invariant and workflow tests
+├── docs/                     Current guides and verification archive
+├── scripts/                  Concurrency and browser verification helpers
+├── manual-test-files/        Synthetic parsing fixtures
+└── milestone-7-product-spec.md  Historical product specification
 ```
 
-## Supabase Project Setup
+The `concepts*` directories are preserved design explorations, not the runtime product. The canonical frontend is `frontend/`.
 
-1. Create or open the `gigmatch-ai` Supabase project.
-2. Keep **Enable Data API** on.
-3. For local demo speed, Supabase email confirmation may be disabled from **Authentication -> Providers -> Email**. If email confirmation stays enabled, signup will ask the user to check email before login.
-4. Open the Supabase SQL Editor.
-5. Paste and run [docs/database/001_auth_profiles.sql](docs/database/001_auth_profiles.sql).
-6. Review, then paste and run [docs/database/002_profiles.sql](docs/database/002_profiles.sql).
-7. Review, then paste and run [docs/database/003_gigs.sql](docs/database/003_gigs.sql).
-8. Review, then paste and run [docs/database/004_parsing_foundation.sql](docs/database/004_parsing_foundation.sql).
-9. Copy the project URL and publishable key from Supabase project settings.
+## Local setup
 
-Admin accounts are not created through public signup. The signup UI only allows `freelancer` and `client`. Admin profiles should be created later by the project owner through Supabase SQL or backend service-role logic.
+### Prerequisites
 
-## Environment Variables
+- Node.js 22.6+ and npm (required by the frontend test runner's type stripping)
+- Python 3.11+
+- Supabase CLI and a Docker-compatible runtime
+- A Supabase project or the local Supabase stack
 
-Frontend:
+### 1. Database
+
+`supabase/migrations/` is the authoritative schema history.
 
 ```bash
-cd frontend
-cp .env.example .env
+supabase start
+supabase db reset --local
+supabase status
 ```
 
-Required frontend values:
+Use the local URL and keys printed by `supabase status`. The files under `docs/database/` are early bootstrap references; do not apply them after the migration chain.
 
-```env
-VITE_SUPABASE_URL="https://your-project-ref.supabase.co"
-VITE_SUPABASE_PUBLISHABLE_KEY="sb_publishable_your_publishable_key"
-VITE_API_BASE_URL="http://localhost:8000"
-```
-
-Backend:
-
-```bash
-cd backend
-cp .env.example .env
-```
-
-Required backend values for future server-side Supabase work:
-
-```env
-SUPABASE_URL="https://your-project-ref.supabase.co"
-SUPABASE_PUBLISHABLE_KEY="sb_publishable_your_publishable_key"
-SUPABASE_SECRET_KEY="sb_secret_your_secret_key"
-```
-
-Never put `SUPABASE_SECRET_KEY` in the frontend.
-
-## Frontend Setup
-
-```bash
-cd frontend
-npm install
-```
-
-## Run Frontend
-
-```bash
-cd frontend
-npm run dev
-```
-
-The frontend runs on `http://localhost:5173` by default.
-
-## Backend Setup
+### 2. Backend
 
 ```bash
 cd backend
 python -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
-```
-
-On Windows PowerShell:
-
-```powershell
-cd backend
-python -m venv .venv
-.\.venv\Scripts\Activate.ps1
-pip install -r requirements.txt
-```
-
-## Run Backend
-
-```bash
-cd backend
+cp .env.example .env
 uvicorn app.main:app --reload
 ```
 
-The backend runs on `http://localhost:8000` by default.
-
-## Health Check
+On Windows, activate with `.venv\Scripts\Activate.ps1`. The API starts at `http://localhost:8000`; OpenAPI is at `http://localhost:8000/docs`.
 
 ```bash
 curl http://localhost:8000/health
 ```
 
-Expected response:
+### 3. Frontend
 
-```json
-{
-  "status": "ok",
-  "service": "gigmatch-ai-backend"
-}
+```bash
+cd frontend
+npm install
+cp .env.example .env
+npm run dev
 ```
 
-## Test Signup
+Vite starts at `http://localhost:5173` by default.
 
-1. Start the frontend.
-2. Go to `/signup`.
-3. Enter full name, email, password, and choose `Freelancer` or `Client`.
-4. Submit the form.
-5. If email confirmation is disabled, the app creates the auth user, inserts `user_profiles`, and redirects to the correct dashboard.
-6. If email confirmation is enabled, the app shows a check-email message instead of crashing.
+## Configuration
 
-## Test Login
+Never expose `SUPABASE_SECRET_KEY`, contact-encryption keys, or fingerprint keys through `VITE_*` variables.
 
-1. Go to `/login`.
-2. Login with a Supabase Auth user that has a matching `user_profiles` row.
-3. The app fetches the profile row and redirects by role:
-   - `freelancer` -> `/dashboard/freelancer`
-   - `client` -> `/dashboard/client`
-   - `admin` -> `/dashboard/admin`
+### Frontend
 
-If the profile row is missing, the app shows a clear error and does not create fake data.
+| Variable | Purpose |
+| --- | --- |
+| `VITE_APP_NAME` | Product name |
+| `VITE_API_BASE_URL` | FastAPI base URL |
+| `VITE_SUPABASE_URL` | Supabase API URL |
+| `VITE_SUPABASE_PUBLISHABLE_KEY` | Browser-safe Supabase key |
+| `VITE_GOOGLE_AUTH_ENABLED` | Google sign-in control; provider setup is also required |
 
-## Test Role-Based Redirects
+### Backend
 
-1. Login as a freelancer and try `/dashboard/client`; the app redirects to `/dashboard/freelancer`.
-2. Login as a client and try `/dashboard/admin`; the app redirects to `/dashboard/client`.
-3. Login as a freelancer and try `/profile/client`; the app redirects to `/dashboard/freelancer`.
-4. Login as a client and try `/profile/freelancer`; the app redirects to `/dashboard/client`.
-5. Login as a freelancer and try `/gigs/new`; the app redirects to `/dashboard/freelancer`.
-6. Login as a freelancer and try `/gigs/manage`; the app redirects to `/dashboard/freelancer`.
-7. Login as a client and try `/profile/resume-parse`; the app redirects to `/dashboard/client`.
-8. Logout and try any dashboard, profile, or gig route; the app redirects to `/login`.
+| Variable | Purpose |
+| --- | --- |
+| `APP_NAME`, `APP_ENV`, `FRONTEND_ORIGIN` | Service metadata and browser origin |
+| `SUPABASE_URL`, `SUPABASE_PUBLISHABLE_KEY` | Token verification and authenticated access |
+| `SUPABASE_SECRET_KEY` | Trusted server-side operations only |
+| `EMBEDDING_MODEL_NAME` | Optional sentence-transformers model; blank disables runtime semantic ranking |
+| `APPLICANT_SHORTLIST_CAPACITY`, `APPLICANT_ADVANCEMENT_CAPACITY` | Applicant review limits |
+| `QA_*` | Q&A burst, daily, revision, and pagination policies |
+| `CONTACT_*` | Encryption keyring, fingerprint, reveal rate, and window |
 
-## user_profiles Security
+Generate independent 32-byte base64 contact encryption and fingerprint keys. During rotation, activate a new key ID but retain prior encryption keys until existing ciphertext is migrated.
 
-[docs/database/001_auth_profiles.sql](docs/database/001_auth_profiles.sql) protects `user_profiles` at the database level:
+## Verification
 
-- RLS is enabled on `public.user_profiles`.
-- Select policy only allows users to read their own profile where `auth.uid() = id`.
-- Insert policy only allows authenticated users to insert their own profile row.
-- Public signup insert is limited to `role in ('freelancer', 'client')`, so public signup cannot create admins.
-- Update policy only allows users to update their own profile row.
-- A trigger prevents normal authenticated API requests from changing `role` after profile creation.
-- Column-level grants allow authenticated users to update only safe columns such as `full_name` and `updated_at`, not `role`.
+```bash
+cd backend
+.venv/bin/python -m unittest discover -s tests -v
+```
 
-Together, the insert policy, update policy, trigger, and grants prevent browser users from promoting themselves to `admin`. Manual admin/service-role changes remain possible later through trusted project-owner SQL or backend service-role code.
+```bash
+cd frontend
+npm test
+npm run lint
+npm run build
+```
 
-## Structured Profile Setup
+```bash
+supabase db reset --local
+supabase test db
+```
 
-[docs/database/002_profiles.sql](docs/database/002_profiles.sql) creates:
+Focused browser and concurrency helpers live in `frontend/e2e/` and `scripts/`; consult the [verification archive](docs/README.md#historical-engineering-evidence) before environment-specific checks.
 
-- `public.freelancer_profiles`
-- `public.client_profiles`
+## Security model
 
-Both tables reference `public.user_profiles(id)`, enable RLS, restrict normal users to their own role-specific profile row, allow admins to select all profile rows, and maintain `updated_at` through triggers.
+- Public signup is restricted to freelancer/client roles; administrators require trusted provisioning.
+- The backend verifies Supabase access tokens and loads the trusted profile role.
+- RLS, column grants, constraints, and triggers protect direct Data API access.
+- Safe response models omit raw resumes, private profiles, auth metadata, secrets, and embeddings.
+- Commercial actions use version tokens and idempotency keys; PostgreSQL serializes critical transitions.
+- Contact reveal is engagement-scoped, consent-based, encrypted, audited, rate-limited, and reversible.
 
-To apply the SQL:
+These controls do not replace an independent security review, operational monitoring, secret management, backups, or abuse-response procedures.
 
-1. Confirm [docs/database/001_auth_profiles.sql](docs/database/001_auth_profiles.sql) has already been run.
-2. Open the Supabase SQL Editor.
-3. Review [docs/database/002_profiles.sql](docs/database/002_profiles.sql).
-4. Paste the full SQL into the editor and run it.
-5. Keep using only the frontend publishable key in `frontend/.env`; never place the service role or secret key in frontend env vars.
+## Current boundaries
 
-## Test Freelancer Profile Create/Update
+- Semantic ranking requires a separately installed `sentence-transformers` package and configured model; unavailable infrastructure is surfaced explicitly.
+- Skill extraction recognizes a curated taxonomy and does not infer proficiency or experience duration.
+- PDF extraction supports embedded text; OCR is not included.
+- Evaluation uses seeded judgments and makes no real-world accuracy or business-impact claim.
+- Payment terms are modeled, but payment processing and escrow are not implemented.
+- Email delivery, production observability, backups, and moderation require environment-specific integrations.
 
-1. Login as a `freelancer`.
-2. Open `/dashboard/freelancer`.
-3. Click `Complete / Edit Smart Profile`.
-4. Fill in the profile fields. For array fields such as skills, tools, tech categories, and project links, enter comma-separated values.
-5. Save the form and confirm the success message appears.
-6. Refresh `/profile/freelancer` and confirm saved values load back into the form.
-7. Edit a field, save again, and confirm the row updates instead of creating a duplicate.
+## Documentation
 
-## Test Client Profile Create/Update
+- [Documentation index](docs/README.md)
+- [System architecture](docs/architecture/README.md)
+- [Matching and explainability](docs/matching.md)
+- [Parsing pipeline](docs/parsing.md)
+- [Capability history](docs/milestones.md)
+- [Portfolio and resume guide](docs/portfolio-resume.md)
 
-1. Login as a `client`.
-2. Open `/dashboard/client`.
-3. Click `Complete / Edit Client Profile`.
-4. Fill in the company fields. For hiring focus, enter comma-separated values.
-5. Save the form and confirm the success message appears.
-6. Refresh `/profile/client` and confirm saved values load back into the form.
-7. Edit a field, save again, and confirm the row updates instead of creating a duplicate.
+## Project ownership
 
-## Profile RLS Checks
-
-1. As a freelancer, verify `/profile/client` redirects to `/dashboard/freelancer`.
-2. As a client, verify `/profile/freelancer` redirects to `/dashboard/client`.
-3. In Supabase SQL Editor, inspect the created policies on `freelancer_profiles` and `client_profiles`.
-4. Confirm normal authenticated users cannot insert or update rows where `user_id` is another user's id.
-5. Confirm normal authenticated users cannot select another user's profile row.
-
-## Client Gig Posting Setup
-
-[docs/database/003_gigs.sql](docs/database/003_gigs.sql) creates:
-
-- `public.gigs`
-
-The table references `public.user_profiles(id)` through `client_id`, enables RLS, restricts normal clients to their own gigs, prevents freelancers from creating or editing gigs, allows admins to select all gigs, adds practical budget constraints, and indexes client, status, category, and skill array fields.
-
-To apply the SQL:
-
-1. Confirm [docs/database/001_auth_profiles.sql](docs/database/001_auth_profiles.sql) and [docs/database/002_profiles.sql](docs/database/002_profiles.sql) have already been run.
-2. Open the Supabase SQL Editor.
-3. Review [docs/database/003_gigs.sql](docs/database/003_gigs.sql).
-4. Paste the full SQL into the editor and run it.
-5. Keep using only the frontend publishable key in `frontend/.env`; never place the service role or secret key in frontend env vars.
-
-## Test Client Gig Create/List/Update
-
-1. Login as a `client`.
-2. Open `/dashboard/client`.
-3. Click `Post a New Gig`.
-4. Fill in title, description, tech category, and any optional structured fields. For skill and deliverable fields, enter comma-separated values.
-5. Save the gig and confirm the app returns to `/gigs/manage`.
-6. Confirm the manage page lists the gig title, category, status, required skills, deadline, and updated time.
-7. Click `Edit Gig`, update a field, save, and confirm the success message appears.
-8. Return to `/gigs/manage` and confirm the updated values are shown.
-
-## Test Freelancer Cannot Access Gig Posting
-
-1. Login as a `freelancer`.
-2. Try `/gigs/new`; the app should redirect to `/dashboard/freelancer`.
-3. Try `/gigs/manage`; the app should redirect to `/dashboard/freelancer`.
-4. Try a known `/gigs/:id/edit` URL; the app should redirect to `/dashboard/freelancer`.
-5. Confirm no gig posting controls appear on the freelancer dashboard.
-
-## Gig RLS Checks
-
-1. As a client, confirm you can select, insert, and update only rows where `client_id = auth.uid()`.
-2. Confirm a client cannot insert a gig with another user's `client_id`.
-3. Confirm a client cannot update another client's gig.
-4. Confirm a freelancer cannot insert, update, or delete gigs.
-5. Confirm freelancers do not get read access to gigs in Milestone 2B.
-
-## Parsing Persistence Setup
-
-[docs/database/004_parsing_foundation.sql](docs/database/004_parsing_foundation.sql) creates:
-
-- `public.resume_parses`
-- `public.gig_parses`
-
-Both tables enable RLS. Freelancers can access only their own resume parse row, and clients can access only parse rows for gigs they own. The current frontend uses `resume_parses` for reviewed pasted-text resume extraction and `gig_parses` for reviewed existing-gig requirement extraction.
-
-## Test Resume Text Parser
-
-1. Start the backend and frontend.
-2. Login as a `freelancer`.
-3. Open `/dashboard/freelancer`.
-4. Click `Resume Parser`.
-5. Paste resume text and click `Extract Skills`.
-6. Review or edit the comma-separated skills, categories, and matched terms.
-7. Save the reviewed result and confirm the success message appears.
-8. Refresh `/profile/resume-parse` and confirm the saved result loads again.
-
-The page calls `POST /parsing/extract-skills` for deterministic parsing and saves reviewed output directly to `public.resume_parses` through the frontend Supabase client and RLS. It does not upload PDF/DOCX files, store full raw resume text, update `freelancer_profiles`, or use AI extraction.
-
-## Test Gig Requirement Parser
-
-1. Start the backend and frontend.
-2. Login as a `client`.
-3. Open `/gigs/manage`.
-4. Click `Parse Requirements` on an existing gig.
-5. Confirm the gig title and description appear.
-6. Click `Extract Requirements`.
-7. Review or edit required skills, preferred skills, categories, matched terms, seniority, and deliverables.
-8. Save the reviewed result and confirm the success message appears.
-9. Refresh `/gigs/:id/parse` and confirm the saved result loads again.
-
-The page calls `POST /parsing/extract-skills` for deterministic parsing and saves reviewed output directly to `public.gig_parses` through the frontend Supabase client and RLS. It does not mutate the original `gigs` row, use AI extraction, or create matching/recommendation output.
-
-## Backend Matching APIs
-
-Milestone 4 backend matching is complete and tested. The backend supports normalized matching entities, keyword scoring, semantic similarity, hybrid ranking, auth-safe data access, and two authenticated matching routes:
-
-- `GET /matching/recommended-gigs`
-- `GET /matching/gigs/{gig_id}/recommended-freelancers`
-
-Both routes require a bearer token, enforce trusted roles from `user_profiles`, validate `limit` from `1` to `50`, and return compact hybrid recommendation envelopes. Details, privacy boundaries, manual smoke steps, and known limitations are documented in [docs/matching.md](docs/matching.md).
-
-Milestones 5 and 6 add frontend recommendation/explanation UI and seeded internal evaluation visibility. The project still does not add production-scale retrieval, pgvector/FAISS retrieval, saved match history, behavioral feedback learning, marketplace operations, or production-scale metric claims.
-
-## Current Milestone Status
-
-Milestones 0 through 6 are complete and tested. Milestone 7 — Deployment and Black Book — is planned next:
-
-- Foundation repo structure, frontend, backend, routing, and docs added
-- Supabase auth client configured
-- Signup and login forms connected to Supabase Auth
-- `user_profiles` SQL setup added
-- Role-based dashboard routing added
-- Navbar login/signup/logout behavior added
-- `freelancer_profiles` and `client_profiles` SQL setup added
-- Freelancer and client profile create/update pages added
-- `gigs` SQL setup applied and tested
-- Client gig create, manage, and edit pages added
-- Deterministic skill taxonomy and extraction utilities added
-- Stateless backend parsing endpoint added
-- `resume_parses` and `gig_parses` persistence foundation added
-- Resume text parsing review UI and save/fetch flow added
-- Gig description parsing review UI and save/fetch flow added
-- Backend PDF/DOCX text extraction utilities added
-- Stateless resume document text extraction endpoint added
-- Resume parser PDF/DOCX upload input integration added
-- Parser verification and security/data-flow checklist completed
-- Backend matching contracts, builders, keyword scoring, semantic scoring, hybrid ranking, auth-safe data access, and matching API routes added
-- Matching verification and docs closure completed
-- Milestone 5 explainability and skill-gap flow completed
-- Frontend freelancer/client recommendation UI completed
-- Milestone 6 seeded evaluation contracts, metrics, runner, admin API, and internal admin evaluation console completed
-- Milestone 6 verification and docs closure completed
-
-Production-scale evaluation, final analytics dashboard design, pgvector/FAISS retrieval, saved match history, behavioral feedback learning, deployment, and black book materials remain planned or out of scope.
-
-## Planned Future Modules
-
-- Deployment configuration
-- Black book documentation materials
-- Final admin analytics dashboard design
-- pgvector matching, if explicitly scoped later
-- Saved match history, if explicitly scoped later
+GigMatch AI was independently designed and built end to end across product design, React UX, FastAPI services, PostgreSQL data modeling, secure authorization, explainable ranking, workflow state machines, and automated verification.
