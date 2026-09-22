@@ -23,7 +23,11 @@ from app.matching.explanations import (
     with_explanation_text,
     with_skill_gap_summary,
 )
-from app.matching.hybrid import HybridMatchResult, rank_freelancers_for_gig_hybrid
+from app.matching.hybrid import (
+    HybridMatchResult,
+    HybridRankingConfig,
+    rank_freelancers_for_gig_hybrid,
+)
 from app.matching.keyword import KeywordMatchResult, rank_freelancers_for_gig
 from app.matching.semantic import EmbeddingProvider, SemanticRankingUnavailableError
 from app.marketplace.applicant_review_contracts import ApplicantStatus, ApplicantView
@@ -44,11 +48,14 @@ def build_applicant_list(
     page: int,
     page_size: int,
     provider_factory: Callable[[], EmbeddingProvider],
+    hybrid_config: HybridRankingConfig | None = None,
 ) -> dict[str, Any]:
     applications = list(pool.get("applications") or [])
     gig = pool.get("gig") if isinstance(pool.get("gig"), dict) else {}
     ranking_generated_at = datetime.now(timezone.utc).isoformat()
-    context, evidence = _rank_applications(gig, applications, provider_factory)
+    context, evidence = _rank_applications(
+        gig, applications, provider_factory, hybrid_config
+    )
 
     selected = _filter_applications(applications, status=status, view=view)
     ordered = sorted(
@@ -87,12 +94,15 @@ def build_applicant_detail(
     application: dict[str, Any],
     *,
     provider_factory: Callable[[], EmbeddingProvider],
+    hybrid_config: HybridRankingConfig | None = None,
     history_page: int = 1,
     history_page_size: int = 10,
 ) -> dict[str, Any]:
     gig = application.get("gig") if isinstance(application.get("gig"), dict) else {}
     generated_at = datetime.now(timezone.utc).isoformat()
-    context, ranked = _rank_applications(gig, [application], provider_factory)
+    context, ranked = _rank_applications(
+        gig, [application], provider_factory, hybrid_config
+    )
     evidence = ranked.get(str(application.get("id")))
     versions = sorted(
         application.get("versions") or [],
@@ -251,6 +261,7 @@ def _rank_applications(
     gig: dict[str, Any],
     applications: list[dict[str, Any]],
     provider_factory: Callable[[], EmbeddingProvider],
+    hybrid_config: HybridRankingConfig | None = None,
 ) -> tuple[dict[str, Any], dict[str, dict[str, Any]]]:
     gig_profile = _current_material_gig_profile(gig)
     rankable: list[tuple[dict[str, Any], FreelancerMatchProfile]] = []
@@ -278,7 +289,9 @@ def _rank_applications(
     try:
         provider = provider_factory()
         results: list[RankedResult] = list(
-            rank_freelancers_for_gig_hybrid(gig_profile, freelancers, provider)
+            rank_freelancers_for_gig_hybrid(
+                gig_profile, freelancers, provider, hybrid_config
+            )
         )
         context = {
             "ranking_mode": RankingMode.HYBRID.value,

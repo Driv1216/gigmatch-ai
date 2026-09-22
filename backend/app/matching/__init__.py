@@ -54,18 +54,26 @@ from app.matching.keyword import (
 )
 from app.matching.semantic import (
     DeterministicFakeEmbeddingProvider,
+    EmbeddingInputPolicy,
     EmbeddingProvider,
     SentenceTransformerEmbeddingProvider,
     build_freelancer_embedding_text,
     build_gig_embedding_text,
     cosine_similarity,
+    prepare_embedding_input,
 )
 from app.matching.semantic_ranker import (
     SemanticMatchResult,
+    SemanticRankingDirection,
     SemanticScoreBreakdown,
     rank_freelancers_for_gig_semantic,
     rank_gigs_for_freelancer_semantic,
     score_semantic_match,
+)
+from app.matching.provider import (
+    get_embedding_provider_factory,
+    get_production_embedding_provider,
+    get_production_hybrid_config,
 )
 
 __all__ = [
@@ -90,6 +98,7 @@ __all__ = [
     "ResourceNotFoundError",
     "ResourceOwnershipError",
     "SemanticMatchResult",
+    "SemanticRankingDirection",
     "SemanticScoreBreakdown",
     "ScoreExplanation",
     "SkillEvidence",
@@ -97,6 +106,7 @@ __all__ = [
     "SkillGapSummary",
     "UnsupportedRoleError",
     "DeterministicFakeEmbeddingProvider",
+    "EmbeddingInputPolicy",
     "EmbeddingProvider",
     "SentenceTransformerEmbeddingProvider",
     "authenticate_matching_request",
@@ -106,6 +116,7 @@ __all__ = [
     "build_gig_embedding_text",
     "combine_hybrid_score",
     "cosine_similarity",
+    "prepare_embedding_input",
     "build_explanation_text",
     "build_match_explanation_evidence",
     "build_skill_gap_summary",
@@ -123,4 +134,7 @@ __all__ = [
     "score_hybrid_match",
     "score_keyword_match",
     "score_semantic_match",
+    "get_embedding_provider_factory",
+    "get_production_embedding_provider",
+    "get_production_hybrid_config",
 ]

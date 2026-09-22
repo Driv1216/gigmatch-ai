@@ -11,6 +11,7 @@ from app.evaluation.contracts import EvaluationFixture, EvaluationQuery, Evaluat
 from app.evaluation.metrics import (
     MetricResult,
     average_precision,
+    graded_pairwise_inversion_rate,
     mean_average_precision,
     ndcg_at_k,
     precision_at_k,
@@ -21,6 +22,7 @@ from app.matching import (
     FreelancerMatchProfile,
     GigMatchProfile,
     HybridMatchResult,
+    HybridRankingConfig,
     KeywordMatchResult,
     SemanticMatchResult,
     rank_freelancers_for_gig,
@@ -105,6 +107,7 @@ def run_evaluation(
     *,
     top_ks: Iterable[int] = (1, 3),
     embedding_provider: EmbeddingProvider,
+    hybrid_config: HybridRankingConfig | None = None,
 ) -> EvaluationSummary:
     """Run keyword, semantic, and hybrid rankings over fixture query pools."""
 
@@ -120,6 +123,7 @@ def run_evaluation(
                     query=query,
                     top_ks=normalized_top_ks,
                     embedding_provider=embedding_provider,
+                    hybrid_config=hybrid_config,
                 )
             )
 
@@ -151,6 +155,7 @@ def evaluate_query(
     query: EvaluationQuery,
     top_ks: Iterable[int],
     embedding_provider: EmbeddingProvider,
+    hybrid_config: HybridRankingConfig | None = None,
 ) -> QueryEvaluationComparison:
     """Evaluate all ranking strategies for one fixture query."""
 
@@ -173,7 +178,7 @@ def evaluate_query(
         ),
         EvaluationStrategy.HYBRID: _evaluate_strategy(
             EvaluationStrategy.HYBRID,
-            _rank_hybrid(query, embedding_provider),
+            _rank_hybrid(query, embedding_provider, hybrid_config),
             candidate_ids,
             query,
             normalized_top_ks,
@@ -219,17 +224,23 @@ def _rank_semantic(query: EvaluationQuery, provider: EmbeddingProvider) -> list[
     )
 
 
-def _rank_hybrid(query: EvaluationQuery, provider: EmbeddingProvider) -> list[HybridMatchResult]:
+def _rank_hybrid(
+    query: EvaluationQuery,
+    provider: EmbeddingProvider,
+    config: HybridRankingConfig | None,
+) -> list[HybridMatchResult]:
     if query.query_type == EvaluationQueryType.FREELANCER_TO_GIGS:
         return rank_gigs_for_freelancer_hybrid(
             _freelancer_query_entity(query),
             list(_gig_candidate_entities(query)),
             provider,
+            config,
         )
     return rank_freelancers_for_gig_hybrid(
         _gig_query_entity(query),
         list(_freelancer_candidate_entities(query)),
         provider,
+        config,
     )
 
 
@@ -280,6 +291,7 @@ def _calculate_strategy_metrics(
             query.is_complete_judgment_set,
         )
     )
+    metrics.append(graded_pairwise_inversion_rate(ranked_candidate_ids, query.judgments))
     return tuple(metrics)
 
 
@@ -324,6 +336,14 @@ def _aggregate_strategy_metrics(
             },
         )
     )
+    aggregate_metrics.append(
+        _average_available_metric(
+            strategy_query_results,
+            source_metric_name="graded_pairwise_inversion_rate",
+            aggregate_metric_name="mean_graded_pairwise_inversion_rate",
+            k=None,
+        )
+    )
     return tuple(aggregate_metrics)
 
 
@@ -332,7 +352,7 @@ def _average_available_metric(
     *,
     source_metric_name: str,
     aggregate_metric_name: str,
-    k: int,
+    k: int | None,
 ) -> MetricResult:
     matching_metrics = [
         metric

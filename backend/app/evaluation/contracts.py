@@ -36,6 +36,13 @@ class EvaluationLabelSource(str, Enum):
     MANUAL_REVIEW = "manual_review"
 
 
+class BenchmarkSplit(str, Enum):
+    """Locked query-level partitions for permanent matching benchmarks."""
+
+    SELECTION = "selection"
+    HOLDOUT = "holdout"
+
+
 @dataclass(frozen=True)
 class RelevanceJudgment:
     """A relevance judgment for one candidate in one evaluation query."""
@@ -44,6 +51,9 @@ class RelevanceJudgment:
     relevance_label: RelevanceLabel
     label_source: EvaluationLabelSource
     notes: str | None = None
+    case_id: str | None = None
+    rationale: str | None = None
+    scenario_tags: tuple[str, ...] = ()
 
 
 @dataclass(frozen=True)
@@ -57,6 +67,7 @@ class EvaluationQuery:
     judgments: tuple[RelevanceJudgment, ...]
     is_complete_judgment_set: bool
     notes: str | None = None
+    split: BenchmarkSplit | None = None
 
 
 @dataclass(frozen=True)
@@ -66,3 +77,4 @@ class EvaluationFixture:
     fixture_id: str
     description: str | None
     queries: tuple[EvaluationQuery, ...]
+    benchmark_version: str | None = None

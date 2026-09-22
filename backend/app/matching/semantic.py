@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import hashlib
 import math
+from enum import Enum
 from typing import Protocol
 
 from app.matching.contracts import FreelancerMatchProfile, GigMatchProfile, NormalizedSkill
@@ -35,6 +36,32 @@ class EmbeddingProvider(Protocol):
 
     def encode_batch(self, texts: list[str]) -> list[list[float]]:
         """Encode multiple text values into numeric vectors."""
+
+    def prepare_query_text(self, text: str) -> str:
+        """Apply provider-specific query formatting without changing canonical text."""
+
+    def prepare_candidate_text(self, text: str) -> str:
+        """Apply provider-specific candidate formatting without changing canonical text."""
+
+
+class EmbeddingInputPolicy(str, Enum):
+    """Provider-local text preparation policies for supported model families."""
+
+    PLAIN = "plain"
+    BGE_RETRIEVAL = "bge_retrieval"
+    E5_RETRIEVAL = "e5_retrieval"
+
+
+def prepare_embedding_input(text: str, policy: EmbeddingInputPolicy, *, is_query: bool) -> str:
+    """Prepare canonical text at the provider boundary for one model family."""
+
+    if policy is EmbeddingInputPolicy.PLAIN:
+        return text
+    if policy is EmbeddingInputPolicy.BGE_RETRIEVAL:
+        return f"Represent this sentence for searching relevant passages: {text}" if is_query else text
+    if policy is EmbeddingInputPolicy.E5_RETRIEVAL:
+        return f"{'query' if is_query else 'passage'}: {text}"
+    raise ValueError(f"Unsupported embedding input policy: {policy!r}")
 
 
 class DeterministicFakeEmbeddingProvider:
@@ -64,11 +91,25 @@ class DeterministicFakeEmbeddingProvider:
     def encode_batch(self, texts: list[str]) -> list[list[float]]:
         return [self.encode(text) for text in texts]
 
+    def prepare_query_text(self, text: str) -> str:
+        return text
+
+    def prepare_candidate_text(self, text: str) -> str:
+        return text
+
 
 class SentenceTransformerEmbeddingProvider:
     """Optional sentence-transformers wrapper loaded only when instantiated."""
 
-    def __init__(self, model_name: str) -> None:
+    def __init__(
+        self,
+        model_name: str,
+        *,
+        revision: str | None = None,
+        input_policy: EmbeddingInputPolicy = EmbeddingInputPolicy.PLAIN,
+        cache_folder: str | None = None,
+        local_files_only: bool = False,
+    ) -> None:
         try:
             from sentence_transformers import SentenceTransformer
         except ImportError as error:
@@ -77,17 +118,46 @@ class SentenceTransformerEmbeddingProvider:
             ) from error
 
         self.model_name = model_name
+        self.revision = revision
+        self.input_policy = input_policy
+        self.device = "cpu"
+        self.trust_remote_code = False
+        self._observed_dimension: int | None = None
         try:
-            self._model = SentenceTransformer(model_name)
-        except (OSError, RuntimeError, TimeoutError) as error:
+            self._model = SentenceTransformer(
+                model_name,
+                revision=revision,
+                device=self.device,
+                cache_folder=cache_folder,
+                trust_remote_code=self.trust_remote_code,
+                local_files_only=local_files_only,
+            )
+        except (ImportError, OSError, RuntimeError, TimeoutError, TypeError, ValueError) as error:
             raise SemanticRankingUnavailableError(
                 SemanticUnavailableReason.EMBEDDING_PROVIDER_UNAVAILABLE
             ) from error
 
     def encode(self, text: str) -> list[float]:
+        return self.encode_batch([text])[0]
+
+    def encode_batch(self, texts: list[str]) -> list[list[float]]:
         try:
-            vector = self._model.encode(text)
-            return _vector_to_list(vector)
+            vectors = self._model.encode(texts, normalize_embeddings=True)
+            converted = [_vector_to_list(vector) for vector in vectors]
+            dimensions = {len(vector) for vector in converted}
+            if len(dimensions) != 1 or not dimensions or 0 in dimensions:
+                raise InvalidEmbeddingOutputError(
+                    SemanticUnavailableReason.INVALID_EMBEDDING_OUTPUT,
+                    "Provider returned empty or dimensionally inconsistent vectors.",
+                )
+            dimension = next(iter(dimensions))
+            if self._observed_dimension is not None and dimension != self._observed_dimension:
+                raise InvalidEmbeddingOutputError(
+                    SemanticUnavailableReason.INVALID_EMBEDDING_OUTPUT,
+                    "Provider vector dimension changed during the process lifetime.",
+                )
+            self._observed_dimension = dimension
+            return converted
         except SemanticRankingUnavailableError:
             raise
         except (OSError, RuntimeError, TimeoutError) as error:
@@ -99,9 +169,15 @@ class SentenceTransformerEmbeddingProvider:
                 SemanticUnavailableReason.INVALID_EMBEDDING_OUTPUT
             ) from error
 
-    def encode_batch(self, texts: list[str]) -> list[list[float]]:
-        vectors = self._model.encode(texts)
-        return [_vector_to_list(vector) for vector in vectors]
+    def prepare_query_text(self, text: str) -> str:
+        return prepare_embedding_input(text, self.input_policy, is_query=True)
+
+    def prepare_candidate_text(self, text: str) -> str:
+        return prepare_embedding_input(text, self.input_policy, is_query=False)
+
+    @property
+    def observed_dimension(self) -> int | None:
+        return self._observed_dimension
 
 
 def build_freelancer_embedding_text(freelancer: FreelancerMatchProfile) -> str:

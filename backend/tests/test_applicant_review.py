@@ -204,6 +204,11 @@ class ApplicantReviewReadTests(unittest.TestCase):
         unavailable = next(item for item in body["items"] if item["application_id"] == "unrankable")
         self.assertEqual(unavailable["suitability"]["ranking_status"], "unavailable")
         self.assertIsNone(unavailable["suitability"]["ranking_score"])
+        ranked = next(
+            item for item in body["items"] if item["suitability"]["ranking_status"] == "available"
+        )
+        self.assertEqual(ranked["suitability"]["explanation"]["score"]["keyword_weight"], 0.75)
+        self.assertEqual(ranked["suitability"]["explanation"]["score"]["semantic_weight"], 0.25)
         self.assertEqual(body["items"][-1]["application_id"], "terminal")
 
     def test_newest_does_not_drop_or_require_rankable_input(self) -> None:

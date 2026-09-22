@@ -143,6 +143,8 @@ class MatchingRouteTests(unittest.TestCase):
             },
         )
         self.assert_recommendation_item_has_safe_explanation(data["items"][0], "freelancer", "gig")
+        self.assertEqual(data["items"][0]["explanation"]["score"]["keyword_weight"], 0.75)
+        self.assertEqual(data["items"][0]["explanation"]["score"]["semantic_weight"], 0.25)
         public_json = json.dumps(data)
         self.assertNotIn("description", public_json)
         self.assertNotIn("client_id", public_json)
@@ -258,6 +260,8 @@ class MatchingRouteTests(unittest.TestCase):
             },
         )
         self.assert_recommendation_item_has_safe_explanation(data["items"][0], "gig", "freelancer")
+        self.assertEqual(data["items"][0]["explanation"]["score"]["keyword_weight"], 0.75)
+        self.assertEqual(data["items"][0]["explanation"]["score"]["semantic_weight"], 0.25)
         public_json = json.dumps(data)
         self.assertNotIn("raw_resume_text", public_json)
         self.assertNotIn("bio", public_json)

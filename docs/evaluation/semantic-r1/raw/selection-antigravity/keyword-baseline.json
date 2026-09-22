@@ -1,0 +1,2425 @@
+{
+  "benchmark_lock_sha256": "6d4a99f27be10133e41231e6a2e79751721590a4d3b284cabdb65de54385ccf2",
+  "benchmark_sha256": "652e7439f8f43e1e0d402e57f83625e42c572c91ac930165f1c9e543056cd4d5",
+  "benchmark_version": "1",
+  "dependency_lock_sha256": "48049b59b66f97e6e4ac66ff9c8f9e3b77e71c156adf305be7705c3c3d7c1e4d",
+  "model_manifest_sha256": "1d713577b862415aa1eb16f91d24b8f4a3e1fe7f8d7572a6e58c31cf02c1d48f",
+  "payload": {
+    "aggregate_metrics": {
+      "mean_average_precision": {
+        "available": true,
+        "included_query_count": 16,
+        "total_query_count": 16,
+        "value": 1.0
+      },
+      "mean_graded_pairwise_inversion_rate": {
+        "available": true,
+        "included_query_count": 16,
+        "total_query_count": 16,
+        "value": 0.015625
+      },
+      "mean_ndcg_at_k@1": {
+        "available": true,
+        "included_query_count": 16,
+        "total_query_count": 16,
+        "value": 1.0
+      },
+      "mean_ndcg_at_k@3": {
+        "available": true,
+        "included_query_count": 16,
+        "total_query_count": 16,
+        "value": 0.9939303323733945
+      },
+      "mean_ndcg_at_k@5": {
+        "available": true,
+        "included_query_count": 16,
+        "total_query_count": 16,
+        "value": 0.9939303323733945
+      },
+      "mean_precision_at_k@1": {
+        "available": true,
+        "included_query_count": 16,
+        "total_query_count": 16,
+        "value": 1.0
+      },
+      "mean_precision_at_k@3": {
+        "available": true,
+        "included_query_count": 16,
+        "total_query_count": 16,
+        "value": 1.0
+      },
+      "mean_precision_at_k@5": {
+        "available": true,
+        "included_query_count": 16,
+        "total_query_count": 16,
+        "value": 0.6
+      },
+      "mean_recall_at_k@3": {
+        "available": true,
+        "included_query_count": 16,
+        "total_query_count": 16,
+        "value": 1.0
+      },
+      "mean_recall_at_k@5": {
+        "available": true,
+        "included_query_count": 16,
+        "total_query_count": 16,
+        "value": 1.0
+      }
+    },
+    "queries": [
+      {
+        "metrics": {
+          "average_precision": {
+            "available": true,
+            "details": {
+              "evaluated_count": 5,
+              "is_complete_judgment_set": true,
+              "relevant_count": 3,
+              "relevant_retrieved_count": 3
+            },
+            "reason": null,
+            "value": 1.0
+          },
+          "graded_pairwise_inversion_rate": {
+            "available": true,
+            "details": {
+              "comparable_pair_count": 8,
+              "hard_negative_inversion_count": 0,
+              "hard_negative_pair_count": 4,
+              "inversion_count": 1,
+              "inversion_pairs": [
+                {
+                  "higher_candidate_id": "sel_f2g_01_api_synonyms_gig_02",
+                  "higher_label": 2,
+                  "lower_candidate_id": "sel_f2g_01_api_synonyms_gig_03",
+                  "lower_label": 1
+                }
+              ]
+            },
+            "reason": null,
+            "value": 0.125
+          },
+          "ndcg_at_k@1": {
+            "available": true,
+            "details": {
+              "dcg": 3.0,
+              "evaluated_count": 1,
+              "idcg": 3.0,
+              "idcg_zero": false
+            },
+            "reason": null,
+            "value": 1.0
+          },
+          "ndcg_at_k@3": {
+            "available": true,
+            "details": {
+              "dcg": 5.130929753571458,
+              "evaluated_count": 3,
+              "idcg": 5.392789260714372,
+              "idcg_zero": false
+            },
+            "reason": null,
+            "value": 0.9514426589871553
+          },
+          "ndcg_at_k@5": {
+            "available": true,
+            "details": {
+              "dcg": 5.130929753571458,
+              "evaluated_count": 5,
+              "idcg": 5.392789260714372,
+              "idcg_zero": false
+            },
+            "reason": null,
+            "value": 0.9514426589871553
+          },
+          "precision_at_k@1": {
+            "available": true,
+            "details": {
+              "evaluated_count": 1,
+              "judged_count": 5,
+              "relevant_retrieved_count": 1
+            },
+            "reason": null,
+            "value": 1.0
+          },
+          "precision_at_k@3": {
+            "available": true,
+            "details": {
+              "evaluated_count": 3,
+              "judged_count": 5,
+              "relevant_retrieved_count": 3
+            },
+            "reason": null,
+            "value": 1.0
+          },
+          "precision_at_k@5": {
+            "available": true,
+            "details": {
+              "evaluated_count": 5,
+              "judged_count": 5,
+              "relevant_retrieved_count": 3
+            },
+            "reason": null,
+            "value": 0.6
+          },
+          "recall_at_k@3": {
+            "available": true,
+            "details": {
+              "evaluated_count": 3,
+              "is_complete_judgment_set": true,
+              "relevant_count": 3,
+              "relevant_retrieved_count": 3
+            },
+            "reason": null,
+            "value": 1.0
+          },
+          "recall_at_k@5": {
+            "available": true,
+            "details": {
+              "evaluated_count": 5,
+              "is_complete_judgment_set": true,
+              "relevant_count": 3,
+              "relevant_retrieved_count": 3
+            },
+            "reason": null,
+            "value": 1.0
+          }
+        },
+        "query_id": "sel_f2g_01_api_synonyms",
+        "query_type": "freelancer_to_gigs",
+        "ranked_candidates": [
+          {
+            "candidate_id": "sel_f2g_01_api_synonyms_gig_01",
+            "rank": 1,
+            "relevance_label": 2,
+            "score": 0.7999999999999999
+          },
+          {
+            "candidate_id": "sel_f2g_01_api_synonyms_gig_03",
+            "rank": 2,
+            "relevance_label": 1,
+            "score": 0.7
+          },
+          {
+            "candidate_id": "sel_f2g_01_api_synonyms_gig_02",
+            "rank": 3,
+            "relevance_label": 2,
+            "score": 0.2733333333333333
+          },
+          {
+            "candidate_id": "sel_f2g_01_api_synonyms_gig_05",
+            "rank": 4,
+            "relevance_label": 0,
+            "score": 0.04000000000000001
+          },
+          {
+            "candidate_id": "sel_f2g_01_api_synonyms_gig_04",
+            "rank": 5,
+            "relevance_label": 0,
+            "score": 0.0
+          }
+        ]
+      },
+      {
+        "metrics": {
+          "average_precision": {
+            "available": true,
+            "details": {
+              "evaluated_count": 5,
+              "is_complete_judgment_set": true,
+              "relevant_count": 3,
+              "relevant_retrieved_count": 3
+            },
+            "reason": null,
+            "value": 1.0
+          },
+          "graded_pairwise_inversion_rate": {
+            "available": true,
+            "details": {
+              "comparable_pair_count": 8,
+              "hard_negative_inversion_count": 0,
+              "hard_negative_pair_count": 4,
+              "inversion_count": 0,
+              "inversion_pairs": []
+            },
+            "reason": null,
+            "value": 0.0
+          },
+          "ndcg_at_k@1": {
+            "available": true,
+            "details": {
+              "dcg": 3.0,
+              "evaluated_count": 1,
+              "idcg": 3.0,
+              "idcg_zero": false
+            },
+            "reason": null,
+            "value": 1.0
+          },
+          "ndcg_at_k@3": {
+            "available": true,
+            "details": {
+              "dcg": 5.392789260714372,
+              "evaluated_count": 3,
+              "idcg": 5.392789260714372,
+              "idcg_zero": false
+            },
+            "reason": null,
+            "value": 1.0
+          },
+          "ndcg_at_k@5": {
+            "available": true,
+            "details": {
+              "dcg": 5.392789260714372,
+              "evaluated_count": 5,
+              "idcg": 5.392789260714372,
+              "idcg_zero": false
+            },
+            "reason": null,
+            "value": 1.0
+          },
+          "precision_at_k@1": {
+            "available": true,
+            "details": {
+              "evaluated_count": 1,
+              "judged_count": 5,
+              "relevant_retrieved_count": 1
+            },
+            "reason": null,
+            "value": 1.0
+          },
+          "precision_at_k@3": {
+            "available": true,
+            "details": {
+              "evaluated_count": 3,
+              "judged_count": 5,
+              "relevant_retrieved_count": 3
+            },
+            "reason": null,
+            "value": 1.0
+          },
+          "precision_at_k@5": {
+            "available": true,
+            "details": {
+              "evaluated_count": 5,
+              "judged_count": 5,
+              "relevant_retrieved_count": 3
+            },
+            "reason": null,
+            "value": 0.6
+          },
+          "recall_at_k@3": {
+            "available": true,
+            "details": {
+              "evaluated_count": 3,
+              "is_complete_judgment_set": true,
+              "relevant_count": 3,
+              "relevant_retrieved_count": 3
+            },
+            "reason": null,
+            "value": 1.0
+          },
+          "recall_at_k@5": {
+            "available": true,
+            "details": {
+              "evaluated_count": 5,
+              "is_complete_judgment_set": true,
+              "relevant_count": 3,
+              "relevant_retrieved_count": 3
+            },
+            "reason": null,
+            "value": 1.0
+          }
+        },
+        "query_id": "sel_f2g_02_react_frameworks",
+        "query_type": "freelancer_to_gigs",
+        "ranked_candidates": [
+          {
+            "candidate_id": "sel_f2g_02_react_frameworks_gig_01",
+            "rank": 1,
+            "relevance_label": 2,
+            "score": 0.7999999999999999
+          },
+          {
+            "candidate_id": "sel_f2g_02_react_frameworks_gig_02",
+            "rank": 2,
+            "relevance_label": 2,
+            "score": 0.41999999999999993
+          },
+          {
+            "candidate_id": "sel_f2g_02_react_frameworks_gig_03",
+            "rank": 3,
+            "relevance_label": 1,
+            "score": 0.41999999999999993
+          },
+          {
+            "candidate_id": "sel_f2g_02_react_frameworks_gig_04",
+            "rank": 4,
+            "relevance_label": 0,
+            "score": 0.31999999999999995
+          },
+          {
+            "candidate_id": "sel_f2g_02_react_frameworks_gig_05",
+            "rank": 5,
+            "relevance_label": 0,
+            "score": 0.0
+          }
+        ]
+      },
+      {
+        "metrics": {
+          "average_precision": {
+            "available": true,
+            "details": {
+              "evaluated_count": 5,
+              "is_complete_judgment_set": true,
+              "relevant_count": 3,
+              "relevant_retrieved_count": 3
+            },
+            "reason": null,
+            "value": 1.0
+          },
+          "graded_pairwise_inversion_rate": {
+            "available": true,
+            "details": {
+              "comparable_pair_count": 8,
+              "hard_negative_inversion_count": 0,
+              "hard_negative_pair_count": 4,
+              "inversion_count": 0,
+              "inversion_pairs": []
+            },
+            "reason": null,
+            "value": 0.0
+          },
+          "ndcg_at_k@1": {
+            "available": true,
+            "details": {
+              "dcg": 3.0,
+              "evaluated_count": 1,
+              "idcg": 3.0,
+              "idcg_zero": false
+            },
+            "reason": null,
+            "value": 1.0
+          },
+          "ndcg_at_k@3": {
+            "available": true,
+            "details": {
+              "dcg": 5.392789260714372,
+              "evaluated_count": 3,
+              "idcg": 5.392789260714372,
+              "idcg_zero": false
+            },
+            "reason": null,
+            "value": 1.0
+          },
+          "ndcg_at_k@5": {
+            "available": true,
+            "details": {
+              "dcg": 5.392789260714372,
+              "evaluated_count": 5,
+              "idcg": 5.392789260714372,
+              "idcg_zero": false
+            },
+            "reason": null,
+            "value": 1.0
+          },
+          "precision_at_k@1": {
+            "available": true,
+            "details": {
+              "evaluated_count": 1,
+              "judged_count": 5,
+              "relevant_retrieved_count": 1
+            },
+            "reason": null,
+            "value": 1.0
+          },
+          "precision_at_k@3": {
+            "available": true,
+            "details": {
+              "evaluated_count": 3,
+              "judged_count": 5,
+              "relevant_retrieved_count": 3
+            },
+            "reason": null,
+            "value": 1.0
+          },
+          "precision_at_k@5": {
+            "available": true,
+            "details": {
+              "evaluated_count": 5,
+              "judged_count": 5,
+              "relevant_retrieved_count": 3
+            },
+            "reason": null,
+            "value": 0.6
+          },
+          "recall_at_k@3": {
+            "available": true,
+            "details": {
+              "evaluated_count": 3,
+              "is_complete_judgment_set": true,
+              "relevant_count": 3,
+              "relevant_retrieved_count": 3
+            },
+            "reason": null,
+            "value": 1.0
+          },
+          "recall_at_k@5": {
+            "available": true,
+            "details": {
+              "evaluated_count": 5,
+              "is_complete_judgment_set": true,
+              "relevant_count": 3,
+              "relevant_retrieved_count": 3
+            },
+            "reason": null,
+            "value": 1.0
+          }
+        },
+        "query_id": "sel_f2g_03_docker_kubernetes",
+        "query_type": "freelancer_to_gigs",
+        "ranked_candidates": [
+          {
+            "candidate_id": "sel_f2g_03_docker_kubernetes_gig_01",
+            "rank": 1,
+            "relevance_label": 2,
+            "score": 0.7999999999999999
+          },
+          {
+            "candidate_id": "sel_f2g_03_docker_kubernetes_gig_02",
+            "rank": 2,
+            "relevance_label": 2,
+            "score": 0.7999999999999999
+          },
+          {
+            "candidate_id": "sel_f2g_03_docker_kubernetes_gig_03",
+            "rank": 3,
+            "relevance_label": 1,
+            "score": 0.41999999999999993
+          },
+          {
+            "candidate_id": "sel_f2g_03_docker_kubernetes_gig_04",
+            "rank": 4,
+            "relevance_label": 0,
+            "score": 0.0
+          },
+          {
+            "candidate_id": "sel_f2g_03_docker_kubernetes_gig_05",
+            "rank": 5,
+            "relevance_label": 0,
+            "score": 0.0
+          }
+        ]
+      },
+      {
+        "metrics": {
+          "average_precision": {
+            "available": true,
+            "details": {
+              "evaluated_count": 5,
+              "is_complete_judgment_set": true,
+              "relevant_count": 3,
+              "relevant_retrieved_count": 3
+            },
+            "reason": null,
+            "value": 1.0
+          },
+          "graded_pairwise_inversion_rate": {
+            "available": true,
+            "details": {
+              "comparable_pair_count": 8,
+              "hard_negative_inversion_count": 0,
+              "hard_negative_pair_count": 4,
+              "inversion_count": 1,
+              "inversion_pairs": [
+                {
+                  "higher_candidate_id": "sel_f2g_04_sql_database_gig_02",
+                  "higher_label": 2,
+                  "lower_candidate_id": "sel_f2g_04_sql_database_gig_03",
+                  "lower_label": 1
+                }
+              ]
+            },
+            "reason": null,
+            "value": 0.125
+          },
+          "ndcg_at_k@1": {
+            "available": true,
+            "details": {
+              "dcg": 3.0,
+              "evaluated_count": 1,
+              "idcg": 3.0,
+              "idcg_zero": false
+            },
+            "reason": null,
+            "value": 1.0
+          },
+          "ndcg_at_k@3": {
+            "available": true,
+            "details": {
+              "dcg": 5.130929753571458,
+              "evaluated_count": 3,
+              "idcg": 5.392789260714372,
+              "idcg_zero": false
+            },
+            "reason": null,
+            "value": 0.9514426589871553
+          },
+          "ndcg_at_k@5": {
+            "available": true,
+            "details": {
+              "dcg": 5.130929753571458,
+              "evaluated_count": 5,
+              "idcg": 5.392789260714372,
+              "idcg_zero": false
+            },
+            "reason": null,
+            "value": 0.9514426589871553
+          },
+          "precision_at_k@1": {
+            "available": true,
+            "details": {
+              "evaluated_count": 1,
+              "judged_count": 5,
+              "relevant_retrieved_count": 1
+            },
+            "reason": null,
+            "value": 1.0
+          },
+          "precision_at_k@3": {
+            "available": true,
+            "details": {
+              "evaluated_count": 3,
+              "judged_count": 5,
+              "relevant_retrieved_count": 3
+            },
+            "reason": null,
+            "value": 1.0
+          },
+          "precision_at_k@5": {
+            "available": true,
+            "details": {
+              "evaluated_count": 5,
+              "judged_count": 5,
+              "relevant_retrieved_count": 3
+            },
+            "reason": null,
+            "value": 0.6
+          },
+          "recall_at_k@3": {
+            "available": true,
+            "details": {
+              "evaluated_count": 3,
+              "is_complete_judgment_set": true,
+              "relevant_count": 3,
+              "relevant_retrieved_count": 3
+            },
+            "reason": null,
+            "value": 1.0
+          },
+          "recall_at_k@5": {
+            "available": true,
+            "details": {
+              "evaluated_count": 5,
+              "is_complete_judgment_set": true,
+              "relevant_count": 3,
+              "relevant_retrieved_count": 3
+            },
+            "reason": null,
+            "value": 1.0
+          }
+        },
+        "query_id": "sel_f2g_04_sql_database",
+        "query_type": "freelancer_to_gigs",
+        "ranked_candidates": [
+          {
+            "candidate_id": "sel_f2g_04_sql_database_gig_01",
+            "rank": 1,
+            "relevance_label": 2,
+            "score": 0.7999999999999999
+          },
+          {
+            "candidate_id": "sel_f2g_04_sql_database_gig_03",
+            "rank": 2,
+            "relevance_label": 1,
+            "score": 0.41999999999999993
+          },
+          {
+            "candidate_id": "sel_f2g_04_sql_database_gig_02",
+            "rank": 3,
+            "relevance_label": 2,
+            "score": 0.04000000000000001
+          },
+          {
+            "candidate_id": "sel_f2g_04_sql_database_gig_04",
+            "rank": 4,
+            "relevance_label": 0,
+            "score": 0.04000000000000001
+          },
+          {
+            "candidate_id": "sel_f2g_04_sql_database_gig_05",
+            "rank": 5,
+            "relevance_label": 0,
+            "score": 0.0
+          }
+        ]
+      },
+      {
+        "metrics": {
+          "average_precision": {
+            "available": true,
+            "details": {
+              "evaluated_count": 5,
+              "is_complete_judgment_set": true,
+              "relevant_count": 3,
+              "relevant_retrieved_count": 3
+            },
+            "reason": null,
+            "value": 1.0
+          },
+          "graded_pairwise_inversion_rate": {
+            "available": true,
+            "details": {
+              "comparable_pair_count": 8,
+              "hard_negative_inversion_count": 0,
+              "hard_negative_pair_count": 2,
+              "inversion_count": 0,
+              "inversion_pairs": []
+            },
+            "reason": null,
+            "value": 0.0
+          },
+          "ndcg_at_k@1": {
+            "available": true,
+            "details": {
+              "dcg": 3.0,
+              "evaluated_count": 1,
+              "idcg": 3.0,
+              "idcg_zero": false
+            },
+            "reason": null,
+            "value": 1.0
+          },
+          "ndcg_at_k@3": {
+            "available": true,
+            "details": {
+              "dcg": 4.130929753571458,
+              "evaluated_count": 3,
+              "idcg": 4.130929753571458,
+              "idcg_zero": false
+            },
+            "reason": null,
+            "value": 1.0
+          },
+          "ndcg_at_k@5": {
+            "available": true,
+            "details": {
+              "dcg": 4.130929753571458,
+              "evaluated_count": 5,
+              "idcg": 4.130929753571458,
+              "idcg_zero": false
+            },
+            "reason": null,
+            "value": 1.0
+          },
+          "precision_at_k@1": {
+            "available": true,
+            "details": {
+              "evaluated_count": 1,
+              "judged_count": 5,
+              "relevant_retrieved_count": 1
+            },
+            "reason": null,
+            "value": 1.0
+          },
+          "precision_at_k@3": {
+            "available": true,
+            "details": {
+              "evaluated_count": 3,
+              "judged_count": 5,
+              "relevant_retrieved_count": 3
+            },
+            "reason": null,
+            "value": 1.0
+          },
+          "precision_at_k@5": {
+            "available": true,
+            "details": {
+              "evaluated_count": 5,
+              "judged_count": 5,
+              "relevant_retrieved_count": 3
+            },
+            "reason": null,
+            "value": 0.6
+          },
+          "recall_at_k@3": {
+            "available": true,
+            "details": {
+              "evaluated_count": 3,
+              "is_complete_judgment_set": true,
+              "relevant_count": 3,
+              "relevant_retrieved_count": 3
+            },
+            "reason": null,
+            "value": 1.0
+          },
+          "recall_at_k@5": {
+            "available": true,
+            "details": {
+              "evaluated_count": 5,
+              "is_complete_judgment_set": true,
+              "relevant_count": 3,
+              "relevant_retrieved_count": 3
+            },
+            "reason": null,
+            "value": 1.0
+          }
+        },
+        "query_id": "sel_f2g_05_aws_cloud",
+        "query_type": "freelancer_to_gigs",
+        "ranked_candidates": [
+          {
+            "candidate_id": "sel_f2g_05_aws_cloud_gig_01",
+            "rank": 1,
+            "relevance_label": 2,
+            "score": 0.7999999999999999
+          },
+          {
+            "candidate_id": "sel_f2g_05_aws_cloud_gig_02",
+            "rank": 2,
+            "relevance_label": 1,
+            "score": 0.41999999999999993
+          },
+          {
+            "candidate_id": "sel_f2g_05_aws_cloud_gig_03",
+            "rank": 3,
+            "relevance_label": 1,
+            "score": 0.41999999999999993
+          },
+          {
+            "candidate_id": "sel_f2g_05_aws_cloud_gig_04",
+            "rank": 4,
+            "relevance_label": 0,
+            "score": 0.41999999999999993
+          },
+          {
+            "candidate_id": "sel_f2g_05_aws_cloud_gig_05",
+            "rank": 5,
+            "relevance_label": 0,
+            "score": 0.0
+          }
+        ]
+      },
+      {
+        "metrics": {
+          "average_precision": {
+            "available": true,
+            "details": {
+              "evaluated_count": 5,
+              "is_complete_judgment_set": true,
+              "relevant_count": 3,
+              "relevant_retrieved_count": 3
+            },
+            "reason": null,
+            "value": 1.0
+          },
+          "graded_pairwise_inversion_rate": {
+            "available": true,
+            "details": {
+              "comparable_pair_count": 8,
+              "hard_negative_inversion_count": 0,
+              "hard_negative_pair_count": 2,
+              "inversion_count": 0,
+              "inversion_pairs": []
+            },
+            "reason": null,
+            "value": 0.0
+          },
+          "ndcg_at_k@1": {
+            "available": true,
+            "details": {
+              "dcg": 3.0,
+              "evaluated_count": 1,
+              "idcg": 3.0,
+              "idcg_zero": false
+            },
+            "reason": null,
+            "value": 1.0
+          },
+          "ndcg_at_k@3": {
+            "available": true,
+            "details": {
+              "dcg": 4.130929753571458,
+              "evaluated_count": 3,
+              "idcg": 4.130929753571458,
+              "idcg_zero": false
+            },
+            "reason": null,
+            "value": 1.0
+          },
+          "ndcg_at_k@5": {
+            "available": true,
+            "details": {
+              "dcg": 4.130929753571458,
+              "evaluated_count": 5,
+              "idcg": 4.130929753571458,
+              "idcg_zero": false
+            },
+            "reason": null,
+            "value": 1.0
+          },
+          "precision_at_k@1": {
+            "available": true,
+            "details": {
+              "evaluated_count": 1,
+              "judged_count": 5,
+              "relevant_retrieved_count": 1
+            },
+            "reason": null,
+            "value": 1.0
+          },
+          "precision_at_k@3": {
+            "available": true,
+            "details": {
+              "evaluated_count": 3,
+              "judged_count": 5,
+              "relevant_retrieved_count": 3
+            },
+            "reason": null,
+            "value": 1.0
+          },
+          "precision_at_k@5": {
+            "available": true,
+            "details": {
+              "evaluated_count": 5,
+              "judged_count": 5,
+              "relevant_retrieved_count": 3
+            },
+            "reason": null,
+            "value": 0.6
+          },
+          "recall_at_k@3": {
+            "available": true,
+            "details": {
+              "evaluated_count": 3,
+              "is_complete_judgment_set": true,
+              "relevant_count": 3,
+              "relevant_retrieved_count": 3
+            },
+            "reason": null,
+            "value": 1.0
+          },
+          "recall_at_k@5": {
+            "available": true,
+            "details": {
+              "evaluated_count": 5,
+              "is_complete_judgment_set": true,
+              "relevant_count": 3,
+              "relevant_retrieved_count": 3
+            },
+            "reason": null,
+            "value": 1.0
+          }
+        },
+        "query_id": "sel_f2g_06_python_ml",
+        "query_type": "freelancer_to_gigs",
+        "ranked_candidates": [
+          {
+            "candidate_id": "sel_f2g_06_python_ml_gig_01",
+            "rank": 1,
+            "relevance_label": 2,
+            "score": 0.7999999999999999
+          },
+          {
+            "candidate_id": "sel_f2g_06_python_ml_gig_03",
+            "rank": 2,
+            "relevance_label": 1,
+            "score": 0.7
+          },
+          {
+            "candidate_id": "sel_f2g_06_python_ml_gig_02",
+            "rank": 3,
+            "relevance_label": 1,
+            "score": 0.41999999999999993
+          },
+          {
+            "candidate_id": "sel_f2g_06_python_ml_gig_04",
+            "rank": 4,
+            "relevance_label": 0,
+            "score": 0.0
+          },
+          {
+            "candidate_id": "sel_f2g_06_python_ml_gig_05",
+            "rank": 5,
+            "relevance_label": 0,
+            "score": 0.0
+          }
+        ]
+      },
+      {
+        "metrics": {
+          "average_precision": {
+            "available": true,
+            "details": {
+              "evaluated_count": 5,
+              "is_complete_judgment_set": true,
+              "relevant_count": 3,
+              "relevant_retrieved_count": 3
+            },
+            "reason": null,
+            "value": 1.0
+          },
+          "graded_pairwise_inversion_rate": {
+            "available": true,
+            "details": {
+              "comparable_pair_count": 8,
+              "hard_negative_inversion_count": 0,
+              "hard_negative_pair_count": 4,
+              "inversion_count": 0,
+              "inversion_pairs": []
+            },
+            "reason": null,
+            "value": 0.0
+          },
+          "ndcg_at_k@1": {
+            "available": true,
+            "details": {
+              "dcg": 3.0,
+              "evaluated_count": 1,
+              "idcg": 3.0,
+              "idcg_zero": false
+            },
+            "reason": null,
+            "value": 1.0
+          },
+          "ndcg_at_k@3": {
+            "available": true,
+            "details": {
+              "dcg": 5.392789260714372,
+              "evaluated_count": 3,
+              "idcg": 5.392789260714372,
+              "idcg_zero": false
+            },
+            "reason": null,
+            "value": 1.0
+          },
+          "ndcg_at_k@5": {
+            "available": true,
+            "details": {
+              "dcg": 5.392789260714372,
+              "evaluated_count": 5,
+              "idcg": 5.392789260714372,
+              "idcg_zero": false
+            },
+            "reason": null,
+            "value": 1.0
+          },
+          "precision_at_k@1": {
+            "available": true,
+            "details": {
+              "evaluated_count": 1,
+              "judged_count": 5,
+              "relevant_retrieved_count": 1
+            },
+            "reason": null,
+            "value": 1.0
+          },
+          "precision_at_k@3": {
+            "available": true,
+            "details": {
+              "evaluated_count": 3,
+              "judged_count": 5,
+              "relevant_retrieved_count": 3
+            },
+            "reason": null,
+            "value": 1.0
+          },
+          "precision_at_k@5": {
+            "available": true,
+            "details": {
+              "evaluated_count": 5,
+              "judged_count": 5,
+              "relevant_retrieved_count": 3
+            },
+            "reason": null,
+            "value": 0.6
+          },
+          "recall_at_k@3": {
+            "available": true,
+            "details": {
+              "evaluated_count": 3,
+              "is_complete_judgment_set": true,
+              "relevant_count": 3,
+              "relevant_retrieved_count": 3
+            },
+            "reason": null,
+            "value": 1.0
+          },
+          "recall_at_k@5": {
+            "available": true,
+            "details": {
+              "evaluated_count": 5,
+              "is_complete_judgment_set": true,
+              "relevant_count": 3,
+              "relevant_retrieved_count": 3
+            },
+            "reason": null,
+            "value": 1.0
+          }
+        },
+        "query_id": "sel_f2g_07_java_javascript",
+        "query_type": "freelancer_to_gigs",
+        "ranked_candidates": [
+          {
+            "candidate_id": "sel_f2g_07_java_javascript_gig_01",
+            "rank": 1,
+            "relevance_label": 2,
+            "score": 0.7999999999999999
+          },
+          {
+            "candidate_id": "sel_f2g_07_java_javascript_gig_02",
+            "rank": 2,
+            "relevance_label": 2,
+            "score": 0.41999999999999993
+          },
+          {
+            "candidate_id": "sel_f2g_07_java_javascript_gig_03",
+            "rank": 3,
+            "relevance_label": 1,
+            "score": 0.04000000000000001
+          },
+          {
+            "candidate_id": "sel_f2g_07_java_javascript_gig_04",
+            "rank": 4,
+            "relevance_label": 0,
+            "score": 0.04000000000000001
+          },
+          {
+            "candidate_id": "sel_f2g_07_java_javascript_gig_05",
+            "rank": 5,
+            "relevance_label": 0,
+            "score": 0.0
+          }
+        ]
+      },
+      {
+        "metrics": {
+          "average_precision": {
+            "available": true,
+            "details": {
+              "evaluated_count": 5,
+              "is_complete_judgment_set": true,
+              "relevant_count": 3,
+              "relevant_retrieved_count": 3
+            },
+            "reason": null,
+            "value": 1.0
+          },
+          "graded_pairwise_inversion_rate": {
+            "available": true,
+            "details": {
+              "comparable_pair_count": 8,
+              "hard_negative_inversion_count": 0,
+              "hard_negative_pair_count": 4,
+              "inversion_count": 0,
+              "inversion_pairs": []
+            },
+            "reason": null,
+            "value": 0.0
+          },
+          "ndcg_at_k@1": {
+            "available": true,
+            "details": {
+              "dcg": 3.0,
+              "evaluated_count": 1,
+              "idcg": 3.0,
+              "idcg_zero": false
+            },
+            "reason": null,
+            "value": 1.0
+          },
+          "ndcg_at_k@3": {
+            "available": true,
+            "details": {
+              "dcg": 5.392789260714372,
+              "evaluated_count": 3,
+              "idcg": 5.392789260714372,
+              "idcg_zero": false
+            },
+            "reason": null,
+            "value": 1.0
+          },
+          "ndcg_at_k@5": {
+            "available": true,
+            "details": {
+              "dcg": 5.392789260714372,
+              "evaluated_count": 5,
+              "idcg": 5.392789260714372,
+              "idcg_zero": false
+            },
+            "reason": null,
+            "value": 1.0
+          },
+          "precision_at_k@1": {
+            "available": true,
+            "details": {
+              "evaluated_count": 1,
+              "judged_count": 5,
+              "relevant_retrieved_count": 1
+            },
+            "reason": null,
+            "value": 1.0
+          },
+          "precision_at_k@3": {
+            "available": true,
+            "details": {
+              "evaluated_count": 3,
+              "judged_count": 5,
+              "relevant_retrieved_count": 3
+            },
+            "reason": null,
+            "value": 1.0
+          },
+          "precision_at_k@5": {
+            "available": true,
+            "details": {
+              "evaluated_count": 5,
+              "judged_count": 5,
+              "relevant_retrieved_count": 3
+            },
+            "reason": null,
+            "value": 0.6
+          },
+          "recall_at_k@3": {
+            "available": true,
+            "details": {
+              "evaluated_count": 3,
+              "is_complete_judgment_set": true,
+              "relevant_count": 3,
+              "relevant_retrieved_count": 3
+            },
+            "reason": null,
+            "value": 1.0
+          },
+          "recall_at_k@5": {
+            "available": true,
+            "details": {
+              "evaluated_count": 5,
+              "is_complete_judgment_set": true,
+              "relevant_count": 3,
+              "relevant_retrieved_count": 3
+            },
+            "reason": null,
+            "value": 1.0
+          }
+        },
+        "query_id": "sel_f2g_08_nlp_synonyms",
+        "query_type": "freelancer_to_gigs",
+        "ranked_candidates": [
+          {
+            "candidate_id": "sel_f2g_08_nlp_synonyms_gig_01",
+            "rank": 1,
+            "relevance_label": 2,
+            "score": 0.7999999999999999
+          },
+          {
+            "candidate_id": "sel_f2g_08_nlp_synonyms_gig_02",
+            "rank": 2,
+            "relevance_label": 2,
+            "score": 0.41999999999999993
+          },
+          {
+            "candidate_id": "sel_f2g_08_nlp_synonyms_gig_03",
+            "rank": 3,
+            "relevance_label": 1,
+            "score": 0.31999999999999995
+          },
+          {
+            "candidate_id": "sel_f2g_08_nlp_synonyms_gig_04",
+            "rank": 4,
+            "relevance_label": 0,
+            "score": 0.07
+          },
+          {
+            "candidate_id": "sel_f2g_08_nlp_synonyms_gig_05",
+            "rank": 5,
+            "relevance_label": 0,
+            "score": 0.0
+          }
+        ]
+      },
+      {
+        "metrics": {
+          "average_precision": {
+            "available": true,
+            "details": {
+              "evaluated_count": 5,
+              "is_complete_judgment_set": true,
+              "relevant_count": 3,
+              "relevant_retrieved_count": 3
+            },
+            "reason": null,
+            "value": 1.0
+          },
+          "graded_pairwise_inversion_rate": {
+            "available": true,
+            "details": {
+              "comparable_pair_count": 8,
+              "hard_negative_inversion_count": 0,
+              "hard_negative_pair_count": 4,
+              "inversion_count": 0,
+              "inversion_pairs": []
+            },
+            "reason": null,
+            "value": 0.0
+          },
+          "ndcg_at_k@1": {
+            "available": true,
+            "details": {
+              "dcg": 3.0,
+              "evaluated_count": 1,
+              "idcg": 3.0,
+              "idcg_zero": false
+            },
+            "reason": null,
+            "value": 1.0
+          },
+          "ndcg_at_k@3": {
+            "available": true,
+            "details": {
+              "dcg": 5.392789260714372,
+              "evaluated_count": 3,
+              "idcg": 5.392789260714372,
+              "idcg_zero": false
+            },
+            "reason": null,
+            "value": 1.0
+          },
+          "ndcg_at_k@5": {
+            "available": true,
+            "details": {
+              "dcg": 5.392789260714372,
+              "evaluated_count": 5,
+              "idcg": 5.392789260714372,
+              "idcg_zero": false
+            },
+            "reason": null,
+            "value": 1.0
+          },
+          "precision_at_k@1": {
+            "available": true,
+            "details": {
+              "evaluated_count": 1,
+              "judged_count": 5,
+              "relevant_retrieved_count": 1
+            },
+            "reason": null,
+            "value": 1.0
+          },
+          "precision_at_k@3": {
+            "available": true,
+            "details": {
+              "evaluated_count": 3,
+              "judged_count": 5,
+              "relevant_retrieved_count": 3
+            },
+            "reason": null,
+            "value": 1.0
+          },
+          "precision_at_k@5": {
+            "available": true,
+            "details": {
+              "evaluated_count": 5,
+              "judged_count": 5,
+              "relevant_retrieved_count": 3
+            },
+            "reason": null,
+            "value": 0.6
+          },
+          "recall_at_k@3": {
+            "available": true,
+            "details": {
+              "evaluated_count": 3,
+              "is_complete_judgment_set": true,
+              "relevant_count": 3,
+              "relevant_retrieved_count": 3
+            },
+            "reason": null,
+            "value": 1.0
+          },
+          "recall_at_k@5": {
+            "available": true,
+            "details": {
+              "evaluated_count": 5,
+              "is_complete_judgment_set": true,
+              "relevant_count": 3,
+              "relevant_retrieved_count": 3
+            },
+            "reason": null,
+            "value": 1.0
+          }
+        },
+        "query_id": "sel_g2f_09_fastapi",
+        "query_type": "gig_to_freelancers",
+        "ranked_candidates": [
+          {
+            "candidate_id": "sel_g2f_09_fastapi_freelancer_01",
+            "rank": 1,
+            "relevance_label": 2,
+            "score": 0.9999999999999999
+          },
+          {
+            "candidate_id": "sel_g2f_09_fastapi_freelancer_02",
+            "rank": 2,
+            "relevance_label": 2,
+            "score": 0.5366666666666666
+          },
+          {
+            "candidate_id": "sel_g2f_09_fastapi_freelancer_03",
+            "rank": 3,
+            "relevance_label": 1,
+            "score": 0.43666666666666665
+          },
+          {
+            "candidate_id": "sel_g2f_09_fastapi_freelancer_04",
+            "rank": 4,
+            "relevance_label": 0,
+            "score": 0.010000000000000009
+          },
+          {
+            "candidate_id": "sel_g2f_09_fastapi_freelancer_05",
+            "rank": 5,
+            "relevance_label": 0,
+            "score": 0.0
+          }
+        ]
+      },
+      {
+        "metrics": {
+          "average_precision": {
+            "available": true,
+            "details": {
+              "evaluated_count": 5,
+              "is_complete_judgment_set": true,
+              "relevant_count": 3,
+              "relevant_retrieved_count": 3
+            },
+            "reason": null,
+            "value": 1.0
+          },
+          "graded_pairwise_inversion_rate": {
+            "available": true,
+            "details": {
+              "comparable_pair_count": 8,
+              "hard_negative_inversion_count": 0,
+              "hard_negative_pair_count": 4,
+              "inversion_count": 0,
+              "inversion_pairs": []
+            },
+            "reason": null,
+            "value": 0.0
+          },
+          "ndcg_at_k@1": {
+            "available": true,
+            "details": {
+              "dcg": 3.0,
+              "evaluated_count": 1,
+              "idcg": 3.0,
+              "idcg_zero": false
+            },
+            "reason": null,
+            "value": 1.0
+          },
+          "ndcg_at_k@3": {
+            "available": true,
+            "details": {
+              "dcg": 5.392789260714372,
+              "evaluated_count": 3,
+              "idcg": 5.392789260714372,
+              "idcg_zero": false
+            },
+            "reason": null,
+            "value": 1.0
+          },
+          "ndcg_at_k@5": {
+            "available": true,
+            "details": {
+              "dcg": 5.392789260714372,
+              "evaluated_count": 5,
+              "idcg": 5.392789260714372,
+              "idcg_zero": false
+            },
+            "reason": null,
+            "value": 1.0
+          },
+          "precision_at_k@1": {
+            "available": true,
+            "details": {
+              "evaluated_count": 1,
+              "judged_count": 5,
+              "relevant_retrieved_count": 1
+            },
+            "reason": null,
+            "value": 1.0
+          },
+          "precision_at_k@3": {
+            "available": true,
+            "details": {
+              "evaluated_count": 3,
+              "judged_count": 5,
+              "relevant_retrieved_count": 3
+            },
+            "reason": null,
+            "value": 1.0
+          },
+          "precision_at_k@5": {
+            "available": true,
+            "details": {
+              "evaluated_count": 5,
+              "judged_count": 5,
+              "relevant_retrieved_count": 3
+            },
+            "reason": null,
+            "value": 0.6
+          },
+          "recall_at_k@3": {
+            "available": true,
+            "details": {
+              "evaluated_count": 3,
+              "is_complete_judgment_set": true,
+              "relevant_count": 3,
+              "relevant_retrieved_count": 3
+            },
+            "reason": null,
+            "value": 1.0
+          },
+          "recall_at_k@5": {
+            "available": true,
+            "details": {
+              "evaluated_count": 5,
+              "is_complete_judgment_set": true,
+              "relevant_count": 3,
+              "relevant_retrieved_count": 3
+            },
+            "reason": null,
+            "value": 1.0
+          }
+        },
+        "query_id": "sel_g2f_10_react_native",
+        "query_type": "gig_to_freelancers",
+        "ranked_candidates": [
+          {
+            "candidate_id": "sel_g2f_10_react_native_freelancer_01",
+            "rank": 1,
+            "relevance_label": 2,
+            "score": 0.9999999999999999
+          },
+          {
+            "candidate_id": "sel_g2f_10_react_native_freelancer_02",
+            "rank": 2,
+            "relevance_label": 2,
+            "score": 0.62
+          },
+          {
+            "candidate_id": "sel_g2f_10_react_native_freelancer_03",
+            "rank": 3,
+            "relevance_label": 1,
+            "score": 0.31999999999999995
+          },
+          {
+            "candidate_id": "sel_g2f_10_react_native_freelancer_04",
+            "rank": 4,
+            "relevance_label": 0,
+            "score": 0.04000000000000001
+          },
+          {
+            "candidate_id": "sel_g2f_10_react_native_freelancer_05",
+            "rank": 5,
+            "relevance_label": 0,
+            "score": 0.0
+          }
+        ]
+      },
+      {
+        "metrics": {
+          "average_precision": {
+            "available": true,
+            "details": {
+              "evaluated_count": 5,
+              "is_complete_judgment_set": true,
+              "relevant_count": 3,
+              "relevant_retrieved_count": 3
+            },
+            "reason": null,
+            "value": 1.0
+          },
+          "graded_pairwise_inversion_rate": {
+            "available": true,
+            "details": {
+              "comparable_pair_count": 8,
+              "hard_negative_inversion_count": 0,
+              "hard_negative_pair_count": 2,
+              "inversion_count": 0,
+              "inversion_pairs": []
+            },
+            "reason": null,
+            "value": 0.0
+          },
+          "ndcg_at_k@1": {
+            "available": true,
+            "details": {
+              "dcg": 3.0,
+              "evaluated_count": 1,
+              "idcg": 3.0,
+              "idcg_zero": false
+            },
+            "reason": null,
+            "value": 1.0
+          },
+          "ndcg_at_k@3": {
+            "available": true,
+            "details": {
+              "dcg": 4.130929753571458,
+              "evaluated_count": 3,
+              "idcg": 4.130929753571458,
+              "idcg_zero": false
+            },
+            "reason": null,
+            "value": 1.0
+          },
+          "ndcg_at_k@5": {
+            "available": true,
+            "details": {
+              "dcg": 4.130929753571458,
+              "evaluated_count": 5,
+              "idcg": 4.130929753571458,
+              "idcg_zero": false
+            },
+            "reason": null,
+            "value": 1.0
+          },
+          "precision_at_k@1": {
+            "available": true,
+            "details": {
+              "evaluated_count": 1,
+              "judged_count": 5,
+              "relevant_retrieved_count": 1
+            },
+            "reason": null,
+            "value": 1.0
+          },
+          "precision_at_k@3": {
+            "available": true,
+            "details": {
+              "evaluated_count": 3,
+              "judged_count": 5,
+              "relevant_retrieved_count": 3
+            },
+            "reason": null,
+            "value": 1.0
+          },
+          "precision_at_k@5": {
+            "available": true,
+            "details": {
+              "evaluated_count": 5,
+              "judged_count": 5,
+              "relevant_retrieved_count": 3
+            },
+            "reason": null,
+            "value": 0.6
+          },
+          "recall_at_k@3": {
+            "available": true,
+            "details": {
+              "evaluated_count": 3,
+              "is_complete_judgment_set": true,
+              "relevant_count": 3,
+              "relevant_retrieved_count": 3
+            },
+            "reason": null,
+            "value": 1.0
+          },
+          "recall_at_k@5": {
+            "available": true,
+            "details": {
+              "evaluated_count": 5,
+              "is_complete_judgment_set": true,
+              "relevant_count": 3,
+              "relevant_retrieved_count": 3
+            },
+            "reason": null,
+            "value": 1.0
+          }
+        },
+        "query_id": "sel_g2f_11_database",
+        "query_type": "gig_to_freelancers",
+        "ranked_candidates": [
+          {
+            "candidate_id": "sel_g2f_11_database_freelancer_01",
+            "rank": 1,
+            "relevance_label": 2,
+            "score": 0.9999999999999999
+          },
+          {
+            "candidate_id": "sel_g2f_11_database_freelancer_02",
+            "rank": 2,
+            "relevance_label": 1,
+            "score": 0.5366666666666666
+          },
+          {
+            "candidate_id": "sel_g2f_11_database_freelancer_03",
+            "rank": 3,
+            "relevance_label": 1,
+            "score": 0.43666666666666665
+          },
+          {
+            "candidate_id": "sel_g2f_11_database_freelancer_04",
+            "rank": 4,
+            "relevance_label": 0,
+            "score": 0.1733333333333333
+          },
+          {
+            "candidate_id": "sel_g2f_11_database_freelancer_05",
+            "rank": 5,
+            "relevance_label": 0,
+            "score": 0.0
+          }
+        ]
+      },
+      {
+        "metrics": {
+          "average_precision": {
+            "available": true,
+            "details": {
+              "evaluated_count": 5,
+              "is_complete_judgment_set": true,
+              "relevant_count": 3,
+              "relevant_retrieved_count": 3
+            },
+            "reason": null,
+            "value": 1.0
+          },
+          "graded_pairwise_inversion_rate": {
+            "available": true,
+            "details": {
+              "comparable_pair_count": 8,
+              "hard_negative_inversion_count": 0,
+              "hard_negative_pair_count": 4,
+              "inversion_count": 0,
+              "inversion_pairs": []
+            },
+            "reason": null,
+            "value": 0.0
+          },
+          "ndcg_at_k@1": {
+            "available": true,
+            "details": {
+              "dcg": 3.0,
+              "evaluated_count": 1,
+              "idcg": 3.0,
+              "idcg_zero": false
+            },
+            "reason": null,
+            "value": 1.0
+          },
+          "ndcg_at_k@3": {
+            "available": true,
+            "details": {
+              "dcg": 5.392789260714372,
+              "evaluated_count": 3,
+              "idcg": 5.392789260714372,
+              "idcg_zero": false
+            },
+            "reason": null,
+            "value": 1.0
+          },
+          "ndcg_at_k@5": {
+            "available": true,
+            "details": {
+              "dcg": 5.392789260714372,
+              "evaluated_count": 5,
+              "idcg": 5.392789260714372,
+              "idcg_zero": false
+            },
+            "reason": null,
+            "value": 1.0
+          },
+          "precision_at_k@1": {
+            "available": true,
+            "details": {
+              "evaluated_count": 1,
+              "judged_count": 5,
+              "relevant_retrieved_count": 1
+            },
+            "reason": null,
+            "value": 1.0
+          },
+          "precision_at_k@3": {
+            "available": true,
+            "details": {
+              "evaluated_count": 3,
+              "judged_count": 5,
+              "relevant_retrieved_count": 3
+            },
+            "reason": null,
+            "value": 1.0
+          },
+          "precision_at_k@5": {
+            "available": true,
+            "details": {
+              "evaluated_count": 5,
+              "judged_count": 5,
+              "relevant_retrieved_count": 3
+            },
+            "reason": null,
+            "value": 0.6
+          },
+          "recall_at_k@3": {
+            "available": true,
+            "details": {
+              "evaluated_count": 3,
+              "is_complete_judgment_set": true,
+              "relevant_count": 3,
+              "relevant_retrieved_count": 3
+            },
+            "reason": null,
+            "value": 1.0
+          },
+          "recall_at_k@5": {
+            "available": true,
+            "details": {
+              "evaluated_count": 5,
+              "is_complete_judgment_set": true,
+              "relevant_count": 3,
+              "relevant_retrieved_count": 3
+            },
+            "reason": null,
+            "value": 1.0
+          }
+        },
+        "query_id": "sel_g2f_12_cloud",
+        "query_type": "gig_to_freelancers",
+        "ranked_candidates": [
+          {
+            "candidate_id": "sel_g2f_12_cloud_freelancer_01",
+            "rank": 1,
+            "relevance_label": 2,
+            "score": 0.9999999999999999
+          },
+          {
+            "candidate_id": "sel_g2f_12_cloud_freelancer_02",
+            "rank": 2,
+            "relevance_label": 2,
+            "score": 0.41999999999999993
+          },
+          {
+            "candidate_id": "sel_g2f_12_cloud_freelancer_03",
+            "rank": 3,
+            "relevance_label": 1,
+            "score": 0.41999999999999993
+          },
+          {
+            "candidate_id": "sel_g2f_12_cloud_freelancer_04",
+            "rank": 4,
+            "relevance_label": 0,
+            "score": 0.14
+          },
+          {
+            "candidate_id": "sel_g2f_12_cloud_freelancer_05",
+            "rank": 5,
+            "relevance_label": 0,
+            "score": 0.0
+          }
+        ]
+      },
+      {
+        "metrics": {
+          "average_precision": {
+            "available": true,
+            "details": {
+              "evaluated_count": 5,
+              "is_complete_judgment_set": true,
+              "relevant_count": 3,
+              "relevant_retrieved_count": 3
+            },
+            "reason": null,
+            "value": 1.0
+          },
+          "graded_pairwise_inversion_rate": {
+            "available": true,
+            "details": {
+              "comparable_pair_count": 8,
+              "hard_negative_inversion_count": 0,
+              "hard_negative_pair_count": 4,
+              "inversion_count": 0,
+              "inversion_pairs": []
+            },
+            "reason": null,
+            "value": 0.0
+          },
+          "ndcg_at_k@1": {
+            "available": true,
+            "details": {
+              "dcg": 3.0,
+              "evaluated_count": 1,
+              "idcg": 3.0,
+              "idcg_zero": false
+            },
+            "reason": null,
+            "value": 1.0
+          },
+          "ndcg_at_k@3": {
+            "available": true,
+            "details": {
+              "dcg": 5.392789260714372,
+              "evaluated_count": 3,
+              "idcg": 5.392789260714372,
+              "idcg_zero": false
+            },
+            "reason": null,
+            "value": 1.0
+          },
+          "ndcg_at_k@5": {
+            "available": true,
+            "details": {
+              "dcg": 5.392789260714372,
+              "evaluated_count": 5,
+              "idcg": 5.392789260714372,
+              "idcg_zero": false
+            },
+            "reason": null,
+            "value": 1.0
+          },
+          "precision_at_k@1": {
+            "available": true,
+            "details": {
+              "evaluated_count": 1,
+              "judged_count": 5,
+              "relevant_retrieved_count": 1
+            },
+            "reason": null,
+            "value": 1.0
+          },
+          "precision_at_k@3": {
+            "available": true,
+            "details": {
+              "evaluated_count": 3,
+              "judged_count": 5,
+              "relevant_retrieved_count": 3
+            },
+            "reason": null,
+            "value": 1.0
+          },
+          "precision_at_k@5": {
+            "available": true,
+            "details": {
+              "evaluated_count": 5,
+              "judged_count": 5,
+              "relevant_retrieved_count": 3
+            },
+            "reason": null,
+            "value": 0.6
+          },
+          "recall_at_k@3": {
+            "available": true,
+            "details": {
+              "evaluated_count": 3,
+              "is_complete_judgment_set": true,
+              "relevant_count": 3,
+              "relevant_retrieved_count": 3
+            },
+            "reason": null,
+            "value": 1.0
+          },
+          "recall_at_k@5": {
+            "available": true,
+            "details": {
+              "evaluated_count": 5,
+              "is_complete_judgment_set": true,
+              "relevant_count": 3,
+              "relevant_retrieved_count": 3
+            },
+            "reason": null,
+            "value": 1.0
+          }
+        },
+        "query_id": "sel_g2f_13_kubernetes",
+        "query_type": "gig_to_freelancers",
+        "ranked_candidates": [
+          {
+            "candidate_id": "sel_g2f_13_kubernetes_freelancer_01",
+            "rank": 1,
+            "relevance_label": 2,
+            "score": 0.9999999999999999
+          },
+          {
+            "candidate_id": "sel_g2f_13_kubernetes_freelancer_02",
+            "rank": 2,
+            "relevance_label": 2,
+            "score": 0.7999999999999999
+          },
+          {
+            "candidate_id": "sel_g2f_13_kubernetes_freelancer_03",
+            "rank": 3,
+            "relevance_label": 1,
+            "score": 0.41999999999999993
+          },
+          {
+            "candidate_id": "sel_g2f_13_kubernetes_freelancer_04",
+            "rank": 4,
+            "relevance_label": 0,
+            "score": 0.0
+          },
+          {
+            "candidate_id": "sel_g2f_13_kubernetes_freelancer_05",
+            "rank": 5,
+            "relevance_label": 0,
+            "score": 0.0
+          }
+        ]
+      },
+      {
+        "metrics": {
+          "average_precision": {
+            "available": true,
+            "details": {
+              "evaluated_count": 5,
+              "is_complete_judgment_set": true,
+              "relevant_count": 3,
+              "relevant_retrieved_count": 3
+            },
+            "reason": null,
+            "value": 1.0
+          },
+          "graded_pairwise_inversion_rate": {
+            "available": true,
+            "details": {
+              "comparable_pair_count": 8,
+              "hard_negative_inversion_count": 0,
+              "hard_negative_pair_count": 4,
+              "inversion_count": 0,
+              "inversion_pairs": []
+            },
+            "reason": null,
+            "value": 0.0
+          },
+          "ndcg_at_k@1": {
+            "available": true,
+            "details": {
+              "dcg": 3.0,
+              "evaluated_count": 1,
+              "idcg": 3.0,
+              "idcg_zero": false
+            },
+            "reason": null,
+            "value": 1.0
+          },
+          "ndcg_at_k@3": {
+            "available": true,
+            "details": {
+              "dcg": 5.392789260714372,
+              "evaluated_count": 3,
+              "idcg": 5.392789260714372,
+              "idcg_zero": false
+            },
+            "reason": null,
+            "value": 1.0
+          },
+          "ndcg_at_k@5": {
+            "available": true,
+            "details": {
+              "dcg": 5.392789260714372,
+              "evaluated_count": 5,
+              "idcg": 5.392789260714372,
+              "idcg_zero": false
+            },
+            "reason": null,
+            "value": 1.0
+          },
+          "precision_at_k@1": {
+            "available": true,
+            "details": {
+              "evaluated_count": 1,
+              "judged_count": 5,
+              "relevant_retrieved_count": 1
+            },
+            "reason": null,
+            "value": 1.0
+          },
+          "precision_at_k@3": {
+            "available": true,
+            "details": {
+              "evaluated_count": 3,
+              "judged_count": 5,
+              "relevant_retrieved_count": 3
+            },
+            "reason": null,
+            "value": 1.0
+          },
+          "precision_at_k@5": {
+            "available": true,
+            "details": {
+              "evaluated_count": 5,
+              "judged_count": 5,
+              "relevant_retrieved_count": 3
+            },
+            "reason": null,
+            "value": 0.6
+          },
+          "recall_at_k@3": {
+            "available": true,
+            "details": {
+              "evaluated_count": 3,
+              "is_complete_judgment_set": true,
+              "relevant_count": 3,
+              "relevant_retrieved_count": 3
+            },
+            "reason": null,
+            "value": 1.0
+          },
+          "recall_at_k@5": {
+            "available": true,
+            "details": {
+              "evaluated_count": 5,
+              "is_complete_judgment_set": true,
+              "relevant_count": 3,
+              "relevant_retrieved_count": 3
+            },
+            "reason": null,
+            "value": 1.0
+          }
+        },
+        "query_id": "sel_g2f_14_nlp",
+        "query_type": "gig_to_freelancers",
+        "ranked_candidates": [
+          {
+            "candidate_id": "sel_g2f_14_nlp_freelancer_01",
+            "rank": 1,
+            "relevance_label": 2,
+            "score": 0.9999999999999999
+          },
+          {
+            "candidate_id": "sel_g2f_14_nlp_freelancer_02",
+            "rank": 2,
+            "relevance_label": 2,
+            "score": 0.5366666666666666
+          },
+          {
+            "candidate_id": "sel_g2f_14_nlp_freelancer_03",
+            "rank": 3,
+            "relevance_label": 1,
+            "score": 0.2733333333333333
+          },
+          {
+            "candidate_id": "sel_g2f_14_nlp_freelancer_05",
+            "rank": 4,
+            "relevance_label": 0,
+            "score": 0.1733333333333333
+          },
+          {
+            "candidate_id": "sel_g2f_14_nlp_freelancer_04",
+            "rank": 5,
+            "relevance_label": 0,
+            "score": 0.0
+          }
+        ]
+      },
+      {
+        "metrics": {
+          "average_precision": {
+            "available": true,
+            "details": {
+              "evaluated_count": 5,
+              "is_complete_judgment_set": true,
+              "relevant_count": 3,
+              "relevant_retrieved_count": 3
+            },
+            "reason": null,
+            "value": 1.0
+          },
+          "graded_pairwise_inversion_rate": {
+            "available": true,
+            "details": {
+              "comparable_pair_count": 8,
+              "hard_negative_inversion_count": 0,
+              "hard_negative_pair_count": 4,
+              "inversion_count": 0,
+              "inversion_pairs": []
+            },
+            "reason": null,
+            "value": 0.0
+          },
+          "ndcg_at_k@1": {
+            "available": true,
+            "details": {
+              "dcg": 3.0,
+              "evaluated_count": 1,
+              "idcg": 3.0,
+              "idcg_zero": false
+            },
+            "reason": null,
+            "value": 1.0
+          },
+          "ndcg_at_k@3": {
+            "available": true,
+            "details": {
+              "dcg": 5.392789260714372,
+              "evaluated_count": 3,
+              "idcg": 5.392789260714372,
+              "idcg_zero": false
+            },
+            "reason": null,
+            "value": 1.0
+          },
+          "ndcg_at_k@5": {
+            "available": true,
+            "details": {
+              "dcg": 5.392789260714372,
+              "evaluated_count": 5,
+              "idcg": 5.392789260714372,
+              "idcg_zero": false
+            },
+            "reason": null,
+            "value": 1.0
+          },
+          "precision_at_k@1": {
+            "available": true,
+            "details": {
+              "evaluated_count": 1,
+              "judged_count": 5,
+              "relevant_retrieved_count": 1
+            },
+            "reason": null,
+            "value": 1.0
+          },
+          "precision_at_k@3": {
+            "available": true,
+            "details": {
+              "evaluated_count": 3,
+              "judged_count": 5,
+              "relevant_retrieved_count": 3
+            },
+            "reason": null,
+            "value": 1.0
+          },
+          "precision_at_k@5": {
+            "available": true,
+            "details": {
+              "evaluated_count": 5,
+              "judged_count": 5,
+              "relevant_retrieved_count": 3
+            },
+            "reason": null,
+            "value": 0.6
+          },
+          "recall_at_k@3": {
+            "available": true,
+            "details": {
+              "evaluated_count": 3,
+              "is_complete_judgment_set": true,
+              "relevant_count": 3,
+              "relevant_retrieved_count": 3
+            },
+            "reason": null,
+            "value": 1.0
+          },
+          "recall_at_k@5": {
+            "available": true,
+            "details": {
+              "evaluated_count": 5,
+              "is_complete_judgment_set": true,
+              "relevant_count": 3,
+              "relevant_retrieved_count": 3
+            },
+            "reason": null,
+            "value": 1.0
+          }
+        },
+        "query_id": "sel_g2f_15_node_java",
+        "query_type": "gig_to_freelancers",
+        "ranked_candidates": [
+          {
+            "candidate_id": "sel_g2f_15_node_java_freelancer_01",
+            "rank": 1,
+            "relevance_label": 2,
+            "score": 0.9999999999999999
+          },
+          {
+            "candidate_id": "sel_g2f_15_node_java_freelancer_02",
+            "rank": 2,
+            "relevance_label": 2,
+            "score": 0.5366666666666666
+          },
+          {
+            "candidate_id": "sel_g2f_15_node_java_freelancer_03",
+            "rank": 3,
+            "relevance_label": 1,
+            "score": 0.43666666666666665
+          },
+          {
+            "candidate_id": "sel_g2f_15_node_java_freelancer_04",
+            "rank": 4,
+            "relevance_label": 0,
+            "score": 0.010000000000000009
+          },
+          {
+            "candidate_id": "sel_g2f_15_node_java_freelancer_05",
+            "rank": 5,
+            "relevance_label": 0,
+            "score": 0.0
+          }
+        ]
+      },
+      {
+        "metrics": {
+          "average_precision": {
+            "available": true,
+            "details": {
+              "evaluated_count": 5,
+              "is_complete_judgment_set": true,
+              "relevant_count": 3,
+              "relevant_retrieved_count": 3
+            },
+            "reason": null,
+            "value": 1.0
+          },
+          "graded_pairwise_inversion_rate": {
+            "available": true,
+            "details": {
+              "comparable_pair_count": 8,
+              "hard_negative_inversion_count": 0,
+              "hard_negative_pair_count": 4,
+              "inversion_count": 0,
+              "inversion_pairs": []
+            },
+            "reason": null,
+            "value": 0.0
+          },
+          "ndcg_at_k@1": {
+            "available": true,
+            "details": {
+              "dcg": 3.0,
+              "evaluated_count": 1,
+              "idcg": 3.0,
+              "idcg_zero": false
+            },
+            "reason": null,
+            "value": 1.0
+          },
+          "ndcg_at_k@3": {
+            "available": true,
+            "details": {
+              "dcg": 5.392789260714372,
+              "evaluated_count": 3,
+              "idcg": 5.392789260714372,
+              "idcg_zero": false
+            },
+            "reason": null,
+            "value": 1.0
+          },
+          "ndcg_at_k@5": {
+            "available": true,
+            "details": {
+              "dcg": 5.392789260714372,
+              "evaluated_count": 5,
+              "idcg": 5.392789260714372,
+              "idcg_zero": false
+            },
+            "reason": null,
+            "value": 1.0
+          },
+          "precision_at_k@1": {
+            "available": true,
+            "details": {
+              "evaluated_count": 1,
+              "judged_count": 5,
+              "relevant_retrieved_count": 1
+            },
+            "reason": null,
+            "value": 1.0
+          },
+          "precision_at_k@3": {
+            "available": true,
+            "details": {
+              "evaluated_count": 3,
+              "judged_count": 5,
+              "relevant_retrieved_count": 3
+            },
+            "reason": null,
+            "value": 1.0
+          },
+          "precision_at_k@5": {
+            "available": true,
+            "details": {
+              "evaluated_count": 5,
+              "judged_count": 5,
+              "relevant_retrieved_count": 3
+            },
+            "reason": null,
+            "value": 0.6
+          },
+          "recall_at_k@3": {
+            "available": true,
+            "details": {
+              "evaluated_count": 3,
+              "is_complete_judgment_set": true,
+              "relevant_count": 3,
+              "relevant_retrieved_count": 3
+            },
+            "reason": null,
+            "value": 1.0
+          },
+          "recall_at_k@5": {
+            "available": true,
+            "details": {
+              "evaluated_count": 5,
+              "is_complete_judgment_set": true,
+              "relevant_count": 3,
+              "relevant_retrieved_count": 3
+            },
+            "reason": null,
+            "value": 1.0
+          }
+        },
+        "query_id": "sel_g2f_16_seniority",
+        "query_type": "gig_to_freelancers",
+        "ranked_candidates": [
+          {
+            "candidate_id": "sel_g2f_16_seniority_freelancer_01",
+            "rank": 1,
+            "relevance_label": 2,
+            "score": 0.8999999999999999
+          },
+          {
+            "candidate_id": "sel_g2f_16_seniority_freelancer_02",
+            "rank": 2,
+            "relevance_label": 2,
+            "score": 0.43666666666666665
+          },
+          {
+            "candidate_id": "sel_g2f_16_seniority_freelancer_03",
+            "rank": 3,
+            "relevance_label": 1,
+            "score": 0.43666666666666665
+          },
+          {
+            "candidate_id": "sel_g2f_16_seniority_freelancer_04",
+            "rank": 4,
+            "relevance_label": 0,
+            "score": 0.1733333333333333
+          },
+          {
+            "candidate_id": "sel_g2f_16_seniority_freelancer_05",
+            "rank": 5,
+            "relevance_label": 0,
+            "score": 0.1733333333333333
+          }
+        ]
+      }
+    ]
+  },
+  "schema_version": 1,
+  "split": "selection"
+}

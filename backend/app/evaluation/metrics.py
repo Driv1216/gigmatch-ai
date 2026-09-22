@@ -278,6 +278,93 @@ def mean_average_precision(ap_results: Iterable[MetricResult]) -> MetricResult:
     )
 
 
+def graded_pairwise_inversion_rate(
+    ranked_candidate_ids: Iterable[str],
+    judgments: RelevanceInput,
+) -> MetricResult:
+    """Return the share of differently labelled pairs ordered backwards.
+
+    A pair is an inversion when the lower-relevance candidate appears ahead of
+    the higher-relevance candidate. Equal-label pairs are intentionally ignored.
+    The details separately expose label-0-over-label-2 hard-negative inversions.
+    """
+
+    metric_name = "graded_pairwise_inversion_rate"
+    context = _prepare_metric_context(ranked_candidate_ids, judgments, None, metric_name)
+    if isinstance(context, MetricResult):
+        return context
+
+    missing = _unjudged_candidate_ids(context.ranked_candidate_ids, context.relevance_by_candidate)
+    if missing:
+        return _unavailable(
+            metric_name,
+            "Pairwise inversion rate is unavailable because the ranking contains unjudged candidates.",
+            details={"unjudged_candidate_ids": missing},
+        )
+
+    ranked_set = set(context.ranked_candidate_ids)
+    absent = sorted(set(context.relevance_by_candidate) - ranked_set)
+    if absent:
+        return _unavailable(
+            metric_name,
+            "Pairwise inversion rate is unavailable because the ranking omits judged candidates.",
+            details={"missing_ranked_candidate_ids": absent},
+        )
+
+    positions = {candidate_id: position for position, candidate_id in enumerate(context.ranked_candidate_ids)}
+    candidate_ids = list(context.relevance_by_candidate)
+    comparable_pairs = 0
+    inversions = 0
+    hard_negative_pairs = 0
+    hard_negative_inversions = 0
+    inversion_pairs: list[dict[str, Any]] = []
+
+    for left_index, left_id in enumerate(candidate_ids):
+        for right_id in candidate_ids[left_index + 1 :]:
+            left_label = int(context.relevance_by_candidate[left_id])
+            right_label = int(context.relevance_by_candidate[right_id])
+            if left_label == right_label:
+                continue
+            comparable_pairs += 1
+            higher_id, lower_id = (left_id, right_id) if left_label > right_label else (right_id, left_id)
+            higher_label = max(left_label, right_label)
+            lower_label = min(left_label, right_label)
+            is_hard_negative_pair = higher_label == 2 and lower_label == 0
+            if is_hard_negative_pair:
+                hard_negative_pairs += 1
+            if positions[lower_id] < positions[higher_id]:
+                inversions += 1
+                if is_hard_negative_pair:
+                    hard_negative_inversions += 1
+                inversion_pairs.append(
+                    {
+                        "lower_candidate_id": lower_id,
+                        "lower_label": lower_label,
+                        "higher_candidate_id": higher_id,
+                        "higher_label": higher_label,
+                    }
+                )
+
+    if comparable_pairs == 0:
+        return _unavailable(
+            metric_name,
+            "Pairwise inversion rate is unavailable because no candidate pair has different relevance labels.",
+            details={"comparable_pair_count": 0},
+        )
+
+    return _available(
+        metric_name,
+        inversions / comparable_pairs,
+        details={
+            "comparable_pair_count": comparable_pairs,
+            "inversion_count": inversions,
+            "hard_negative_pair_count": hard_negative_pairs,
+            "hard_negative_inversion_count": hard_negative_inversions,
+            "inversion_pairs": inversion_pairs,
+        },
+    )
+
+
 @dataclass(frozen=True)
 class _MetricContext:
     ranked_candidate_ids: list[str]
@@ -420,4 +507,5 @@ def _display_name(metric_name: str) -> str:
         "ndcg_at_k": "NDCG@K",
         "average_precision": "Average Precision",
         "mean_average_precision": "MAP",
+        "graded_pairwise_inversion_rate": "Pairwise inversion rate",
     }.get(metric_name, "Metric")

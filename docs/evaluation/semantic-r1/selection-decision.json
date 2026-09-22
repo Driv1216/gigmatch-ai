@@ -1,0 +1,234 @@
+{
+  "schema_version": 1,
+  "status": "frozen",
+  "benchmark_version": "1",
+  "benchmark_sha256": "652e7439f8f43e1e0d402e57f83625e42c572c91ac930165f1c9e543056cd4d5",
+  "benchmark_lock_sha256": "6d4a99f27be10133e41231e6a2e79751721590a4d3b284cabdb65de54385ccf2",
+  "model_manifest_sha256": "1d713577b862415aa1eb16f91d24b8f4a3e1fe7f8d7572a6e58c31cf02c1d48f",
+  "dependency_lock_sha256": "48049b59b66f97e6e4ac66ff9c8f9e3b77e71c156adf305be7705c3c3d7c1e4d",
+  "selection_results_sha256": "c318f7d5293bd6a6c9543537704eef1aef1bcee7bffb95de3bf65d17e58494d8",
+  "selection_evidence": {
+    "path": "docs/evaluation/semantic-r1/raw/selection-antigravity",
+    "split": "selection",
+    "query_count": 16,
+    "judgment_count": 80,
+    "direction_counts": {
+      "freelancer_to_gigs": 8,
+      "gig_to_freelancers": 8
+    },
+    "holdout_query_count": 0,
+    "artifact_checksums_verified": true,
+    "artifact_sha256": {
+      "environment.json": "f2cecf1887a320644606064c68e377f46a75d642bf6fd2abc72623c6926d2746",
+      "keyword-baseline.json": "1f6a90d106ce346277cf2e05f6c1b644342e4fb1f8053764c3b662569ee53594",
+      "model-1.json": "024f82d6bf433692c5ea3594d867e68da714278effd81d7f99758f5a7f484513",
+      "model-2.json": "b91a8d79e48d9bf3952e08ddf5b4daf3c5dc731b6964cef70a0ec6d0ff921691",
+      "model-3.json": "3d74145281488f59e52c50b8f530f1951ce17ffeeb9ef5fd972844abb1ab77fd",
+      "model-4.json": "e4ce2cbefcba24ba002555aa1a9cdbdd9b0206db0f1f3030e4e217a2f4a8fcbb",
+      "selection-results.json": "c318f7d5293bd6a6c9543537704eef1aef1bcee7bffb95de3bf65d17e58494d8",
+      "run.log": "991e44a45450a0ff35f95c4ea61b92284b3826c96df340fda9ff46839dadd51d"
+    },
+    "runtime": {
+      "python": "3.13.13",
+      "platform": "macOS-26.6.2-arm64",
+      "sentence_transformers": "5.4.1",
+      "transformers": "4.55.4",
+      "huggingface_hub": "0.34.4",
+      "torch": "2.8.0",
+      "numpy": "2.5.3"
+    }
+  },
+  "selected_configuration": {
+    "model_id": "intfloat/e5-small-v2",
+    "revision": "ffb93f3bd4047442299a41ebb6fa998a38507c52",
+    "input_policy": "e5_retrieval",
+    "keyword_weight": 1.0,
+    "semantic_weight": 0.0
+  },
+  "selection_metrics": {
+    "keyword_baseline": {
+      "mean_ndcg_at_1": 1.0,
+      "mean_ndcg_at_3": 0.9939303323733945,
+      "mean_ndcg_at_5": 0.9939303323733945,
+      "mean_average_precision": 1.0,
+      "mean_precision_at_3": 1.0,
+      "mean_recall_at_3": 1.0,
+      "mean_graded_pairwise_inversion_rate": 0.015625,
+      "graded_inversion_count": 2,
+      "hard_negative_inversion_count": 0,
+      "label_0_ranked_first_count": 0
+    },
+    "selected_e5_semantic_only": {
+      "mean_ndcg_at_1": 1.0,
+      "mean_ndcg_at_3": 0.985375616330688,
+      "mean_ndcg_at_5": 0.9953583112139001,
+      "mean_average_precision": 0.9895833333333334,
+      "mean_precision_at_3": 0.9583333333333334,
+      "mean_recall_at_3": 0.9583333333333334,
+      "mean_graded_pairwise_inversion_rate": 0.0234375,
+      "graded_inversion_count": 3,
+      "hard_negative_inversion_count": 0,
+      "label_0_ranked_first_count": 0,
+      "paired_ndcg_at_3_wins_ties_losses_vs_keyword": [
+        2,
+        11,
+        3
+      ]
+    },
+    "selected_weight_configuration": {
+      "mean_ndcg_at_1": 1.0,
+      "mean_ndcg_at_3": 0.9881355574453898,
+      "mean_ndcg_at_5": 0.9931269048869958,
+      "mean_average_precision": 0.9947916666666666,
+      "mean_precision_at_3": 0.9791666666666666,
+      "mean_recall_at_3": 0.9791666666666666,
+      "mean_graded_pairwise_inversion_rate": 0.0234375,
+      "graded_inversion_count": 3,
+      "hard_negative_inversion_count": 0,
+      "label_0_above_label_2_count": 0,
+      "label_0_ranked_first_count": 0,
+      "strong_exact_alias_candidates": 16,
+      "strong_exact_alias_rank_drop_at_least_2_count": 0,
+      "seniority_or_domain_label_0_candidates": 22,
+      "seniority_or_domain_label_0_advanced_vs_keyword_count": 2,
+      "seniority_or_domain_label_0_above_label_2_count": 0,
+      "paired_ndcg_at_3_wins_ties_losses_vs_keyword": [
+        0,
+        15,
+        1
+      ]
+    },
+    "selected_weight_by_direction": {
+      "freelancer_to_gigs": {
+        "mean_ndcg_at_1": 1.0,
+        "mean_ndcg_at_3": 0.9762711148907797,
+        "mean_ndcg_at_5": 0.9862538097739917,
+        "mean_average_precision": 0.9895833333333334,
+        "mean_precision_at_3": 0.9583333333333334,
+        "mean_recall_at_3": 0.9583333333333334,
+        "mean_graded_pairwise_inversion_rate": 0.046875,
+        "graded_inversion_count": 3,
+        "hard_negative_inversion_count": 0
+      },
+      "gig_to_freelancers": {
+        "mean_ndcg_at_1": 1.0,
+        "mean_ndcg_at_3": 1.0,
+        "mean_ndcg_at_5": 1.0,
+        "mean_average_precision": 1.0,
+        "mean_precision_at_3": 1.0,
+        "mean_recall_at_3": 1.0,
+        "mean_graded_pairwise_inversion_rate": 0.0,
+        "graded_inversion_count": 0,
+        "hard_negative_inversion_count": 0
+      }
+    },
+    "selected_model_runtime": {
+      "observed_dimension": 384,
+      "cold_load_seconds": 35.22628091700608,
+      "model_cache_bytes": 134478697,
+      "baseline_rss_bytes": 40288256,
+      "peak_rss_bytes": 708214784,
+      "warm_single_encode_seconds_mean": 0.0802223196757647,
+      "warm_query_plus_5_batch_seconds_mean": 0.032026819341505565,
+      "ranking_10_candidates_seconds": 0.050772624963428825,
+      "ranking_50_candidates_seconds": 0.19878891704138368
+    }
+  },
+  "candidate_comparison": [
+    {
+      "model_id": "sentence-transformers/all-MiniLM-L6-v2",
+      "semantic_ndcg_at_3": 0.9554106382809532,
+      "semantic_map": 0.9722222222222222,
+      "semantic_pairwise_inversion_rate": 0.0546875,
+      "semantic_hard_negative_inversions": 1,
+      "semantic_strong_exact_rank_drop_at_least_2": 1,
+      "keyword_dominant_ndcg_at_3": 0.9813496791076732,
+      "keyword_dominant_map": 0.9878472222222222,
+      "keyword_dominant_pairwise_inversion_rate": 0.0390625,
+      "keyword_dominant_hard_negative_inversions": 0,
+      "model_cache_bytes": 91578415,
+      "ranking_50_candidates_seconds": 0.10493366600712761
+    },
+    {
+      "model_id": "BAAI/bge-small-en-v1.5",
+      "semantic_ndcg_at_3": 0.9747758995820165,
+      "semantic_map": 0.984375,
+      "semantic_pairwise_inversion_rate": 0.0390625,
+      "semantic_hard_negative_inversions": 0,
+      "semantic_strong_exact_rank_drop_at_least_2": 0,
+      "keyword_dominant_ndcg_at_3": 0.9833306156247228,
+      "keyword_dominant_map": 0.9947916666666666,
+      "keyword_dominant_pairwise_inversion_rate": 0.03125,
+      "keyword_dominant_hard_negative_inversions": 0,
+      "model_cache_bytes": 134505940,
+      "ranking_50_candidates_seconds": 0.1963668749667704
+    },
+    {
+      "model_id": "thenlper/gte-small",
+      "semantic_ndcg_at_3": 0.9604042070134173,
+      "semantic_map": 0.9670138888888888,
+      "semantic_pairwise_inversion_rate": 0.0625,
+      "semantic_hard_negative_inversions": 1,
+      "semantic_strong_exact_rank_drop_at_least_2": 0,
+      "keyword_dominant_ndcg_at_3": 0.970476339962775,
+      "keyword_dominant_map": 0.9947916666666666,
+      "keyword_dominant_pairwise_inversion_rate": 0.0390625,
+      "keyword_dominant_hard_negative_inversions": 1,
+      "model_cache_bytes": 67759155,
+      "ranking_50_candidates_seconds": 0.19763387501006946
+    },
+    {
+      "model_id": "intfloat/e5-small-v2",
+      "semantic_ndcg_at_3": 0.985375616330688,
+      "semantic_map": 0.9895833333333334,
+      "semantic_pairwise_inversion_rate": 0.0234375,
+      "semantic_hard_negative_inversions": 0,
+      "semantic_strong_exact_rank_drop_at_least_2": 0,
+      "keyword_dominant_ndcg_at_3": 0.9881355574453898,
+      "keyword_dominant_map": 0.9947916666666666,
+      "keyword_dominant_pairwise_inversion_rate": 0.0234375,
+      "keyword_dominant_hard_negative_inversions": 0,
+      "model_cache_bytes": 134478697,
+      "ranking_50_candidates_seconds": 0.19878891704138368
+    }
+  ],
+  "weight_analysis": {
+    "observation": "For E5, every predefined configuration from keyword/semantic 0.25/0.75 through 1.00/0.00 produced identical rankings and metrics. Semantic-only 0.00/1.00 differed.",
+    "keyword_baseline_was_stronger_than_selected_weight_on_selection": true,
+    "positive_semantic_weight_produced_paired_ndcg_at_3_wins_over_keyword": 0,
+    "selection_rule_application": "Because the ranking metrics for all keyword-positive E5 weights were identical, no positive semantic contribution had demonstrated ranking benefit. The predefined 1.00/0.00 weight is frozen rather than forcing hybrid contribution. Under the evaluated production tie-breaking rule, E5 still breaks equal keyword scores, so this configuration is not byte-for-byte identical to the standalone keyword baseline."
+  },
+  "rationale": "E5 was the strongest and safest semantic candidate on the locked selection set: it led semantic-only NDCG@3, MAP, Precision/Recall@3, and pairwise inversion rate; produced no label-0-over-label-2 inversion, no label-0 top result, and no strong exact-alias rank drop; and was perfect on the gig-to-freelancer direction under the selected configuration. BGE was the nearest quality alternative, but E5 had fewer pairwise inversions and fewer seniority/domain hard-negative promotions. MiniLM was materially faster and smaller but had a semantic hard-negative inversion and a three-rank exact-skill loss. GTE retained a hard-negative inversion even in keyword-dominant configurations. The standalone keyword baseline remained strongest overall, while every positive-keyword E5 weight produced exactly the same rankings and no paired NDCG@3 win over keyword. Therefore the evidence does not justify forcing a positive semantic weight: the predefined 1.00 keyword / 0.00 semantic configuration is selected. E5 remains the frozen model because the evaluated ranker uses semantic score as a deterministic tie-breaker even at zero semantic weight and E5 provided the safest such ordering among candidates. Runtime cost is accepted as a tradeoff for safer pair ordering: approximately 128.2 MiB cached, 675.4 MiB peak RSS, 50.8 ms for 10 candidates, and 198.8 ms for 50 candidates on the recorded Apple-arm64 CPU environment.",
+  "rejected_alternatives": [
+    {
+      "alternative": "sentence-transformers/all-MiniLM-L6-v2",
+      "reason": "Fastest ranking and smaller cache, but weaker semantic quality, one label-0-over-label-2 inversion, and one strong exact-alias candidate dropped three ranks under semantic-only scoring."
+    },
+    {
+      "alternative": "BAAI/bge-small-en-v1.5",
+      "reason": "Safe from hard-negative inversions, but below E5 on semantic and keyword-dominant NDCG@3 and pairwise ordering, with more seniority/domain hard-negative promotions and no meaningful size or ranking-latency advantage."
+    },
+    {
+      "alternative": "thenlper/gte-small",
+      "reason": "Smallest cache, but lowest selected-configuration NDCG@3, highest semantic pairwise inversion rate, and a label-0-over-label-2 inversion that remained in keyword-dominant configurations."
+    },
+    {
+      "alternative": "positive semantic weight",
+      "reason": "All positive-keyword E5 weights produced the same rankings, with zero paired NDCG@3 wins, fifteen ties, and one loss against keyword. A positive semantic contribution therefore had no demonstrated selection-set ranking benefit."
+    },
+    {
+      "alternative": "semantic-only 0.00/1.00",
+      "reason": "E5 semantic-only improved two queries but lost three, had lower MAP and Precision/Recall@3 than keyword, and did not beat the keyword baseline in aggregate."
+    }
+  ],
+  "known_selection_limitations": [
+    "The corpus is a controlled 16-query selection partition, not real-user traffic or a statistical superiority study.",
+    "The selected 1.00/0.00 configuration still uses E5 for deterministic tie-breaking in the evaluated implementation, so it differs slightly from the standalone keyword baseline.",
+    "The selected configuration had one NDCG@3 loss against keyword: the Java-versus-JavaScript hard-negative family placed a label-0 candidate above the label-1 candidate, while retaining both label-2 candidates above it.",
+    "Two seniority/domain label-0 candidates advanced relative to keyword under E5 tie-breaking, but neither passed a label-2 candidate.",
+    "Recorded timings and memory are specific to Python 3.13.13 on Apple arm64 CPU."
+  ],
+  "holdout_reselection_prohibited": true,
+  "holdout_policy": "The locked holdout may affect claims, limitations, and future work, but it must not change this selected model, revision, input policy, or weight.",
+  "decision_sha256": "703662255cb2b8967f8de7b9e594ed42c56f05d699378c40fe481acec22e5e18"
+}

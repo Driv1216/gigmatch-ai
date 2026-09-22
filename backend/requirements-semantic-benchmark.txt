@@ -1,0 +1,6 @@
+# R1 controlled transformer stack, also pinned by the production backend after
+# selection and locked-holdout evidence were returned.
+sentence-transformers==5.4.1
+transformers==4.55.4
+huggingface-hub==0.34.4
+torch==2.8.0

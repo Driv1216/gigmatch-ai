@@ -8,10 +8,17 @@ from typing import Literal
 from app.matching.contracts import FreelancerMatchProfile, GigMatchProfile
 from app.matching.keyword import KeywordScoreBreakdown, score_keyword_match
 from app.matching.semantic import EmbeddingProvider
-from app.matching.semantic_ranker import SemanticScoreBreakdown, score_semantic_match
+from app.matching.semantic_ranker import (
+    SemanticMatchResult,
+    SemanticRankingDirection,
+    SemanticScoreBreakdown,
+    rank_freelancers_for_gig_semantic,
+    rank_gigs_for_freelancer_semantic,
+    score_semantic_match,
+)
 
-DEFAULT_KEYWORD_WEIGHT = 0.55
-DEFAULT_SEMANTIC_WEIGHT = 0.45
+DEFAULT_KEYWORD_WEIGHT = 0.75
+DEFAULT_SEMANTIC_WEIGHT = 0.25
 
 
 @dataclass(frozen=True)
@@ -71,12 +78,13 @@ def score_hybrid_match(
     gig: GigMatchProfile,
     provider: EmbeddingProvider,
     config: HybridRankingConfig | None = None,
+    direction: SemanticRankingDirection = SemanticRankingDirection.FREELANCER_TO_GIGS,
 ) -> HybridScoreBreakdown:
     """Score one freelancer/gig pair by combining keyword and semantic scores."""
 
     resolved_config = config or HybridRankingConfig()
     keyword_breakdown = score_keyword_match(freelancer, gig)
-    semantic_breakdown = score_semantic_match(freelancer, gig, provider)
+    semantic_breakdown = score_semantic_match(freelancer, gig, provider, direction)
 
     return HybridScoreBreakdown(
         hybrid_score=combine_hybrid_score(
@@ -101,11 +109,18 @@ def rank_gigs_for_freelancer_hybrid(
 ) -> list[HybridMatchResult]:
     """Rank gig candidates for a freelancer without filtering by gig status."""
 
+    resolved_config = config or HybridRankingConfig()
+    semantic_by_id = {
+        result.candidate_id: result
+        for result in rank_gigs_for_freelancer_semantic(freelancer, gigs, provider)
+    }
     results = [
-        _result_from_breakdown(
+        _result_from_components(
             candidate_id=gig.gig_id,
             candidate_type="gig",
-            breakdown=score_hybrid_match(freelancer, gig, provider, config),
+            keyword_breakdown=score_keyword_match(freelancer, gig),
+            semantic_result=semantic_by_id[gig.gig_id],
+            config=resolved_config,
             gig_status=gig.status,
         )
         for gig in gigs
@@ -121,11 +136,18 @@ def rank_freelancers_for_gig_hybrid(
 ) -> list[HybridMatchResult]:
     """Rank freelancer candidates for a gig using the same hybrid score."""
 
+    resolved_config = config or HybridRankingConfig()
+    semantic_by_id = {
+        result.candidate_id: result
+        for result in rank_freelancers_for_gig_semantic(gig, freelancers, provider)
+    }
     results = [
-        _result_from_breakdown(
+        _result_from_components(
             candidate_id=freelancer.freelancer_id,
             candidate_type="freelancer",
-            breakdown=score_hybrid_match(freelancer, gig, provider, config),
+            keyword_breakdown=score_keyword_match(freelancer, gig),
+            semantic_result=semantic_by_id[freelancer.freelancer_id],
+            config=resolved_config,
             gig_status=gig.status,
         )
         for freelancer in freelancers
@@ -172,6 +194,42 @@ def _result_from_breakdown(
         semantic_weight=breakdown.semantic_weight,
         keyword_breakdown=breakdown.keyword_breakdown,
         semantic_breakdown=breakdown.semantic_breakdown,
+        gig_status=gig_status,
+    )
+
+
+def _result_from_components(
+    *,
+    candidate_id: str,
+    candidate_type: Literal["gig", "freelancer"],
+    keyword_breakdown: KeywordScoreBreakdown,
+    semantic_result: SemanticMatchResult,
+    config: HybridRankingConfig,
+    gig_status: str | None,
+) -> HybridMatchResult:
+    semantic_breakdown = SemanticScoreBreakdown(
+        raw_cosine_similarity=semantic_result.raw_cosine_similarity,
+        semantic_score=semantic_result.semantic_score,
+        freelancer_embedding_text=semantic_result.freelancer_embedding_text,
+        gig_embedding_text=semantic_result.gig_embedding_text,
+        vector_dimension=semantic_result.vector_dimension,
+        provider_name=semantic_result.provider_name,
+    )
+    return HybridMatchResult(
+        candidate_id=candidate_id,
+        candidate_type=candidate_type,
+        hybrid_score=combine_hybrid_score(
+            keyword_breakdown.keyword_score,
+            semantic_result.semantic_score,
+            config,
+        ),
+        keyword_score=keyword_breakdown.keyword_score,
+        semantic_score=semantic_result.semantic_score,
+        rank=0,
+        keyword_weight=config.normalized_keyword_weight,
+        semantic_weight=config.normalized_semantic_weight,
+        keyword_breakdown=keyword_breakdown,
+        semantic_breakdown=semantic_breakdown,
         gig_status=gig_status,
     )
 

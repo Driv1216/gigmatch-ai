@@ -1,5 +1,8 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
+import { dashboardPathForRole } from "../lib/auth";
 
 const workflowLanes = [
   {
@@ -34,6 +37,13 @@ const workflowLanes = [
 
 export function LandingPage() {
   const [openLane, setOpenLane] = useState<string | null>(null);
+  const navigate = useNavigate();
+  const { profile, role, logout } = useAuth();
+
+  async function handleLogout() {
+    await logout();
+    navigate("/login");
+  }
 
   return (
     <div className="switchboard-landing">
@@ -46,12 +56,17 @@ export function LandingPage() {
             structured applications, and version-bound selection.
           </p>
           <div className="switchboard-public-actions">
-            <Link className="switchboard-public-action is-primary" to="/signup">
-              Join as a freelancer or client <span aria-hidden="true">→</span>
-            </Link>
-            <Link className="switchboard-public-action" to="/login">
-              Use an existing account <span aria-hidden="true">↗</span>
-            </Link>
+            {profile && role ? (
+              <>
+                <Link className="switchboard-public-action is-primary" to={dashboardPathForRole(role)}>Open {role} dashboard <span aria-hidden="true">→</span></Link>
+                <button className="switchboard-public-action" type="button" onClick={handleLogout}>Logout {profile.full_name || profile.email} <span aria-hidden="true">↗</span></button>
+              </>
+            ) : (
+              <>
+                <Link className="switchboard-public-action is-primary" to="/signup">Join as a freelancer or client <span aria-hidden="true">→</span></Link>
+                <Link className="switchboard-public-action" to="/login">Use an existing account <span aria-hidden="true">↗</span></Link>
+              </>
+            )}
           </div>
           <p className="switchboard-landing-boundary">
             Public entry only. Marketplace discovery and participant workflow data require an account.

@@ -1,14 +1,19 @@
 import inspect
 import sys
+import types
 import unittest
+from unittest.mock import patch
 
 from app.matching import (
     DeterministicFakeEmbeddingProvider,
+    EmbeddingInputPolicy,
+    SentenceTransformerEmbeddingProvider,
     build_freelancer_embedding_text,
     build_freelancer_match_profile,
     build_gig_embedding_text,
     build_gig_match_profile,
     cosine_similarity,
+    prepare_embedding_input,
 )
 from app.matching import semantic
 
@@ -159,6 +164,51 @@ class SemanticMatchingTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "greater than zero"):
             DeterministicFakeEmbeddingProvider(dimensions=0)
 
+    def test_model_input_policies_are_isolated_from_canonical_text(self):
+        canonical = "Role: Backend engineer."
+
+        self.assertEqual(prepare_embedding_input(canonical, EmbeddingInputPolicy.PLAIN, is_query=True), canonical)
+        self.assertEqual(prepare_embedding_input(canonical, EmbeddingInputPolicy.PLAIN, is_query=False), canonical)
+        self.assertEqual(
+            prepare_embedding_input(canonical, EmbeddingInputPolicy.BGE_RETRIEVAL, is_query=True),
+            "Represent this sentence for searching relevant passages: Role: Backend engineer.",
+        )
+        self.assertEqual(
+            prepare_embedding_input(canonical, EmbeddingInputPolicy.BGE_RETRIEVAL, is_query=False),
+            canonical,
+        )
+        self.assertEqual(
+            prepare_embedding_input(canonical, EmbeddingInputPolicy.E5_RETRIEVAL, is_query=True),
+            "query: Role: Backend engineer.",
+        )
+        self.assertEqual(
+            prepare_embedding_input(canonical, EmbeddingInputPolicy.E5_RETRIEVAL, is_query=False),
+            "passage: Role: Backend engineer.",
+        )
+
+    def test_real_provider_wrapper_locks_revision_cpu_and_remote_code_policy(self):
+        stub = StubSentenceTransformer()
+        module = types.SimpleNamespace(SentenceTransformer=lambda *args, **kwargs: stub.capture(*args, **kwargs))
+
+        with patch.dict(sys.modules, {"sentence_transformers": module}):
+            provider = SentenceTransformerEmbeddingProvider(
+                "locked/model",
+                revision="a" * 40,
+                input_policy=EmbeddingInputPolicy.E5_RETRIEVAL,
+                cache_folder="/tmp/locked-cache",
+                local_files_only=True,
+            )
+            vectors = provider.encode_batch(["query: alpha", "passage: beta"])
+
+        self.assertEqual(stub.model_name, "locked/model")
+        self.assertEqual(stub.kwargs["revision"], "a" * 40)
+        self.assertEqual(stub.kwargs["device"], "cpu")
+        self.assertFalse(stub.kwargs["trust_remote_code"])
+        self.assertTrue(stub.kwargs["local_files_only"])
+        self.assertEqual(stub.encoded_texts, ["query: alpha", "passage: beta"])
+        self.assertTrue(stub.encode_kwargs["normalize_embeddings"])
+        self.assertEqual(vectors, [[1.0, 0.0], [1.0, 1.0]])
+
     def test_cosine_similarity_handles_identical_and_opposite_vectors(self):
         self.assertAlmostEqual(cosine_similarity([1.0, 2.0, 3.0], [1.0, 2.0, 3.0]), 1.0)
         self.assertAlmostEqual(cosine_similarity([1.0, 0.0], [-1.0, 0.0]), -1.0)
@@ -194,6 +244,18 @@ class SemanticMatchingTests(unittest.TestCase):
         self.assertNotIn("supabase", source.lower())
         self.assertNotIn(".insert(", source)
         self.assertNotIn(".update(", source)
+
+
+class StubSentenceTransformer:
+    def capture(self, model_name, **kwargs):
+        self.model_name = model_name
+        self.kwargs = kwargs
+        return self
+
+    def encode(self, texts, **kwargs):
+        self.encoded_texts = list(texts)
+        self.encode_kwargs = kwargs
+        return [[1.0, float(index)] for index, _ in enumerate(texts)]
 
 
 if __name__ == "__main__":

@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { dashboardPathForRole } from "../lib/auth";
+import { isVerifiedAuthUser } from "../lib/authFlow";
 
 type PublicShellProps = {
   children: ReactNode;
@@ -12,7 +13,7 @@ function publicLinkClass({ isActive }: { isActive: boolean }) {
 }
 
 export function PublicShell({ children }: PublicShellProps) {
-  const { user, role, loading, logout } = useAuth();
+  const { user, role, loading, profileStatus, logout } = useAuth();
   const navigate = useNavigate();
 
   async function handleLogout() {
@@ -30,18 +31,25 @@ export function PublicShell({ children }: PublicShellProps) {
           <small>Tech work, structured</small>
         </NavLink>
         <nav aria-label="Public navigation">
-          {loading ? (
+          {loading || (user && profileStatus === "loading") ? (
             <span className="switchboard-public-resolution" role="status">Resolving account</span>
-          ) : role ? (
+          ) : user && profileStatus === "error" ? (
+            <>
+              <span className="switchboard-public-resolution" role="alert">Profile unavailable</span>
+              <button type="button" onClick={handleLogout}>Logout</button>
+            </>
+          ) : role && profileStatus === "ready" ? (
             <>
               <NavLink to={dashboardPathForRole(role)}>Open dashboard</NavLink>
               <button type="button" onClick={handleLogout}>Logout</button>
             </>
-          ) : user ? (
+          ) : user && isVerifiedAuthUser(user) && profileStatus === "missing" ? (
             <>
-              <span className="switchboard-public-resolution" role="status">Account setup issue</span>
+              <NavLink to="/account/setup">Complete setup</NavLink>
               <button type="button" onClick={handleLogout}>Logout</button>
             </>
+          ) : user ? (
+            <><span className="switchboard-public-resolution" role="status">Verification required</span><button type="button" onClick={handleLogout}>Logout</button></>
           ) : (
             <>
               <NavLink to="/login" className={publicLinkClass}>Login</NavLink>

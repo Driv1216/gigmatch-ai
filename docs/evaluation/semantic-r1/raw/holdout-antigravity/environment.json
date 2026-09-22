@@ -1,0 +1,14 @@
+{
+  "dependency_lock_sha256": "48049b59b66f97e6e4ac66ff9c8f9e3b77e71c156adf305be7705c3c3d7c1e4d",
+  "machine": "arm64",
+  "packages": {
+    "huggingface-hub": "0.34.4",
+    "numpy": "2.5.3",
+    "sentence-transformers": "5.4.1",
+    "torch": "2.8.0",
+    "transformers": "4.55.4"
+  },
+  "platform": "macOS-26.6.2-arm64-arm-64bit-Mach-O",
+  "processor": "arm",
+  "python": "3.13.13 (main, Apr  7 2026, 18:19:01) [Clang 21.0.0 (clang-2100.0.123.102)]"
+}

@@ -1,0 +1,4027 @@
+{
+  "benchmark_lock_sha256": "6d4a99f27be10133e41231e6a2e79751721590a4d3b284cabdb65de54385ccf2",
+  "benchmark_sha256": "652e7439f8f43e1e0d402e57f83625e42c572c91ac930165f1c9e543056cd4d5",
+  "benchmark_version": "1",
+  "dependency_lock_sha256": "48049b59b66f97e6e4ac66ff9c8f9e3b77e71c156adf305be7705c3c3d7c1e4d",
+  "model_manifest_sha256": "1d713577b862415aa1eb16f91d24b8f4a3e1fe7f8d7572a6e58c31cf02c1d48f",
+  "payload": {
+    "decision_sha256": "703662255cb2b8967f8de7b9e594ed42c56f05d699378c40fe481acec22e5e18",
+    "judgment_count": 40,
+    "keyword_baseline": {
+      "aggregate_metrics": {
+        "mean_average_precision": {
+          "available": true,
+          "included_query_count": 8,
+          "total_query_count": 8,
+          "value": 0.9895833333333334
+        },
+        "mean_graded_pairwise_inversion_rate": {
+          "available": true,
+          "included_query_count": 8,
+          "total_query_count": 8,
+          "value": 0.03125
+        },
+        "mean_ndcg_at_k@1": {
+          "available": true,
+          "included_query_count": 8,
+          "total_query_count": 8,
+          "value": 1.0
+        },
+        "mean_ndcg_at_k@3": {
+          "available": true,
+          "included_query_count": 8,
+          "total_query_count": 8,
+          "value": 0.9823407825173852
+        },
+        "mean_ndcg_at_k@5": {
+          "available": true,
+          "included_query_count": 8,
+          "total_query_count": 8,
+          "value": 0.9923234774005972
+        },
+        "mean_precision_at_k@1": {
+          "available": true,
+          "included_query_count": 8,
+          "total_query_count": 8,
+          "value": 1.0
+        },
+        "mean_precision_at_k@3": {
+          "available": true,
+          "included_query_count": 8,
+          "total_query_count": 8,
+          "value": 0.9583333333333334
+        },
+        "mean_precision_at_k@5": {
+          "available": true,
+          "included_query_count": 8,
+          "total_query_count": 8,
+          "value": 0.6
+        },
+        "mean_recall_at_k@3": {
+          "available": true,
+          "included_query_count": 8,
+          "total_query_count": 8,
+          "value": 0.9583333333333334
+        },
+        "mean_recall_at_k@5": {
+          "available": true,
+          "included_query_count": 8,
+          "total_query_count": 8,
+          "value": 1.0
+        }
+      },
+      "queries": [
+        {
+          "metrics": {
+            "average_precision": {
+              "available": true,
+              "details": {
+                "evaluated_count": 5,
+                "is_complete_judgment_set": true,
+                "relevant_count": 3,
+                "relevant_retrieved_count": 3
+              },
+              "reason": null,
+              "value": 1.0
+            },
+            "graded_pairwise_inversion_rate": {
+              "available": true,
+              "details": {
+                "comparable_pair_count": 8,
+                "hard_negative_inversion_count": 0,
+                "hard_negative_pair_count": 4,
+                "inversion_count": 1,
+                "inversion_pairs": [
+                  {
+                    "higher_candidate_id": "hold_f2g_17_fastapi_alias_gig_02",
+                    "higher_label": 2,
+                    "lower_candidate_id": "hold_f2g_17_fastapi_alias_gig_03",
+                    "lower_label": 1
+                  }
+                ]
+              },
+              "reason": null,
+              "value": 0.125
+            },
+            "ndcg_at_k@1": {
+              "available": true,
+              "details": {
+                "dcg": 3.0,
+                "evaluated_count": 1,
+                "idcg": 3.0,
+                "idcg_zero": false
+              },
+              "reason": null,
+              "value": 1.0
+            },
+            "ndcg_at_k@3": {
+              "available": true,
+              "details": {
+                "dcg": 5.130929753571458,
+                "evaluated_count": 3,
+                "idcg": 5.392789260714372,
+                "idcg_zero": false
+              },
+              "reason": null,
+              "value": 0.9514426589871553
+            },
+            "ndcg_at_k@5": {
+              "available": true,
+              "details": {
+                "dcg": 5.130929753571458,
+                "evaluated_count": 5,
+                "idcg": 5.392789260714372,
+                "idcg_zero": false
+              },
+              "reason": null,
+              "value": 0.9514426589871553
+            },
+            "precision_at_k@1": {
+              "available": true,
+              "details": {
+                "evaluated_count": 1,
+                "judged_count": 5,
+                "relevant_retrieved_count": 1
+              },
+              "reason": null,
+              "value": 1.0
+            },
+            "precision_at_k@3": {
+              "available": true,
+              "details": {
+                "evaluated_count": 3,
+                "judged_count": 5,
+                "relevant_retrieved_count": 3
+              },
+              "reason": null,
+              "value": 1.0
+            },
+            "precision_at_k@5": {
+              "available": true,
+              "details": {
+                "evaluated_count": 5,
+                "judged_count": 5,
+                "relevant_retrieved_count": 3
+              },
+              "reason": null,
+              "value": 0.6
+            },
+            "recall_at_k@3": {
+              "available": true,
+              "details": {
+                "evaluated_count": 3,
+                "is_complete_judgment_set": true,
+                "relevant_count": 3,
+                "relevant_retrieved_count": 3
+              },
+              "reason": null,
+              "value": 1.0
+            },
+            "recall_at_k@5": {
+              "available": true,
+              "details": {
+                "evaluated_count": 5,
+                "is_complete_judgment_set": true,
+                "relevant_count": 3,
+                "relevant_retrieved_count": 3
+              },
+              "reason": null,
+              "value": 1.0
+            }
+          },
+          "query_id": "hold_f2g_17_fastapi_alias",
+          "query_type": "freelancer_to_gigs",
+          "ranked_candidates": [
+            {
+              "candidate_id": "hold_f2g_17_fastapi_alias_gig_01",
+              "rank": 1,
+              "relevance_label": 2,
+              "score": 0.7999999999999999
+            },
+            {
+              "candidate_id": "hold_f2g_17_fastapi_alias_gig_03",
+              "rank": 2,
+              "relevance_label": 1,
+              "score": 0.7
+            },
+            {
+              "candidate_id": "hold_f2g_17_fastapi_alias_gig_02",
+              "rank": 3,
+              "relevance_label": 2,
+              "score": 0.5366666666666666
+            },
+            {
+              "candidate_id": "hold_f2g_17_fastapi_alias_gig_04",
+              "rank": 4,
+              "relevance_label": 0,
+              "score": 0.0
+            },
+            {
+              "candidate_id": "hold_f2g_17_fastapi_alias_gig_05",
+              "rank": 5,
+              "relevance_label": 0,
+              "score": 0.0
+            }
+          ]
+        },
+        {
+          "metrics": {
+            "average_precision": {
+              "available": true,
+              "details": {
+                "evaluated_count": 5,
+                "is_complete_judgment_set": true,
+                "relevant_count": 3,
+                "relevant_retrieved_count": 3
+              },
+              "reason": null,
+              "value": 0.9166666666666666
+            },
+            "graded_pairwise_inversion_rate": {
+              "available": true,
+              "details": {
+                "comparable_pair_count": 8,
+                "hard_negative_inversion_count": 0,
+                "hard_negative_pair_count": 4,
+                "inversion_count": 1,
+                "inversion_pairs": [
+                  {
+                    "higher_candidate_id": "hold_f2g_18_cloud_docker_gig_03",
+                    "higher_label": 1,
+                    "lower_candidate_id": "hold_f2g_18_cloud_docker_gig_04",
+                    "lower_label": 0
+                  }
+                ]
+              },
+              "reason": null,
+              "value": 0.125
+            },
+            "ndcg_at_k@1": {
+              "available": true,
+              "details": {
+                "dcg": 3.0,
+                "evaluated_count": 1,
+                "idcg": 3.0,
+                "idcg_zero": false
+              },
+              "reason": null,
+              "value": 1.0
+            },
+            "ndcg_at_k@3": {
+              "available": true,
+              "details": {
+                "dcg": 4.892789260714372,
+                "evaluated_count": 3,
+                "idcg": 5.392789260714372,
+                "idcg_zero": false
+              },
+              "reason": null,
+              "value": 0.9072836011519267
+            },
+            "ndcg_at_k@5": {
+              "available": true,
+              "details": {
+                "dcg": 5.323465818787765,
+                "evaluated_count": 5,
+                "idcg": 5.392789260714372,
+                "idcg_zero": false
+              },
+              "reason": null,
+              "value": 0.9871451602176229
+            },
+            "precision_at_k@1": {
+              "available": true,
+              "details": {
+                "evaluated_count": 1,
+                "judged_count": 5,
+                "relevant_retrieved_count": 1
+              },
+              "reason": null,
+              "value": 1.0
+            },
+            "precision_at_k@3": {
+              "available": true,
+              "details": {
+                "evaluated_count": 3,
+                "judged_count": 5,
+                "relevant_retrieved_count": 2
+              },
+              "reason": null,
+              "value": 0.6666666666666666
+            },
+            "precision_at_k@5": {
+              "available": true,
+              "details": {
+                "evaluated_count": 5,
+                "judged_count": 5,
+                "relevant_retrieved_count": 3
+              },
+              "reason": null,
+              "value": 0.6
+            },
+            "recall_at_k@3": {
+              "available": true,
+              "details": {
+                "evaluated_count": 3,
+                "is_complete_judgment_set": true,
+                "relevant_count": 3,
+                "relevant_retrieved_count": 2
+              },
+              "reason": null,
+              "value": 0.6666666666666666
+            },
+            "recall_at_k@5": {
+              "available": true,
+              "details": {
+                "evaluated_count": 5,
+                "is_complete_judgment_set": true,
+                "relevant_count": 3,
+                "relevant_retrieved_count": 3
+              },
+              "reason": null,
+              "value": 1.0
+            }
+          },
+          "query_id": "hold_f2g_18_cloud_docker",
+          "query_type": "freelancer_to_gigs",
+          "ranked_candidates": [
+            {
+              "candidate_id": "hold_f2g_18_cloud_docker_gig_01",
+              "rank": 1,
+              "relevance_label": 2,
+              "score": 0.7999999999999999
+            },
+            {
+              "candidate_id": "hold_f2g_18_cloud_docker_gig_02",
+              "rank": 2,
+              "relevance_label": 2,
+              "score": 0.7999999999999999
+            },
+            {
+              "candidate_id": "hold_f2g_18_cloud_docker_gig_04",
+              "rank": 3,
+              "relevance_label": 0,
+              "score": 0.41999999999999993
+            },
+            {
+              "candidate_id": "hold_f2g_18_cloud_docker_gig_03",
+              "rank": 4,
+              "relevance_label": 1,
+              "score": 0.31999999999999995
+            },
+            {
+              "candidate_id": "hold_f2g_18_cloud_docker_gig_05",
+              "rank": 5,
+              "relevance_label": 0,
+              "score": 0.0
+            }
+          ]
+        },
+        {
+          "metrics": {
+            "average_precision": {
+              "available": true,
+              "details": {
+                "evaluated_count": 5,
+                "is_complete_judgment_set": true,
+                "relevant_count": 3,
+                "relevant_retrieved_count": 3
+              },
+              "reason": null,
+              "value": 1.0
+            },
+            "graded_pairwise_inversion_rate": {
+              "available": true,
+              "details": {
+                "comparable_pair_count": 8,
+                "hard_negative_inversion_count": 0,
+                "hard_negative_pair_count": 4,
+                "inversion_count": 0,
+                "inversion_pairs": []
+              },
+              "reason": null,
+              "value": 0.0
+            },
+            "ndcg_at_k@1": {
+              "available": true,
+              "details": {
+                "dcg": 3.0,
+                "evaluated_count": 1,
+                "idcg": 3.0,
+                "idcg_zero": false
+              },
+              "reason": null,
+              "value": 1.0
+            },
+            "ndcg_at_k@3": {
+              "available": true,
+              "details": {
+                "dcg": 5.392789260714372,
+                "evaluated_count": 3,
+                "idcg": 5.392789260714372,
+                "idcg_zero": false
+              },
+              "reason": null,
+              "value": 1.0
+            },
+            "ndcg_at_k@5": {
+              "available": true,
+              "details": {
+                "dcg": 5.392789260714372,
+                "evaluated_count": 5,
+                "idcg": 5.392789260714372,
+                "idcg_zero": false
+              },
+              "reason": null,
+              "value": 1.0
+            },
+            "precision_at_k@1": {
+              "available": true,
+              "details": {
+                "evaluated_count": 1,
+                "judged_count": 5,
+                "relevant_retrieved_count": 1
+              },
+              "reason": null,
+              "value": 1.0
+            },
+            "precision_at_k@3": {
+              "available": true,
+              "details": {
+                "evaluated_count": 3,
+                "judged_count": 5,
+                "relevant_retrieved_count": 3
+              },
+              "reason": null,
+              "value": 1.0
+            },
+            "precision_at_k@5": {
+              "available": true,
+              "details": {
+                "evaluated_count": 5,
+                "judged_count": 5,
+                "relevant_retrieved_count": 3
+              },
+              "reason": null,
+              "value": 0.6
+            },
+            "recall_at_k@3": {
+              "available": true,
+              "details": {
+                "evaluated_count": 3,
+                "is_complete_judgment_set": true,
+                "relevant_count": 3,
+                "relevant_retrieved_count": 3
+              },
+              "reason": null,
+              "value": 1.0
+            },
+            "recall_at_k@5": {
+              "available": true,
+              "details": {
+                "evaluated_count": 5,
+                "is_complete_judgment_set": true,
+                "relevant_count": 3,
+                "relevant_retrieved_count": 3
+              },
+              "reason": null,
+              "value": 1.0
+            }
+          },
+          "query_id": "hold_f2g_19_react_web",
+          "query_type": "freelancer_to_gigs",
+          "ranked_candidates": [
+            {
+              "candidate_id": "hold_f2g_19_react_web_gig_01",
+              "rank": 1,
+              "relevance_label": 2,
+              "score": 0.7999999999999999
+            },
+            {
+              "candidate_id": "hold_f2g_19_react_web_gig_02",
+              "rank": 2,
+              "relevance_label": 2,
+              "score": 0.41999999999999993
+            },
+            {
+              "candidate_id": "hold_f2g_19_react_web_gig_03",
+              "rank": 3,
+              "relevance_label": 1,
+              "score": 0.41999999999999993
+            },
+            {
+              "candidate_id": "hold_f2g_19_react_web_gig_04",
+              "rank": 4,
+              "relevance_label": 0,
+              "score": 0.31999999999999995
+            },
+            {
+              "candidate_id": "hold_f2g_19_react_web_gig_05",
+              "rank": 5,
+              "relevance_label": 0,
+              "score": 0.0
+            }
+          ]
+        },
+        {
+          "metrics": {
+            "average_precision": {
+              "available": true,
+              "details": {
+                "evaluated_count": 5,
+                "is_complete_judgment_set": true,
+                "relevant_count": 3,
+                "relevant_retrieved_count": 3
+              },
+              "reason": null,
+              "value": 1.0
+            },
+            "graded_pairwise_inversion_rate": {
+              "available": true,
+              "details": {
+                "comparable_pair_count": 8,
+                "hard_negative_inversion_count": 0,
+                "hard_negative_pair_count": 4,
+                "inversion_count": 0,
+                "inversion_pairs": []
+              },
+              "reason": null,
+              "value": 0.0
+            },
+            "ndcg_at_k@1": {
+              "available": true,
+              "details": {
+                "dcg": 3.0,
+                "evaluated_count": 1,
+                "idcg": 3.0,
+                "idcg_zero": false
+              },
+              "reason": null,
+              "value": 1.0
+            },
+            "ndcg_at_k@3": {
+              "available": true,
+              "details": {
+                "dcg": 5.392789260714372,
+                "evaluated_count": 3,
+                "idcg": 5.392789260714372,
+                "idcg_zero": false
+              },
+              "reason": null,
+              "value": 1.0
+            },
+            "ndcg_at_k@5": {
+              "available": true,
+              "details": {
+                "dcg": 5.392789260714372,
+                "evaluated_count": 5,
+                "idcg": 5.392789260714372,
+                "idcg_zero": false
+              },
+              "reason": null,
+              "value": 1.0
+            },
+            "precision_at_k@1": {
+              "available": true,
+              "details": {
+                "evaluated_count": 1,
+                "judged_count": 5,
+                "relevant_retrieved_count": 1
+              },
+              "reason": null,
+              "value": 1.0
+            },
+            "precision_at_k@3": {
+              "available": true,
+              "details": {
+                "evaluated_count": 3,
+                "judged_count": 5,
+                "relevant_retrieved_count": 3
+              },
+              "reason": null,
+              "value": 1.0
+            },
+            "precision_at_k@5": {
+              "available": true,
+              "details": {
+                "evaluated_count": 5,
+                "judged_count": 5,
+                "relevant_retrieved_count": 3
+              },
+              "reason": null,
+              "value": 0.6
+            },
+            "recall_at_k@3": {
+              "available": true,
+              "details": {
+                "evaluated_count": 3,
+                "is_complete_judgment_set": true,
+                "relevant_count": 3,
+                "relevant_retrieved_count": 3
+              },
+              "reason": null,
+              "value": 1.0
+            },
+            "recall_at_k@5": {
+              "available": true,
+              "details": {
+                "evaluated_count": 5,
+                "is_complete_judgment_set": true,
+                "relevant_count": 3,
+                "relevant_retrieved_count": 3
+              },
+              "reason": null,
+              "value": 1.0
+            }
+          },
+          "query_id": "hold_f2g_20_ml_depth",
+          "query_type": "freelancer_to_gigs",
+          "ranked_candidates": [
+            {
+              "candidate_id": "hold_f2g_20_ml_depth_gig_01",
+              "rank": 1,
+              "relevance_label": 2,
+              "score": 0.7999999999999999
+            },
+            {
+              "candidate_id": "hold_f2g_20_ml_depth_gig_02",
+              "rank": 2,
+              "relevance_label": 2,
+              "score": 0.7999999999999999
+            },
+            {
+              "candidate_id": "hold_f2g_20_ml_depth_gig_03",
+              "rank": 3,
+              "relevance_label": 1,
+              "score": 0.7
+            },
+            {
+              "candidate_id": "hold_f2g_20_ml_depth_gig_04",
+              "rank": 4,
+              "relevance_label": 0,
+              "score": 0.0
+            },
+            {
+              "candidate_id": "hold_f2g_20_ml_depth_gig_05",
+              "rank": 5,
+              "relevance_label": 0,
+              "score": 0.0
+            }
+          ]
+        },
+        {
+          "metrics": {
+            "average_precision": {
+              "available": true,
+              "details": {
+                "evaluated_count": 5,
+                "is_complete_judgment_set": true,
+                "relevant_count": 3,
+                "relevant_retrieved_count": 3
+              },
+              "reason": null,
+              "value": 1.0
+            },
+            "graded_pairwise_inversion_rate": {
+              "available": true,
+              "details": {
+                "comparable_pair_count": 8,
+                "hard_negative_inversion_count": 0,
+                "hard_negative_pair_count": 4,
+                "inversion_count": 0,
+                "inversion_pairs": []
+              },
+              "reason": null,
+              "value": 0.0
+            },
+            "ndcg_at_k@1": {
+              "available": true,
+              "details": {
+                "dcg": 3.0,
+                "evaluated_count": 1,
+                "idcg": 3.0,
+                "idcg_zero": false
+              },
+              "reason": null,
+              "value": 1.0
+            },
+            "ndcg_at_k@3": {
+              "available": true,
+              "details": {
+                "dcg": 5.392789260714372,
+                "evaluated_count": 3,
+                "idcg": 5.392789260714372,
+                "idcg_zero": false
+              },
+              "reason": null,
+              "value": 1.0
+            },
+            "ndcg_at_k@5": {
+              "available": true,
+              "details": {
+                "dcg": 5.392789260714372,
+                "evaluated_count": 5,
+                "idcg": 5.392789260714372,
+                "idcg_zero": false
+              },
+              "reason": null,
+              "value": 1.0
+            },
+            "precision_at_k@1": {
+              "available": true,
+              "details": {
+                "evaluated_count": 1,
+                "judged_count": 5,
+                "relevant_retrieved_count": 1
+              },
+              "reason": null,
+              "value": 1.0
+            },
+            "precision_at_k@3": {
+              "available": true,
+              "details": {
+                "evaluated_count": 3,
+                "judged_count": 5,
+                "relevant_retrieved_count": 3
+              },
+              "reason": null,
+              "value": 1.0
+            },
+            "precision_at_k@5": {
+              "available": true,
+              "details": {
+                "evaluated_count": 5,
+                "judged_count": 5,
+                "relevant_retrieved_count": 3
+              },
+              "reason": null,
+              "value": 0.6
+            },
+            "recall_at_k@3": {
+              "available": true,
+              "details": {
+                "evaluated_count": 3,
+                "is_complete_judgment_set": true,
+                "relevant_count": 3,
+                "relevant_retrieved_count": 3
+              },
+              "reason": null,
+              "value": 1.0
+            },
+            "recall_at_k@5": {
+              "available": true,
+              "details": {
+                "evaluated_count": 5,
+                "is_complete_judgment_set": true,
+                "relevant_count": 3,
+                "relevant_retrieved_count": 3
+              },
+              "reason": null,
+              "value": 1.0
+            }
+          },
+          "query_id": "hold_g2f_21_api_framework",
+          "query_type": "gig_to_freelancers",
+          "ranked_candidates": [
+            {
+              "candidate_id": "hold_g2f_21_api_framework_freelancer_01",
+              "rank": 1,
+              "relevance_label": 2,
+              "score": 0.7366666666666666
+            },
+            {
+              "candidate_id": "hold_g2f_21_api_framework_freelancer_02",
+              "rank": 2,
+              "relevance_label": 2,
+              "score": 0.5366666666666666
+            },
+            {
+              "candidate_id": "hold_g2f_21_api_framework_freelancer_03",
+              "rank": 3,
+              "relevance_label": 1,
+              "score": 0.43666666666666665
+            },
+            {
+              "candidate_id": "hold_g2f_21_api_framework_freelancer_05",
+              "rank": 4,
+              "relevance_label": 0,
+              "score": 0.010000000000000009
+            },
+            {
+              "candidate_id": "hold_g2f_21_api_framework_freelancer_04",
+              "rank": 5,
+              "relevance_label": 0,
+              "score": 0.0
+            }
+          ]
+        },
+        {
+          "metrics": {
+            "average_precision": {
+              "available": true,
+              "details": {
+                "evaluated_count": 5,
+                "is_complete_judgment_set": true,
+                "relevant_count": 3,
+                "relevant_retrieved_count": 3
+              },
+              "reason": null,
+              "value": 1.0
+            },
+            "graded_pairwise_inversion_rate": {
+              "available": true,
+              "details": {
+                "comparable_pair_count": 8,
+                "hard_negative_inversion_count": 0,
+                "hard_negative_pair_count": 2,
+                "inversion_count": 0,
+                "inversion_pairs": []
+              },
+              "reason": null,
+              "value": 0.0
+            },
+            "ndcg_at_k@1": {
+              "available": true,
+              "details": {
+                "dcg": 3.0,
+                "evaluated_count": 1,
+                "idcg": 3.0,
+                "idcg_zero": false
+              },
+              "reason": null,
+              "value": 1.0
+            },
+            "ndcg_at_k@3": {
+              "available": true,
+              "details": {
+                "dcg": 4.130929753571458,
+                "evaluated_count": 3,
+                "idcg": 4.130929753571458,
+                "idcg_zero": false
+              },
+              "reason": null,
+              "value": 1.0
+            },
+            "ndcg_at_k@5": {
+              "available": true,
+              "details": {
+                "dcg": 4.130929753571458,
+                "evaluated_count": 5,
+                "idcg": 4.130929753571458,
+                "idcg_zero": false
+              },
+              "reason": null,
+              "value": 1.0
+            },
+            "precision_at_k@1": {
+              "available": true,
+              "details": {
+                "evaluated_count": 1,
+                "judged_count": 5,
+                "relevant_retrieved_count": 1
+              },
+              "reason": null,
+              "value": 1.0
+            },
+            "precision_at_k@3": {
+              "available": true,
+              "details": {
+                "evaluated_count": 3,
+                "judged_count": 5,
+                "relevant_retrieved_count": 3
+              },
+              "reason": null,
+              "value": 1.0
+            },
+            "precision_at_k@5": {
+              "available": true,
+              "details": {
+                "evaluated_count": 5,
+                "judged_count": 5,
+                "relevant_retrieved_count": 3
+              },
+              "reason": null,
+              "value": 0.6
+            },
+            "recall_at_k@3": {
+              "available": true,
+              "details": {
+                "evaluated_count": 3,
+                "is_complete_judgment_set": true,
+                "relevant_count": 3,
+                "relevant_retrieved_count": 3
+              },
+              "reason": null,
+              "value": 1.0
+            },
+            "recall_at_k@5": {
+              "available": true,
+              "details": {
+                "evaluated_count": 5,
+                "is_complete_judgment_set": true,
+                "relevant_count": 3,
+                "relevant_retrieved_count": 3
+              },
+              "reason": null,
+              "value": 1.0
+            }
+          },
+          "query_id": "hold_g2f_22_database_depth",
+          "query_type": "gig_to_freelancers",
+          "ranked_candidates": [
+            {
+              "candidate_id": "hold_g2f_22_database_depth_freelancer_01",
+              "rank": 1,
+              "relevance_label": 2,
+              "score": 0.7999999999999999
+            },
+            {
+              "candidate_id": "hold_g2f_22_database_depth_freelancer_02",
+              "rank": 2,
+              "relevance_label": 1,
+              "score": 0.5366666666666666
+            },
+            {
+              "candidate_id": "hold_g2f_22_database_depth_freelancer_03",
+              "rank": 3,
+              "relevance_label": 1,
+              "score": 0.43666666666666665
+            },
+            {
+              "candidate_id": "hold_g2f_22_database_depth_freelancer_04",
+              "rank": 4,
+              "relevance_label": 0,
+              "score": 0.1733333333333333
+            },
+            {
+              "candidate_id": "hold_g2f_22_database_depth_freelancer_05",
+              "rank": 5,
+              "relevance_label": 0,
+              "score": 0.0
+            }
+          ]
+        },
+        {
+          "metrics": {
+            "average_precision": {
+              "available": true,
+              "details": {
+                "evaluated_count": 5,
+                "is_complete_judgment_set": true,
+                "relevant_count": 3,
+                "relevant_retrieved_count": 3
+              },
+              "reason": null,
+              "value": 1.0
+            },
+            "graded_pairwise_inversion_rate": {
+              "available": true,
+              "details": {
+                "comparable_pair_count": 8,
+                "hard_negative_inversion_count": 0,
+                "hard_negative_pair_count": 4,
+                "inversion_count": 0,
+                "inversion_pairs": []
+              },
+              "reason": null,
+              "value": 0.0
+            },
+            "ndcg_at_k@1": {
+              "available": true,
+              "details": {
+                "dcg": 3.0,
+                "evaluated_count": 1,
+                "idcg": 3.0,
+                "idcg_zero": false
+              },
+              "reason": null,
+              "value": 1.0
+            },
+            "ndcg_at_k@3": {
+              "available": true,
+              "details": {
+                "dcg": 5.392789260714372,
+                "evaluated_count": 3,
+                "idcg": 5.392789260714372,
+                "idcg_zero": false
+              },
+              "reason": null,
+              "value": 1.0
+            },
+            "ndcg_at_k@5": {
+              "available": true,
+              "details": {
+                "dcg": 5.392789260714372,
+                "evaluated_count": 5,
+                "idcg": 5.392789260714372,
+                "idcg_zero": false
+              },
+              "reason": null,
+              "value": 1.0
+            },
+            "precision_at_k@1": {
+              "available": true,
+              "details": {
+                "evaluated_count": 1,
+                "judged_count": 5,
+                "relevant_retrieved_count": 1
+              },
+              "reason": null,
+              "value": 1.0
+            },
+            "precision_at_k@3": {
+              "available": true,
+              "details": {
+                "evaluated_count": 3,
+                "judged_count": 5,
+                "relevant_retrieved_count": 3
+              },
+              "reason": null,
+              "value": 1.0
+            },
+            "precision_at_k@5": {
+              "available": true,
+              "details": {
+                "evaluated_count": 5,
+                "judged_count": 5,
+                "relevant_retrieved_count": 3
+              },
+              "reason": null,
+              "value": 0.6
+            },
+            "recall_at_k@3": {
+              "available": true,
+              "details": {
+                "evaluated_count": 3,
+                "is_complete_judgment_set": true,
+                "relevant_count": 3,
+                "relevant_retrieved_count": 3
+              },
+              "reason": null,
+              "value": 1.0
+            },
+            "recall_at_k@5": {
+              "available": true,
+              "details": {
+                "evaluated_count": 5,
+                "is_complete_judgment_set": true,
+                "relevant_count": 3,
+                "relevant_retrieved_count": 3
+              },
+              "reason": null,
+              "value": 1.0
+            }
+          },
+          "query_id": "hold_g2f_23_cloud_architecture",
+          "query_type": "gig_to_freelancers",
+          "ranked_candidates": [
+            {
+              "candidate_id": "hold_g2f_23_cloud_architecture_freelancer_01",
+              "rank": 1,
+              "relevance_label": 2,
+              "score": 0.9999999999999999
+            },
+            {
+              "candidate_id": "hold_g2f_23_cloud_architecture_freelancer_02",
+              "rank": 2,
+              "relevance_label": 2,
+              "score": 0.62
+            },
+            {
+              "candidate_id": "hold_g2f_23_cloud_architecture_freelancer_03",
+              "rank": 3,
+              "relevance_label": 1,
+              "score": 0.41999999999999993
+            },
+            {
+              "candidate_id": "hold_g2f_23_cloud_architecture_freelancer_04",
+              "rank": 4,
+              "relevance_label": 0,
+              "score": 0.0
+            },
+            {
+              "candidate_id": "hold_g2f_23_cloud_architecture_freelancer_05",
+              "rank": 5,
+              "relevance_label": 0,
+              "score": 0.0
+            }
+          ]
+        },
+        {
+          "metrics": {
+            "average_precision": {
+              "available": true,
+              "details": {
+                "evaluated_count": 5,
+                "is_complete_judgment_set": true,
+                "relevant_count": 3,
+                "relevant_retrieved_count": 3
+              },
+              "reason": null,
+              "value": 1.0
+            },
+            "graded_pairwise_inversion_rate": {
+              "available": true,
+              "details": {
+                "comparable_pair_count": 8,
+                "hard_negative_inversion_count": 0,
+                "hard_negative_pair_count": 4,
+                "inversion_count": 0,
+                "inversion_pairs": []
+              },
+              "reason": null,
+              "value": 0.0
+            },
+            "ndcg_at_k@1": {
+              "available": true,
+              "details": {
+                "dcg": 3.0,
+                "evaluated_count": 1,
+                "idcg": 3.0,
+                "idcg_zero": false
+              },
+              "reason": null,
+              "value": 1.0
+            },
+            "ndcg_at_k@3": {
+              "available": true,
+              "details": {
+                "dcg": 5.392789260714372,
+                "evaluated_count": 3,
+                "idcg": 5.392789260714372,
+                "idcg_zero": false
+              },
+              "reason": null,
+              "value": 1.0
+            },
+            "ndcg_at_k@5": {
+              "available": true,
+              "details": {
+                "dcg": 5.392789260714372,
+                "evaluated_count": 5,
+                "idcg": 5.392789260714372,
+                "idcg_zero": false
+              },
+              "reason": null,
+              "value": 1.0
+            },
+            "precision_at_k@1": {
+              "available": true,
+              "details": {
+                "evaluated_count": 1,
+                "judged_count": 5,
+                "relevant_retrieved_count": 1
+              },
+              "reason": null,
+              "value": 1.0
+            },
+            "precision_at_k@3": {
+              "available": true,
+              "details": {
+                "evaluated_count": 3,
+                "judged_count": 5,
+                "relevant_retrieved_count": 3
+              },
+              "reason": null,
+              "value": 1.0
+            },
+            "precision_at_k@5": {
+              "available": true,
+              "details": {
+                "evaluated_count": 5,
+                "judged_count": 5,
+                "relevant_retrieved_count": 3
+              },
+              "reason": null,
+              "value": 0.6
+            },
+            "recall_at_k@3": {
+              "available": true,
+              "details": {
+                "evaluated_count": 3,
+                "is_complete_judgment_set": true,
+                "relevant_count": 3,
+                "relevant_retrieved_count": 3
+              },
+              "reason": null,
+              "value": 1.0
+            },
+            "recall_at_k@5": {
+              "available": true,
+              "details": {
+                "evaluated_count": 5,
+                "is_complete_judgment_set": true,
+                "relevant_count": 3,
+                "relevant_retrieved_count": 3
+              },
+              "reason": null,
+              "value": 1.0
+            }
+          },
+          "query_id": "hold_g2f_24_ml_evidence",
+          "query_type": "gig_to_freelancers",
+          "ranked_candidates": [
+            {
+              "candidate_id": "hold_g2f_24_ml_evidence_freelancer_01",
+              "rank": 1,
+              "relevance_label": 2,
+              "score": 0.9999999999999999
+            },
+            {
+              "candidate_id": "hold_g2f_24_ml_evidence_freelancer_02",
+              "rank": 2,
+              "relevance_label": 2,
+              "score": 0.7999999999999999
+            },
+            {
+              "candidate_id": "hold_g2f_24_ml_evidence_freelancer_03",
+              "rank": 3,
+              "relevance_label": 1,
+              "score": 0.5366666666666666
+            },
+            {
+              "candidate_id": "hold_g2f_24_ml_evidence_freelancer_05",
+              "rank": 4,
+              "relevance_label": 0,
+              "score": 0.1733333333333333
+            },
+            {
+              "candidate_id": "hold_g2f_24_ml_evidence_freelancer_04",
+              "rank": 5,
+              "relevance_label": 0,
+              "score": 0.0
+            }
+          ]
+        }
+      ]
+    },
+    "query_count": 8,
+    "selected_model_result": {
+      "failure_analysis": [
+        {
+          "candidate_id": "hold_f2g_17_fastapi_alias_gig_05",
+          "query_id": "hold_f2g_17_fastapi_alias",
+          "reasons": [
+            "seniority_or_domain_inversion"
+          ],
+          "strategy": "semantic_only"
+        },
+        {
+          "candidate_id": "hold_f2g_17_fastapi_alias_gig_05",
+          "query_id": "hold_f2g_17_fastapi_alias",
+          "reasons": [
+            "seniority_or_domain_inversion"
+          ],
+          "strategy": "keyword_1.00_semantic_0.00"
+        }
+      ],
+      "hybrid_by_weight": {
+        "keyword_1.00_semantic_0.00": {
+          "aggregate_metrics": {
+            "mean_average_precision": {
+              "available": true,
+              "included_query_count": 8,
+              "total_query_count": 8,
+              "value": 0.9895833333333334
+            },
+            "mean_graded_pairwise_inversion_rate": {
+              "available": true,
+              "included_query_count": 8,
+              "total_query_count": 8,
+              "value": 0.046875
+            },
+            "mean_ndcg_at_k@1": {
+              "available": true,
+              "included_query_count": 8,
+              "total_query_count": 8,
+              "value": 1.0
+            },
+            "mean_ndcg_at_k@3": {
+              "available": true,
+              "included_query_count": 8,
+              "total_query_count": 8,
+              "value": 0.9762711148907797
+            },
+            "mean_ndcg_at_k@5": {
+              "available": true,
+              "included_query_count": 8,
+              "total_query_count": 8,
+              "value": 0.9862538097739917
+            },
+            "mean_precision_at_k@1": {
+              "available": true,
+              "included_query_count": 8,
+              "total_query_count": 8,
+              "value": 1.0
+            },
+            "mean_precision_at_k@3": {
+              "available": true,
+              "included_query_count": 8,
+              "total_query_count": 8,
+              "value": 0.9583333333333334
+            },
+            "mean_precision_at_k@5": {
+              "available": true,
+              "included_query_count": 8,
+              "total_query_count": 8,
+              "value": 0.6
+            },
+            "mean_recall_at_k@3": {
+              "available": true,
+              "included_query_count": 8,
+              "total_query_count": 8,
+              "value": 0.9583333333333334
+            },
+            "mean_recall_at_k@5": {
+              "available": true,
+              "included_query_count": 8,
+              "total_query_count": 8,
+              "value": 1.0
+            }
+          },
+          "queries": [
+            {
+              "metrics": {
+                "average_precision": {
+                  "available": true,
+                  "details": {
+                    "evaluated_count": 5,
+                    "is_complete_judgment_set": true,
+                    "relevant_count": 3,
+                    "relevant_retrieved_count": 3
+                  },
+                  "reason": null,
+                  "value": 1.0
+                },
+                "graded_pairwise_inversion_rate": {
+                  "available": true,
+                  "details": {
+                    "comparable_pair_count": 8,
+                    "hard_negative_inversion_count": 0,
+                    "hard_negative_pair_count": 4,
+                    "inversion_count": 1,
+                    "inversion_pairs": [
+                      {
+                        "higher_candidate_id": "hold_f2g_17_fastapi_alias_gig_02",
+                        "higher_label": 2,
+                        "lower_candidate_id": "hold_f2g_17_fastapi_alias_gig_03",
+                        "lower_label": 1
+                      }
+                    ]
+                  },
+                  "reason": null,
+                  "value": 0.125
+                },
+                "ndcg_at_k@1": {
+                  "available": true,
+                  "details": {
+                    "dcg": 3.0,
+                    "evaluated_count": 1,
+                    "idcg": 3.0,
+                    "idcg_zero": false
+                  },
+                  "reason": null,
+                  "value": 1.0
+                },
+                "ndcg_at_k@3": {
+                  "available": true,
+                  "details": {
+                    "dcg": 5.130929753571458,
+                    "evaluated_count": 3,
+                    "idcg": 5.392789260714372,
+                    "idcg_zero": false
+                  },
+                  "reason": null,
+                  "value": 0.9514426589871553
+                },
+                "ndcg_at_k@5": {
+                  "available": true,
+                  "details": {
+                    "dcg": 5.130929753571458,
+                    "evaluated_count": 5,
+                    "idcg": 5.392789260714372,
+                    "idcg_zero": false
+                  },
+                  "reason": null,
+                  "value": 0.9514426589871553
+                },
+                "precision_at_k@1": {
+                  "available": true,
+                  "details": {
+                    "evaluated_count": 1,
+                    "judged_count": 5,
+                    "relevant_retrieved_count": 1
+                  },
+                  "reason": null,
+                  "value": 1.0
+                },
+                "precision_at_k@3": {
+                  "available": true,
+                  "details": {
+                    "evaluated_count": 3,
+                    "judged_count": 5,
+                    "relevant_retrieved_count": 3
+                  },
+                  "reason": null,
+                  "value": 1.0
+                },
+                "precision_at_k@5": {
+                  "available": true,
+                  "details": {
+                    "evaluated_count": 5,
+                    "judged_count": 5,
+                    "relevant_retrieved_count": 3
+                  },
+                  "reason": null,
+                  "value": 0.6
+                },
+                "recall_at_k@3": {
+                  "available": true,
+                  "details": {
+                    "evaluated_count": 3,
+                    "is_complete_judgment_set": true,
+                    "relevant_count": 3,
+                    "relevant_retrieved_count": 3
+                  },
+                  "reason": null,
+                  "value": 1.0
+                },
+                "recall_at_k@5": {
+                  "available": true,
+                  "details": {
+                    "evaluated_count": 5,
+                    "is_complete_judgment_set": true,
+                    "relevant_count": 3,
+                    "relevant_retrieved_count": 3
+                  },
+                  "reason": null,
+                  "value": 1.0
+                }
+              },
+              "query_id": "hold_f2g_17_fastapi_alias",
+              "query_type": "freelancer_to_gigs",
+              "ranked_candidates": [
+                {
+                  "candidate_id": "hold_f2g_17_fastapi_alias_gig_01",
+                  "hybrid_score": 0.8,
+                  "keyword_score": 0.7999999999999999,
+                  "rank": 1,
+                  "relevance_label": 2,
+                  "score": 0.8,
+                  "semantic_score": 0.9505619079837955
+                },
+                {
+                  "candidate_id": "hold_f2g_17_fastapi_alias_gig_03",
+                  "hybrid_score": 0.7,
+                  "keyword_score": 0.7,
+                  "rank": 2,
+                  "relevance_label": 1,
+                  "score": 0.7,
+                  "semantic_score": 0.9233110624495787
+                },
+                {
+                  "candidate_id": "hold_f2g_17_fastapi_alias_gig_02",
+                  "hybrid_score": 0.536666666667,
+                  "keyword_score": 0.5366666666666666,
+                  "rank": 3,
+                  "relevance_label": 2,
+                  "score": 0.536666666667,
+                  "semantic_score": 0.9444310579421893
+                },
+                {
+                  "candidate_id": "hold_f2g_17_fastapi_alias_gig_05",
+                  "hybrid_score": 0.0,
+                  "keyword_score": 0.0,
+                  "rank": 4,
+                  "relevance_label": 0,
+                  "score": 0.0,
+                  "semantic_score": 0.9217562928311052
+                },
+                {
+                  "candidate_id": "hold_f2g_17_fastapi_alias_gig_04",
+                  "hybrid_score": 0.0,
+                  "keyword_score": 0.0,
+                  "rank": 5,
+                  "relevance_label": 0,
+                  "score": 0.0,
+                  "semantic_score": 0.9101982029424491
+                }
+              ]
+            },
+            {
+              "metrics": {
+                "average_precision": {
+                  "available": true,
+                  "details": {
+                    "evaluated_count": 5,
+                    "is_complete_judgment_set": true,
+                    "relevant_count": 3,
+                    "relevant_retrieved_count": 3
+                  },
+                  "reason": null,
+                  "value": 0.9166666666666666
+                },
+                "graded_pairwise_inversion_rate": {
+                  "available": true,
+                  "details": {
+                    "comparable_pair_count": 8,
+                    "hard_negative_inversion_count": 0,
+                    "hard_negative_pair_count": 4,
+                    "inversion_count": 1,
+                    "inversion_pairs": [
+                      {
+                        "higher_candidate_id": "hold_f2g_18_cloud_docker_gig_03",
+                        "higher_label": 1,
+                        "lower_candidate_id": "hold_f2g_18_cloud_docker_gig_04",
+                        "lower_label": 0
+                      }
+                    ]
+                  },
+                  "reason": null,
+                  "value": 0.125
+                },
+                "ndcg_at_k@1": {
+                  "available": true,
+                  "details": {
+                    "dcg": 3.0,
+                    "evaluated_count": 1,
+                    "idcg": 3.0,
+                    "idcg_zero": false
+                  },
+                  "reason": null,
+                  "value": 1.0
+                },
+                "ndcg_at_k@3": {
+                  "available": true,
+                  "details": {
+                    "dcg": 4.892789260714372,
+                    "evaluated_count": 3,
+                    "idcg": 5.392789260714372,
+                    "idcg_zero": false
+                  },
+                  "reason": null,
+                  "value": 0.9072836011519267
+                },
+                "ndcg_at_k@5": {
+                  "available": true,
+                  "details": {
+                    "dcg": 5.323465818787765,
+                    "evaluated_count": 5,
+                    "idcg": 5.392789260714372,
+                    "idcg_zero": false
+                  },
+                  "reason": null,
+                  "value": 0.9871451602176229
+                },
+                "precision_at_k@1": {
+                  "available": true,
+                  "details": {
+                    "evaluated_count": 1,
+                    "judged_count": 5,
+                    "relevant_retrieved_count": 1
+                  },
+                  "reason": null,
+                  "value": 1.0
+                },
+                "precision_at_k@3": {
+                  "available": true,
+                  "details": {
+                    "evaluated_count": 3,
+                    "judged_count": 5,
+                    "relevant_retrieved_count": 2
+                  },
+                  "reason": null,
+                  "value": 0.6666666666666666
+                },
+                "precision_at_k@5": {
+                  "available": true,
+                  "details": {
+                    "evaluated_count": 5,
+                    "judged_count": 5,
+                    "relevant_retrieved_count": 3
+                  },
+                  "reason": null,
+                  "value": 0.6
+                },
+                "recall_at_k@3": {
+                  "available": true,
+                  "details": {
+                    "evaluated_count": 3,
+                    "is_complete_judgment_set": true,
+                    "relevant_count": 3,
+                    "relevant_retrieved_count": 2
+                  },
+                  "reason": null,
+                  "value": 0.6666666666666666
+                },
+                "recall_at_k@5": {
+                  "available": true,
+                  "details": {
+                    "evaluated_count": 5,
+                    "is_complete_judgment_set": true,
+                    "relevant_count": 3,
+                    "relevant_retrieved_count": 3
+                  },
+                  "reason": null,
+                  "value": 1.0
+                }
+              },
+              "query_id": "hold_f2g_18_cloud_docker",
+              "query_type": "freelancer_to_gigs",
+              "ranked_candidates": [
+                {
+                  "candidate_id": "hold_f2g_18_cloud_docker_gig_01",
+                  "hybrid_score": 0.8,
+                  "keyword_score": 0.7999999999999999,
+                  "rank": 1,
+                  "relevance_label": 2,
+                  "score": 0.8,
+                  "semantic_score": 0.941865754569204
+                },
+                {
+                  "candidate_id": "hold_f2g_18_cloud_docker_gig_02",
+                  "hybrid_score": 0.8,
+                  "keyword_score": 0.7999999999999999,
+                  "rank": 2,
+                  "relevance_label": 2,
+                  "score": 0.8,
+                  "semantic_score": 0.9363871672853818
+                },
+                {
+                  "candidate_id": "hold_f2g_18_cloud_docker_gig_04",
+                  "hybrid_score": 0.42,
+                  "keyword_score": 0.41999999999999993,
+                  "rank": 3,
+                  "relevance_label": 0,
+                  "score": 0.42,
+                  "semantic_score": 0.9186555023206026
+                },
+                {
+                  "candidate_id": "hold_f2g_18_cloud_docker_gig_03",
+                  "hybrid_score": 0.32,
+                  "keyword_score": 0.31999999999999995,
+                  "rank": 4,
+                  "relevance_label": 1,
+                  "score": 0.32,
+                  "semantic_score": 0.9272541412436057
+                },
+                {
+                  "candidate_id": "hold_f2g_18_cloud_docker_gig_05",
+                  "hybrid_score": 0.0,
+                  "keyword_score": 0.0,
+                  "rank": 5,
+                  "relevance_label": 0,
+                  "score": 0.0,
+                  "semantic_score": 0.9133871456310323
+                }
+              ]
+            },
+            {
+              "metrics": {
+                "average_precision": {
+                  "available": true,
+                  "details": {
+                    "evaluated_count": 5,
+                    "is_complete_judgment_set": true,
+                    "relevant_count": 3,
+                    "relevant_retrieved_count": 3
+                  },
+                  "reason": null,
+                  "value": 1.0
+                },
+                "graded_pairwise_inversion_rate": {
+                  "available": true,
+                  "details": {
+                    "comparable_pair_count": 8,
+                    "hard_negative_inversion_count": 0,
+                    "hard_negative_pair_count": 4,
+                    "inversion_count": 1,
+                    "inversion_pairs": [
+                      {
+                        "higher_candidate_id": "hold_f2g_19_react_web_gig_02",
+                        "higher_label": 2,
+                        "lower_candidate_id": "hold_f2g_19_react_web_gig_03",
+                        "lower_label": 1
+                      }
+                    ]
+                  },
+                  "reason": null,
+                  "value": 0.125
+                },
+                "ndcg_at_k@1": {
+                  "available": true,
+                  "details": {
+                    "dcg": 3.0,
+                    "evaluated_count": 1,
+                    "idcg": 3.0,
+                    "idcg_zero": false
+                  },
+                  "reason": null,
+                  "value": 1.0
+                },
+                "ndcg_at_k@3": {
+                  "available": true,
+                  "details": {
+                    "dcg": 5.130929753571458,
+                    "evaluated_count": 3,
+                    "idcg": 5.392789260714372,
+                    "idcg_zero": false
+                  },
+                  "reason": null,
+                  "value": 0.9514426589871553
+                },
+                "ndcg_at_k@5": {
+                  "available": true,
+                  "details": {
+                    "dcg": 5.130929753571458,
+                    "evaluated_count": 5,
+                    "idcg": 5.392789260714372,
+                    "idcg_zero": false
+                  },
+                  "reason": null,
+                  "value": 0.9514426589871553
+                },
+                "precision_at_k@1": {
+                  "available": true,
+                  "details": {
+                    "evaluated_count": 1,
+                    "judged_count": 5,
+                    "relevant_retrieved_count": 1
+                  },
+                  "reason": null,
+                  "value": 1.0
+                },
+                "precision_at_k@3": {
+                  "available": true,
+                  "details": {
+                    "evaluated_count": 3,
+                    "judged_count": 5,
+                    "relevant_retrieved_count": 3
+                  },
+                  "reason": null,
+                  "value": 1.0
+                },
+                "precision_at_k@5": {
+                  "available": true,
+                  "details": {
+                    "evaluated_count": 5,
+                    "judged_count": 5,
+                    "relevant_retrieved_count": 3
+                  },
+                  "reason": null,
+                  "value": 0.6
+                },
+                "recall_at_k@3": {
+                  "available": true,
+                  "details": {
+                    "evaluated_count": 3,
+                    "is_complete_judgment_set": true,
+                    "relevant_count": 3,
+                    "relevant_retrieved_count": 3
+                  },
+                  "reason": null,
+                  "value": 1.0
+                },
+                "recall_at_k@5": {
+                  "available": true,
+                  "details": {
+                    "evaluated_count": 5,
+                    "is_complete_judgment_set": true,
+                    "relevant_count": 3,
+                    "relevant_retrieved_count": 3
+                  },
+                  "reason": null,
+                  "value": 1.0
+                }
+              },
+              "query_id": "hold_f2g_19_react_web",
+              "query_type": "freelancer_to_gigs",
+              "ranked_candidates": [
+                {
+                  "candidate_id": "hold_f2g_19_react_web_gig_01",
+                  "hybrid_score": 0.8,
+                  "keyword_score": 0.7999999999999999,
+                  "rank": 1,
+                  "relevance_label": 2,
+                  "score": 0.8,
+                  "semantic_score": 0.9473127812232764
+                },
+                {
+                  "candidate_id": "hold_f2g_19_react_web_gig_03",
+                  "hybrid_score": 0.42,
+                  "keyword_score": 0.41999999999999993,
+                  "rank": 2,
+                  "relevance_label": 1,
+                  "score": 0.42,
+                  "semantic_score": 0.9400136181603909
+                },
+                {
+                  "candidate_id": "hold_f2g_19_react_web_gig_02",
+                  "hybrid_score": 0.42,
+                  "keyword_score": 0.41999999999999993,
+                  "rank": 3,
+                  "relevance_label": 2,
+                  "score": 0.42,
+                  "semantic_score": 0.9355204562452475
+                },
+                {
+                  "candidate_id": "hold_f2g_19_react_web_gig_04",
+                  "hybrid_score": 0.32,
+                  "keyword_score": 0.31999999999999995,
+                  "rank": 4,
+                  "relevance_label": 0,
+                  "score": 0.32,
+                  "semantic_score": 0.929253089912057
+                },
+                {
+                  "candidate_id": "hold_f2g_19_react_web_gig_05",
+                  "hybrid_score": 0.0,
+                  "keyword_score": 0.0,
+                  "rank": 5,
+                  "relevance_label": 0,
+                  "score": 0.0,
+                  "semantic_score": 0.9130741606525161
+                }
+              ]
+            },
+            {
+              "metrics": {
+                "average_precision": {
+                  "available": true,
+                  "details": {
+                    "evaluated_count": 5,
+                    "is_complete_judgment_set": true,
+                    "relevant_count": 3,
+                    "relevant_retrieved_count": 3
+                  },
+                  "reason": null,
+                  "value": 1.0
+                },
+                "graded_pairwise_inversion_rate": {
+                  "available": true,
+                  "details": {
+                    "comparable_pair_count": 8,
+                    "hard_negative_inversion_count": 0,
+                    "hard_negative_pair_count": 4,
+                    "inversion_count": 0,
+                    "inversion_pairs": []
+                  },
+                  "reason": null,
+                  "value": 0.0
+                },
+                "ndcg_at_k@1": {
+                  "available": true,
+                  "details": {
+                    "dcg": 3.0,
+                    "evaluated_count": 1,
+                    "idcg": 3.0,
+                    "idcg_zero": false
+                  },
+                  "reason": null,
+                  "value": 1.0
+                },
+                "ndcg_at_k@3": {
+                  "available": true,
+                  "details": {
+                    "dcg": 5.392789260714372,
+                    "evaluated_count": 3,
+                    "idcg": 5.392789260714372,
+                    "idcg_zero": false
+                  },
+                  "reason": null,
+                  "value": 1.0
+                },
+                "ndcg_at_k@5": {
+                  "available": true,
+                  "details": {
+                    "dcg": 5.392789260714372,
+                    "evaluated_count": 5,
+                    "idcg": 5.392789260714372,
+                    "idcg_zero": false
+                  },
+                  "reason": null,
+                  "value": 1.0
+                },
+                "precision_at_k@1": {
+                  "available": true,
+                  "details": {
+                    "evaluated_count": 1,
+                    "judged_count": 5,
+                    "relevant_retrieved_count": 1
+                  },
+                  "reason": null,
+                  "value": 1.0
+                },
+                "precision_at_k@3": {
+                  "available": true,
+                  "details": {
+                    "evaluated_count": 3,
+                    "judged_count": 5,
+                    "relevant_retrieved_count": 3
+                  },
+                  "reason": null,
+                  "value": 1.0
+                },
+                "precision_at_k@5": {
+                  "available": true,
+                  "details": {
+                    "evaluated_count": 5,
+                    "judged_count": 5,
+                    "relevant_retrieved_count": 3
+                  },
+                  "reason": null,
+                  "value": 0.6
+                },
+                "recall_at_k@3": {
+                  "available": true,
+                  "details": {
+                    "evaluated_count": 3,
+                    "is_complete_judgment_set": true,
+                    "relevant_count": 3,
+                    "relevant_retrieved_count": 3
+                  },
+                  "reason": null,
+                  "value": 1.0
+                },
+                "recall_at_k@5": {
+                  "available": true,
+                  "details": {
+                    "evaluated_count": 5,
+                    "is_complete_judgment_set": true,
+                    "relevant_count": 3,
+                    "relevant_retrieved_count": 3
+                  },
+                  "reason": null,
+                  "value": 1.0
+                }
+              },
+              "query_id": "hold_f2g_20_ml_depth",
+              "query_type": "freelancer_to_gigs",
+              "ranked_candidates": [
+                {
+                  "candidate_id": "hold_f2g_20_ml_depth_gig_01",
+                  "hybrid_score": 0.8,
+                  "keyword_score": 0.7999999999999999,
+                  "rank": 1,
+                  "relevance_label": 2,
+                  "score": 0.8,
+                  "semantic_score": 0.9502391680758793
+                },
+                {
+                  "candidate_id": "hold_f2g_20_ml_depth_gig_02",
+                  "hybrid_score": 0.8,
+                  "keyword_score": 0.7999999999999999,
+                  "rank": 2,
+                  "relevance_label": 2,
+                  "score": 0.8,
+                  "semantic_score": 0.936446216951422
+                },
+                {
+                  "candidate_id": "hold_f2g_20_ml_depth_gig_03",
+                  "hybrid_score": 0.7,
+                  "keyword_score": 0.7,
+                  "rank": 3,
+                  "relevance_label": 1,
+                  "score": 0.7,
+                  "semantic_score": 0.9313288587783346
+                },
+                {
+                  "candidate_id": "hold_f2g_20_ml_depth_gig_04",
+                  "hybrid_score": 0.0,
+                  "keyword_score": 0.0,
+                  "rank": 4,
+                  "relevance_label": 0,
+                  "score": 0.0,
+                  "semantic_score": 0.906887048247689
+                },
+                {
+                  "candidate_id": "hold_f2g_20_ml_depth_gig_05",
+                  "hybrid_score": 0.0,
+                  "keyword_score": 0.0,
+                  "rank": 5,
+                  "relevance_label": 0,
+                  "score": 0.0,
+                  "semantic_score": 0.9039848901859221
+                }
+              ]
+            },
+            {
+              "metrics": {
+                "average_precision": {
+                  "available": true,
+                  "details": {
+                    "evaluated_count": 5,
+                    "is_complete_judgment_set": true,
+                    "relevant_count": 3,
+                    "relevant_retrieved_count": 3
+                  },
+                  "reason": null,
+                  "value": 1.0
+                },
+                "graded_pairwise_inversion_rate": {
+                  "available": true,
+                  "details": {
+                    "comparable_pair_count": 8,
+                    "hard_negative_inversion_count": 0,
+                    "hard_negative_pair_count": 4,
+                    "inversion_count": 0,
+                    "inversion_pairs": []
+                  },
+                  "reason": null,
+                  "value": 0.0
+                },
+                "ndcg_at_k@1": {
+                  "available": true,
+                  "details": {
+                    "dcg": 3.0,
+                    "evaluated_count": 1,
+                    "idcg": 3.0,
+                    "idcg_zero": false
+                  },
+                  "reason": null,
+                  "value": 1.0
+                },
+                "ndcg_at_k@3": {
+                  "available": true,
+                  "details": {
+                    "dcg": 5.392789260714372,
+                    "evaluated_count": 3,
+                    "idcg": 5.392789260714372,
+                    "idcg_zero": false
+                  },
+                  "reason": null,
+                  "value": 1.0
+                },
+                "ndcg_at_k@5": {
+                  "available": true,
+                  "details": {
+                    "dcg": 5.392789260714372,
+                    "evaluated_count": 5,
+                    "idcg": 5.392789260714372,
+                    "idcg_zero": false
+                  },
+                  "reason": null,
+                  "value": 1.0
+                },
+                "precision_at_k@1": {
+                  "available": true,
+                  "details": {
+                    "evaluated_count": 1,
+                    "judged_count": 5,
+                    "relevant_retrieved_count": 1
+                  },
+                  "reason": null,
+                  "value": 1.0
+                },
+                "precision_at_k@3": {
+                  "available": true,
+                  "details": {
+                    "evaluated_count": 3,
+                    "judged_count": 5,
+                    "relevant_retrieved_count": 3
+                  },
+                  "reason": null,
+                  "value": 1.0
+                },
+                "precision_at_k@5": {
+                  "available": true,
+                  "details": {
+                    "evaluated_count": 5,
+                    "judged_count": 5,
+                    "relevant_retrieved_count": 3
+                  },
+                  "reason": null,
+                  "value": 0.6
+                },
+                "recall_at_k@3": {
+                  "available": true,
+                  "details": {
+                    "evaluated_count": 3,
+                    "is_complete_judgment_set": true,
+                    "relevant_count": 3,
+                    "relevant_retrieved_count": 3
+                  },
+                  "reason": null,
+                  "value": 1.0
+                },
+                "recall_at_k@5": {
+                  "available": true,
+                  "details": {
+                    "evaluated_count": 5,
+                    "is_complete_judgment_set": true,
+                    "relevant_count": 3,
+                    "relevant_retrieved_count": 3
+                  },
+                  "reason": null,
+                  "value": 1.0
+                }
+              },
+              "query_id": "hold_g2f_21_api_framework",
+              "query_type": "gig_to_freelancers",
+              "ranked_candidates": [
+                {
+                  "candidate_id": "hold_g2f_21_api_framework_freelancer_01",
+                  "hybrid_score": 0.736666666667,
+                  "keyword_score": 0.7366666666666666,
+                  "rank": 1,
+                  "relevance_label": 2,
+                  "score": 0.736666666667,
+                  "semantic_score": 0.9461190207632735
+                },
+                {
+                  "candidate_id": "hold_g2f_21_api_framework_freelancer_02",
+                  "hybrid_score": 0.536666666667,
+                  "keyword_score": 0.5366666666666666,
+                  "rank": 2,
+                  "relevance_label": 2,
+                  "score": 0.536666666667,
+                  "semantic_score": 0.9352139888335771
+                },
+                {
+                  "candidate_id": "hold_g2f_21_api_framework_freelancer_03",
+                  "hybrid_score": 0.436666666667,
+                  "keyword_score": 0.43666666666666665,
+                  "rank": 3,
+                  "relevance_label": 1,
+                  "score": 0.436666666667,
+                  "semantic_score": 0.9246110911231917
+                },
+                {
+                  "candidate_id": "hold_g2f_21_api_framework_freelancer_05",
+                  "hybrid_score": 0.01,
+                  "keyword_score": 0.010000000000000009,
+                  "rank": 4,
+                  "relevance_label": 0,
+                  "score": 0.01,
+                  "semantic_score": 0.9136847635211409
+                },
+                {
+                  "candidate_id": "hold_g2f_21_api_framework_freelancer_04",
+                  "hybrid_score": 0.0,
+                  "keyword_score": 0.0,
+                  "rank": 5,
+                  "relevance_label": 0,
+                  "score": 0.0,
+                  "semantic_score": 0.9033557877734177
+                }
+              ]
+            },
+            {
+              "metrics": {
+                "average_precision": {
+                  "available": true,
+                  "details": {
+                    "evaluated_count": 5,
+                    "is_complete_judgment_set": true,
+                    "relevant_count": 3,
+                    "relevant_retrieved_count": 3
+                  },
+                  "reason": null,
+                  "value": 1.0
+                },
+                "graded_pairwise_inversion_rate": {
+                  "available": true,
+                  "details": {
+                    "comparable_pair_count": 8,
+                    "hard_negative_inversion_count": 0,
+                    "hard_negative_pair_count": 2,
+                    "inversion_count": 0,
+                    "inversion_pairs": []
+                  },
+                  "reason": null,
+                  "value": 0.0
+                },
+                "ndcg_at_k@1": {
+                  "available": true,
+                  "details": {
+                    "dcg": 3.0,
+                    "evaluated_count": 1,
+                    "idcg": 3.0,
+                    "idcg_zero": false
+                  },
+                  "reason": null,
+                  "value": 1.0
+                },
+                "ndcg_at_k@3": {
+                  "available": true,
+                  "details": {
+                    "dcg": 4.130929753571458,
+                    "evaluated_count": 3,
+                    "idcg": 4.130929753571458,
+                    "idcg_zero": false
+                  },
+                  "reason": null,
+                  "value": 1.0
+                },
+                "ndcg_at_k@5": {
+                  "available": true,
+                  "details": {
+                    "dcg": 4.130929753571458,
+                    "evaluated_count": 5,
+                    "idcg": 4.130929753571458,
+                    "idcg_zero": false
+                  },
+                  "reason": null,
+                  "value": 1.0
+                },
+                "precision_at_k@1": {
+                  "available": true,
+                  "details": {
+                    "evaluated_count": 1,
+                    "judged_count": 5,
+                    "relevant_retrieved_count": 1
+                  },
+                  "reason": null,
+                  "value": 1.0
+                },
+                "precision_at_k@3": {
+                  "available": true,
+                  "details": {
+                    "evaluated_count": 3,
+                    "judged_count": 5,
+                    "relevant_retrieved_count": 3
+                  },
+                  "reason": null,
+                  "value": 1.0
+                },
+                "precision_at_k@5": {
+                  "available": true,
+                  "details": {
+                    "evaluated_count": 5,
+                    "judged_count": 5,
+                    "relevant_retrieved_count": 3
+                  },
+                  "reason": null,
+                  "value": 0.6
+                },
+                "recall_at_k@3": {
+                  "available": true,
+                  "details": {
+                    "evaluated_count": 3,
+                    "is_complete_judgment_set": true,
+                    "relevant_count": 3,
+                    "relevant_retrieved_count": 3
+                  },
+                  "reason": null,
+                  "value": 1.0
+                },
+                "recall_at_k@5": {
+                  "available": true,
+                  "details": {
+                    "evaluated_count": 5,
+                    "is_complete_judgment_set": true,
+                    "relevant_count": 3,
+                    "relevant_retrieved_count": 3
+                  },
+                  "reason": null,
+                  "value": 1.0
+                }
+              },
+              "query_id": "hold_g2f_22_database_depth",
+              "query_type": "gig_to_freelancers",
+              "ranked_candidates": [
+                {
+                  "candidate_id": "hold_g2f_22_database_depth_freelancer_01",
+                  "hybrid_score": 0.8,
+                  "keyword_score": 0.7999999999999999,
+                  "rank": 1,
+                  "relevance_label": 2,
+                  "score": 0.8,
+                  "semantic_score": 0.9479257370331998
+                },
+                {
+                  "candidate_id": "hold_g2f_22_database_depth_freelancer_02",
+                  "hybrid_score": 0.536666666667,
+                  "keyword_score": 0.5366666666666666,
+                  "rank": 2,
+                  "relevance_label": 1,
+                  "score": 0.536666666667,
+                  "semantic_score": 0.9297883886303676
+                },
+                {
+                  "candidate_id": "hold_g2f_22_database_depth_freelancer_03",
+                  "hybrid_score": 0.436666666667,
+                  "keyword_score": 0.43666666666666665,
+                  "rank": 3,
+                  "relevance_label": 1,
+                  "score": 0.436666666667,
+                  "semantic_score": 0.9243092558896662
+                },
+                {
+                  "candidate_id": "hold_g2f_22_database_depth_freelancer_04",
+                  "hybrid_score": 0.173333333333,
+                  "keyword_score": 0.1733333333333333,
+                  "rank": 4,
+                  "relevance_label": 0,
+                  "score": 0.173333333333,
+                  "semantic_score": 0.9056148516157264
+                },
+                {
+                  "candidate_id": "hold_g2f_22_database_depth_freelancer_05",
+                  "hybrid_score": 0.0,
+                  "keyword_score": 0.0,
+                  "rank": 5,
+                  "relevance_label": 0,
+                  "score": 0.0,
+                  "semantic_score": 0.8966250183495209
+                }
+              ]
+            },
+            {
+              "metrics": {
+                "average_precision": {
+                  "available": true,
+                  "details": {
+                    "evaluated_count": 5,
+                    "is_complete_judgment_set": true,
+                    "relevant_count": 3,
+                    "relevant_retrieved_count": 3
+                  },
+                  "reason": null,
+                  "value": 1.0
+                },
+                "graded_pairwise_inversion_rate": {
+                  "available": true,
+                  "details": {
+                    "comparable_pair_count": 8,
+                    "hard_negative_inversion_count": 0,
+                    "hard_negative_pair_count": 4,
+                    "inversion_count": 0,
+                    "inversion_pairs": []
+                  },
+                  "reason": null,
+                  "value": 0.0
+                },
+                "ndcg_at_k@1": {
+                  "available": true,
+                  "details": {
+                    "dcg": 3.0,
+                    "evaluated_count": 1,
+                    "idcg": 3.0,
+                    "idcg_zero": false
+                  },
+                  "reason": null,
+                  "value": 1.0
+                },
+                "ndcg_at_k@3": {
+                  "available": true,
+                  "details": {
+                    "dcg": 5.392789260714372,
+                    "evaluated_count": 3,
+                    "idcg": 5.392789260714372,
+                    "idcg_zero": false
+                  },
+                  "reason": null,
+                  "value": 1.0
+                },
+                "ndcg_at_k@5": {
+                  "available": true,
+                  "details": {
+                    "dcg": 5.392789260714372,
+                    "evaluated_count": 5,
+                    "idcg": 5.392789260714372,
+                    "idcg_zero": false
+                  },
+                  "reason": null,
+                  "value": 1.0
+                },
+                "precision_at_k@1": {
+                  "available": true,
+                  "details": {
+                    "evaluated_count": 1,
+                    "judged_count": 5,
+                    "relevant_retrieved_count": 1
+                  },
+                  "reason": null,
+                  "value": 1.0
+                },
+                "precision_at_k@3": {
+                  "available": true,
+                  "details": {
+                    "evaluated_count": 3,
+                    "judged_count": 5,
+                    "relevant_retrieved_count": 3
+                  },
+                  "reason": null,
+                  "value": 1.0
+                },
+                "precision_at_k@5": {
+                  "available": true,
+                  "details": {
+                    "evaluated_count": 5,
+                    "judged_count": 5,
+                    "relevant_retrieved_count": 3
+                  },
+                  "reason": null,
+                  "value": 0.6
+                },
+                "recall_at_k@3": {
+                  "available": true,
+                  "details": {
+                    "evaluated_count": 3,
+                    "is_complete_judgment_set": true,
+                    "relevant_count": 3,
+                    "relevant_retrieved_count": 3
+                  },
+                  "reason": null,
+                  "value": 1.0
+                },
+                "recall_at_k@5": {
+                  "available": true,
+                  "details": {
+                    "evaluated_count": 5,
+                    "is_complete_judgment_set": true,
+                    "relevant_count": 3,
+                    "relevant_retrieved_count": 3
+                  },
+                  "reason": null,
+                  "value": 1.0
+                }
+              },
+              "query_id": "hold_g2f_23_cloud_architecture",
+              "query_type": "gig_to_freelancers",
+              "ranked_candidates": [
+                {
+                  "candidate_id": "hold_g2f_23_cloud_architecture_freelancer_01",
+                  "hybrid_score": 1.0,
+                  "keyword_score": 0.9999999999999999,
+                  "rank": 1,
+                  "relevance_label": 2,
+                  "score": 1.0,
+                  "semantic_score": 0.9566031096770988
+                },
+                {
+                  "candidate_id": "hold_g2f_23_cloud_architecture_freelancer_02",
+                  "hybrid_score": 0.62,
+                  "keyword_score": 0.62,
+                  "rank": 2,
+                  "relevance_label": 2,
+                  "score": 0.62,
+                  "semantic_score": 0.9321203028974963
+                },
+                {
+                  "candidate_id": "hold_g2f_23_cloud_architecture_freelancer_03",
+                  "hybrid_score": 0.42,
+                  "keyword_score": 0.41999999999999993,
+                  "rank": 3,
+                  "relevance_label": 1,
+                  "score": 0.42,
+                  "semantic_score": 0.9213461215930956
+                },
+                {
+                  "candidate_id": "hold_g2f_23_cloud_architecture_freelancer_04",
+                  "hybrid_score": 0.0,
+                  "keyword_score": 0.0,
+                  "rank": 4,
+                  "relevance_label": 0,
+                  "score": 0.0,
+                  "semantic_score": 0.9055201475243507
+                },
+                {
+                  "candidate_id": "hold_g2f_23_cloud_architecture_freelancer_05",
+                  "hybrid_score": 0.0,
+                  "keyword_score": 0.0,
+                  "rank": 5,
+                  "relevance_label": 0,
+                  "score": 0.0,
+                  "semantic_score": 0.8995387315014389
+                }
+              ]
+            },
+            {
+              "metrics": {
+                "average_precision": {
+                  "available": true,
+                  "details": {
+                    "evaluated_count": 5,
+                    "is_complete_judgment_set": true,
+                    "relevant_count": 3,
+                    "relevant_retrieved_count": 3
+                  },
+                  "reason": null,
+                  "value": 1.0
+                },
+                "graded_pairwise_inversion_rate": {
+                  "available": true,
+                  "details": {
+                    "comparable_pair_count": 8,
+                    "hard_negative_inversion_count": 0,
+                    "hard_negative_pair_count": 4,
+                    "inversion_count": 0,
+                    "inversion_pairs": []
+                  },
+                  "reason": null,
+                  "value": 0.0
+                },
+                "ndcg_at_k@1": {
+                  "available": true,
+                  "details": {
+                    "dcg": 3.0,
+                    "evaluated_count": 1,
+                    "idcg": 3.0,
+                    "idcg_zero": false
+                  },
+                  "reason": null,
+                  "value": 1.0
+                },
+                "ndcg_at_k@3": {
+                  "available": true,
+                  "details": {
+                    "dcg": 5.392789260714372,
+                    "evaluated_count": 3,
+                    "idcg": 5.392789260714372,
+                    "idcg_zero": false
+                  },
+                  "reason": null,
+                  "value": 1.0
+                },
+                "ndcg_at_k@5": {
+                  "available": true,
+                  "details": {
+                    "dcg": 5.392789260714372,
+                    "evaluated_count": 5,
+                    "idcg": 5.392789260714372,
+                    "idcg_zero": false
+                  },
+                  "reason": null,
+                  "value": 1.0
+                },
+                "precision_at_k@1": {
+                  "available": true,
+                  "details": {
+                    "evaluated_count": 1,
+                    "judged_count": 5,
+                    "relevant_retrieved_count": 1
+                  },
+                  "reason": null,
+                  "value": 1.0
+                },
+                "precision_at_k@3": {
+                  "available": true,
+                  "details": {
+                    "evaluated_count": 3,
+                    "judged_count": 5,
+                    "relevant_retrieved_count": 3
+                  },
+                  "reason": null,
+                  "value": 1.0
+                },
+                "precision_at_k@5": {
+                  "available": true,
+                  "details": {
+                    "evaluated_count": 5,
+                    "judged_count": 5,
+                    "relevant_retrieved_count": 3
+                  },
+                  "reason": null,
+                  "value": 0.6
+                },
+                "recall_at_k@3": {
+                  "available": true,
+                  "details": {
+                    "evaluated_count": 3,
+                    "is_complete_judgment_set": true,
+                    "relevant_count": 3,
+                    "relevant_retrieved_count": 3
+                  },
+                  "reason": null,
+                  "value": 1.0
+                },
+                "recall_at_k@5": {
+                  "available": true,
+                  "details": {
+                    "evaluated_count": 5,
+                    "is_complete_judgment_set": true,
+                    "relevant_count": 3,
+                    "relevant_retrieved_count": 3
+                  },
+                  "reason": null,
+                  "value": 1.0
+                }
+              },
+              "query_id": "hold_g2f_24_ml_evidence",
+              "query_type": "gig_to_freelancers",
+              "ranked_candidates": [
+                {
+                  "candidate_id": "hold_g2f_24_ml_evidence_freelancer_01",
+                  "hybrid_score": 1.0,
+                  "keyword_score": 0.9999999999999999,
+                  "rank": 1,
+                  "relevance_label": 2,
+                  "score": 1.0,
+                  "semantic_score": 0.9601270725249643
+                },
+                {
+                  "candidate_id": "hold_g2f_24_ml_evidence_freelancer_02",
+                  "hybrid_score": 0.8,
+                  "keyword_score": 0.7999999999999999,
+                  "rank": 2,
+                  "relevance_label": 2,
+                  "score": 0.8,
+                  "semantic_score": 0.9328966395049996
+                },
+                {
+                  "candidate_id": "hold_g2f_24_ml_evidence_freelancer_03",
+                  "hybrid_score": 0.536666666667,
+                  "keyword_score": 0.5366666666666666,
+                  "rank": 3,
+                  "relevance_label": 1,
+                  "score": 0.536666666667,
+                  "semantic_score": 0.9377660584330185
+                },
+                {
+                  "candidate_id": "hold_g2f_24_ml_evidence_freelancer_05",
+                  "hybrid_score": 0.173333333333,
+                  "keyword_score": 0.1733333333333333,
+                  "rank": 4,
+                  "relevance_label": 0,
+                  "score": 0.173333333333,
+                  "semantic_score": 0.9289780332629607
+                },
+                {
+                  "candidate_id": "hold_g2f_24_ml_evidence_freelancer_04",
+                  "hybrid_score": 0.0,
+                  "keyword_score": 0.0,
+                  "rank": 5,
+                  "relevance_label": 0,
+                  "score": 0.0,
+                  "semantic_score": 0.9211199403353969
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "semantic_only": {
+        "aggregate_metrics": {
+          "mean_average_precision": {
+            "available": true,
+            "included_query_count": 8,
+            "total_query_count": 8,
+            "value": 1.0
+          },
+          "mean_graded_pairwise_inversion_rate": {
+            "available": true,
+            "included_query_count": 8,
+            "total_query_count": 8,
+            "value": 0.03125
+          },
+          "mean_ndcg_at_k@1": {
+            "available": true,
+            "included_query_count": 8,
+            "total_query_count": 8,
+            "value": 1.0
+          },
+          "mean_ndcg_at_k@3": {
+            "available": true,
+            "included_query_count": 8,
+            "total_query_count": 8,
+            "value": 0.9878606647467888
+          },
+          "mean_ndcg_at_k@5": {
+            "available": true,
+            "included_query_count": 8,
+            "total_query_count": 8,
+            "value": 0.9878606647467888
+          },
+          "mean_precision_at_k@1": {
+            "available": true,
+            "included_query_count": 8,
+            "total_query_count": 8,
+            "value": 1.0
+          },
+          "mean_precision_at_k@3": {
+            "available": true,
+            "included_query_count": 8,
+            "total_query_count": 8,
+            "value": 1.0
+          },
+          "mean_precision_at_k@5": {
+            "available": true,
+            "included_query_count": 8,
+            "total_query_count": 8,
+            "value": 0.6
+          },
+          "mean_recall_at_k@3": {
+            "available": true,
+            "included_query_count": 8,
+            "total_query_count": 8,
+            "value": 1.0
+          },
+          "mean_recall_at_k@5": {
+            "available": true,
+            "included_query_count": 8,
+            "total_query_count": 8,
+            "value": 1.0
+          }
+        },
+        "queries": [
+          {
+            "metrics": {
+              "average_precision": {
+                "available": true,
+                "details": {
+                  "evaluated_count": 5,
+                  "is_complete_judgment_set": true,
+                  "relevant_count": 3,
+                  "relevant_retrieved_count": 3
+                },
+                "reason": null,
+                "value": 1.0
+              },
+              "graded_pairwise_inversion_rate": {
+                "available": true,
+                "details": {
+                  "comparable_pair_count": 8,
+                  "hard_negative_inversion_count": 0,
+                  "hard_negative_pair_count": 4,
+                  "inversion_count": 0,
+                  "inversion_pairs": []
+                },
+                "reason": null,
+                "value": 0.0
+              },
+              "ndcg_at_k@1": {
+                "available": true,
+                "details": {
+                  "dcg": 3.0,
+                  "evaluated_count": 1,
+                  "idcg": 3.0,
+                  "idcg_zero": false
+                },
+                "reason": null,
+                "value": 1.0
+              },
+              "ndcg_at_k@3": {
+                "available": true,
+                "details": {
+                  "dcg": 5.392789260714372,
+                  "evaluated_count": 3,
+                  "idcg": 5.392789260714372,
+                  "idcg_zero": false
+                },
+                "reason": null,
+                "value": 1.0
+              },
+              "ndcg_at_k@5": {
+                "available": true,
+                "details": {
+                  "dcg": 5.392789260714372,
+                  "evaluated_count": 5,
+                  "idcg": 5.392789260714372,
+                  "idcg_zero": false
+                },
+                "reason": null,
+                "value": 1.0
+              },
+              "precision_at_k@1": {
+                "available": true,
+                "details": {
+                  "evaluated_count": 1,
+                  "judged_count": 5,
+                  "relevant_retrieved_count": 1
+                },
+                "reason": null,
+                "value": 1.0
+              },
+              "precision_at_k@3": {
+                "available": true,
+                "details": {
+                  "evaluated_count": 3,
+                  "judged_count": 5,
+                  "relevant_retrieved_count": 3
+                },
+                "reason": null,
+                "value": 1.0
+              },
+              "precision_at_k@5": {
+                "available": true,
+                "details": {
+                  "evaluated_count": 5,
+                  "judged_count": 5,
+                  "relevant_retrieved_count": 3
+                },
+                "reason": null,
+                "value": 0.6
+              },
+              "recall_at_k@3": {
+                "available": true,
+                "details": {
+                  "evaluated_count": 3,
+                  "is_complete_judgment_set": true,
+                  "relevant_count": 3,
+                  "relevant_retrieved_count": 3
+                },
+                "reason": null,
+                "value": 1.0
+              },
+              "recall_at_k@5": {
+                "available": true,
+                "details": {
+                  "evaluated_count": 5,
+                  "is_complete_judgment_set": true,
+                  "relevant_count": 3,
+                  "relevant_retrieved_count": 3
+                },
+                "reason": null,
+                "value": 1.0
+              }
+            },
+            "query_id": "hold_f2g_17_fastapi_alias",
+            "query_type": "freelancer_to_gigs",
+            "ranked_candidates": [
+              {
+                "candidate_id": "hold_f2g_17_fastapi_alias_gig_01",
+                "rank": 1,
+                "raw_cosine_similarity": 0.9011238159675908,
+                "relevance_label": 2,
+                "score": 0.9505619079837955,
+                "semantic_score": 0.9505619079837955,
+                "vector_dimension": 384
+              },
+              {
+                "candidate_id": "hold_f2g_17_fastapi_alias_gig_02",
+                "rank": 2,
+                "raw_cosine_similarity": 0.8888621158843787,
+                "relevance_label": 2,
+                "score": 0.9444310579421893,
+                "semantic_score": 0.9444310579421893,
+                "vector_dimension": 384
+              },
+              {
+                "candidate_id": "hold_f2g_17_fastapi_alias_gig_03",
+                "rank": 3,
+                "raw_cosine_similarity": 0.8466221248991574,
+                "relevance_label": 1,
+                "score": 0.9233110624495787,
+                "semantic_score": 0.9233110624495787,
+                "vector_dimension": 384
+              },
+              {
+                "candidate_id": "hold_f2g_17_fastapi_alias_gig_05",
+                "rank": 4,
+                "raw_cosine_similarity": 0.8435125856622104,
+                "relevance_label": 0,
+                "score": 0.9217562928311052,
+                "semantic_score": 0.9217562928311052,
+                "vector_dimension": 384
+              },
+              {
+                "candidate_id": "hold_f2g_17_fastapi_alias_gig_04",
+                "rank": 5,
+                "raw_cosine_similarity": 0.8203964058848981,
+                "relevance_label": 0,
+                "score": 0.9101982029424491,
+                "semantic_score": 0.9101982029424491,
+                "vector_dimension": 384
+              }
+            ]
+          },
+          {
+            "metrics": {
+              "average_precision": {
+                "available": true,
+                "details": {
+                  "evaluated_count": 5,
+                  "is_complete_judgment_set": true,
+                  "relevant_count": 3,
+                  "relevant_retrieved_count": 3
+                },
+                "reason": null,
+                "value": 1.0
+              },
+              "graded_pairwise_inversion_rate": {
+                "available": true,
+                "details": {
+                  "comparable_pair_count": 8,
+                  "hard_negative_inversion_count": 0,
+                  "hard_negative_pair_count": 4,
+                  "inversion_count": 0,
+                  "inversion_pairs": []
+                },
+                "reason": null,
+                "value": 0.0
+              },
+              "ndcg_at_k@1": {
+                "available": true,
+                "details": {
+                  "dcg": 3.0,
+                  "evaluated_count": 1,
+                  "idcg": 3.0,
+                  "idcg_zero": false
+                },
+                "reason": null,
+                "value": 1.0
+              },
+              "ndcg_at_k@3": {
+                "available": true,
+                "details": {
+                  "dcg": 5.392789260714372,
+                  "evaluated_count": 3,
+                  "idcg": 5.392789260714372,
+                  "idcg_zero": false
+                },
+                "reason": null,
+                "value": 1.0
+              },
+              "ndcg_at_k@5": {
+                "available": true,
+                "details": {
+                  "dcg": 5.392789260714372,
+                  "evaluated_count": 5,
+                  "idcg": 5.392789260714372,
+                  "idcg_zero": false
+                },
+                "reason": null,
+                "value": 1.0
+              },
+              "precision_at_k@1": {
+                "available": true,
+                "details": {
+                  "evaluated_count": 1,
+                  "judged_count": 5,
+                  "relevant_retrieved_count": 1
+                },
+                "reason": null,
+                "value": 1.0
+              },
+              "precision_at_k@3": {
+                "available": true,
+                "details": {
+                  "evaluated_count": 3,
+                  "judged_count": 5,
+                  "relevant_retrieved_count": 3
+                },
+                "reason": null,
+                "value": 1.0
+              },
+              "precision_at_k@5": {
+                "available": true,
+                "details": {
+                  "evaluated_count": 5,
+                  "judged_count": 5,
+                  "relevant_retrieved_count": 3
+                },
+                "reason": null,
+                "value": 0.6
+              },
+              "recall_at_k@3": {
+                "available": true,
+                "details": {
+                  "evaluated_count": 3,
+                  "is_complete_judgment_set": true,
+                  "relevant_count": 3,
+                  "relevant_retrieved_count": 3
+                },
+                "reason": null,
+                "value": 1.0
+              },
+              "recall_at_k@5": {
+                "available": true,
+                "details": {
+                  "evaluated_count": 5,
+                  "is_complete_judgment_set": true,
+                  "relevant_count": 3,
+                  "relevant_retrieved_count": 3
+                },
+                "reason": null,
+                "value": 1.0
+              }
+            },
+            "query_id": "hold_f2g_18_cloud_docker",
+            "query_type": "freelancer_to_gigs",
+            "ranked_candidates": [
+              {
+                "candidate_id": "hold_f2g_18_cloud_docker_gig_01",
+                "rank": 1,
+                "raw_cosine_similarity": 0.8837315091384079,
+                "relevance_label": 2,
+                "score": 0.941865754569204,
+                "semantic_score": 0.941865754569204,
+                "vector_dimension": 384
+              },
+              {
+                "candidate_id": "hold_f2g_18_cloud_docker_gig_02",
+                "rank": 2,
+                "raw_cosine_similarity": 0.8727743345707637,
+                "relevance_label": 2,
+                "score": 0.9363871672853818,
+                "semantic_score": 0.9363871672853818,
+                "vector_dimension": 384
+              },
+              {
+                "candidate_id": "hold_f2g_18_cloud_docker_gig_03",
+                "rank": 3,
+                "raw_cosine_similarity": 0.8545082824872114,
+                "relevance_label": 1,
+                "score": 0.9272541412436057,
+                "semantic_score": 0.9272541412436057,
+                "vector_dimension": 384
+              },
+              {
+                "candidate_id": "hold_f2g_18_cloud_docker_gig_04",
+                "rank": 4,
+                "raw_cosine_similarity": 0.8373110046412051,
+                "relevance_label": 0,
+                "score": 0.9186555023206026,
+                "semantic_score": 0.9186555023206026,
+                "vector_dimension": 384
+              },
+              {
+                "candidate_id": "hold_f2g_18_cloud_docker_gig_05",
+                "rank": 5,
+                "raw_cosine_similarity": 0.8267742912620647,
+                "relevance_label": 0,
+                "score": 0.9133871456310323,
+                "semantic_score": 0.9133871456310323,
+                "vector_dimension": 384
+              }
+            ]
+          },
+          {
+            "metrics": {
+              "average_precision": {
+                "available": true,
+                "details": {
+                  "evaluated_count": 5,
+                  "is_complete_judgment_set": true,
+                  "relevant_count": 3,
+                  "relevant_retrieved_count": 3
+                },
+                "reason": null,
+                "value": 1.0
+              },
+              "graded_pairwise_inversion_rate": {
+                "available": true,
+                "details": {
+                  "comparable_pair_count": 8,
+                  "hard_negative_inversion_count": 0,
+                  "hard_negative_pair_count": 4,
+                  "inversion_count": 1,
+                  "inversion_pairs": [
+                    {
+                      "higher_candidate_id": "hold_f2g_19_react_web_gig_02",
+                      "higher_label": 2,
+                      "lower_candidate_id": "hold_f2g_19_react_web_gig_03",
+                      "lower_label": 1
+                    }
+                  ]
+                },
+                "reason": null,
+                "value": 0.125
+              },
+              "ndcg_at_k@1": {
+                "available": true,
+                "details": {
+                  "dcg": 3.0,
+                  "evaluated_count": 1,
+                  "idcg": 3.0,
+                  "idcg_zero": false
+                },
+                "reason": null,
+                "value": 1.0
+              },
+              "ndcg_at_k@3": {
+                "available": true,
+                "details": {
+                  "dcg": 5.130929753571458,
+                  "evaluated_count": 3,
+                  "idcg": 5.392789260714372,
+                  "idcg_zero": false
+                },
+                "reason": null,
+                "value": 0.9514426589871553
+              },
+              "ndcg_at_k@5": {
+                "available": true,
+                "details": {
+                  "dcg": 5.130929753571458,
+                  "evaluated_count": 5,
+                  "idcg": 5.392789260714372,
+                  "idcg_zero": false
+                },
+                "reason": null,
+                "value": 0.9514426589871553
+              },
+              "precision_at_k@1": {
+                "available": true,
+                "details": {
+                  "evaluated_count": 1,
+                  "judged_count": 5,
+                  "relevant_retrieved_count": 1
+                },
+                "reason": null,
+                "value": 1.0
+              },
+              "precision_at_k@3": {
+                "available": true,
+                "details": {
+                  "evaluated_count": 3,
+                  "judged_count": 5,
+                  "relevant_retrieved_count": 3
+                },
+                "reason": null,
+                "value": 1.0
+              },
+              "precision_at_k@5": {
+                "available": true,
+                "details": {
+                  "evaluated_count": 5,
+                  "judged_count": 5,
+                  "relevant_retrieved_count": 3
+                },
+                "reason": null,
+                "value": 0.6
+              },
+              "recall_at_k@3": {
+                "available": true,
+                "details": {
+                  "evaluated_count": 3,
+                  "is_complete_judgment_set": true,
+                  "relevant_count": 3,
+                  "relevant_retrieved_count": 3
+                },
+                "reason": null,
+                "value": 1.0
+              },
+              "recall_at_k@5": {
+                "available": true,
+                "details": {
+                  "evaluated_count": 5,
+                  "is_complete_judgment_set": true,
+                  "relevant_count": 3,
+                  "relevant_retrieved_count": 3
+                },
+                "reason": null,
+                "value": 1.0
+              }
+            },
+            "query_id": "hold_f2g_19_react_web",
+            "query_type": "freelancer_to_gigs",
+            "ranked_candidates": [
+              {
+                "candidate_id": "hold_f2g_19_react_web_gig_01",
+                "rank": 1,
+                "raw_cosine_similarity": 0.8946255624465528,
+                "relevance_label": 2,
+                "score": 0.9473127812232764,
+                "semantic_score": 0.9473127812232764,
+                "vector_dimension": 384
+              },
+              {
+                "candidate_id": "hold_f2g_19_react_web_gig_03",
+                "rank": 2,
+                "raw_cosine_similarity": 0.8800272363207818,
+                "relevance_label": 1,
+                "score": 0.9400136181603909,
+                "semantic_score": 0.9400136181603909,
+                "vector_dimension": 384
+              },
+              {
+                "candidate_id": "hold_f2g_19_react_web_gig_02",
+                "rank": 3,
+                "raw_cosine_similarity": 0.8710409124904949,
+                "relevance_label": 2,
+                "score": 0.9355204562452475,
+                "semantic_score": 0.9355204562452475,
+                "vector_dimension": 384
+              },
+              {
+                "candidate_id": "hold_f2g_19_react_web_gig_04",
+                "rank": 4,
+                "raw_cosine_similarity": 0.8585061798241141,
+                "relevance_label": 0,
+                "score": 0.929253089912057,
+                "semantic_score": 0.929253089912057,
+                "vector_dimension": 384
+              },
+              {
+                "candidate_id": "hold_f2g_19_react_web_gig_05",
+                "rank": 5,
+                "raw_cosine_similarity": 0.8261483213050321,
+                "relevance_label": 0,
+                "score": 0.9130741606525161,
+                "semantic_score": 0.9130741606525161,
+                "vector_dimension": 384
+              }
+            ]
+          },
+          {
+            "metrics": {
+              "average_precision": {
+                "available": true,
+                "details": {
+                  "evaluated_count": 5,
+                  "is_complete_judgment_set": true,
+                  "relevant_count": 3,
+                  "relevant_retrieved_count": 3
+                },
+                "reason": null,
+                "value": 1.0
+              },
+              "graded_pairwise_inversion_rate": {
+                "available": true,
+                "details": {
+                  "comparable_pair_count": 8,
+                  "hard_negative_inversion_count": 0,
+                  "hard_negative_pair_count": 4,
+                  "inversion_count": 0,
+                  "inversion_pairs": []
+                },
+                "reason": null,
+                "value": 0.0
+              },
+              "ndcg_at_k@1": {
+                "available": true,
+                "details": {
+                  "dcg": 3.0,
+                  "evaluated_count": 1,
+                  "idcg": 3.0,
+                  "idcg_zero": false
+                },
+                "reason": null,
+                "value": 1.0
+              },
+              "ndcg_at_k@3": {
+                "available": true,
+                "details": {
+                  "dcg": 5.392789260714372,
+                  "evaluated_count": 3,
+                  "idcg": 5.392789260714372,
+                  "idcg_zero": false
+                },
+                "reason": null,
+                "value": 1.0
+              },
+              "ndcg_at_k@5": {
+                "available": true,
+                "details": {
+                  "dcg": 5.392789260714372,
+                  "evaluated_count": 5,
+                  "idcg": 5.392789260714372,
+                  "idcg_zero": false
+                },
+                "reason": null,
+                "value": 1.0
+              },
+              "precision_at_k@1": {
+                "available": true,
+                "details": {
+                  "evaluated_count": 1,
+                  "judged_count": 5,
+                  "relevant_retrieved_count": 1
+                },
+                "reason": null,
+                "value": 1.0
+              },
+              "precision_at_k@3": {
+                "available": true,
+                "details": {
+                  "evaluated_count": 3,
+                  "judged_count": 5,
+                  "relevant_retrieved_count": 3
+                },
+                "reason": null,
+                "value": 1.0
+              },
+              "precision_at_k@5": {
+                "available": true,
+                "details": {
+                  "evaluated_count": 5,
+                  "judged_count": 5,
+                  "relevant_retrieved_count": 3
+                },
+                "reason": null,
+                "value": 0.6
+              },
+              "recall_at_k@3": {
+                "available": true,
+                "details": {
+                  "evaluated_count": 3,
+                  "is_complete_judgment_set": true,
+                  "relevant_count": 3,
+                  "relevant_retrieved_count": 3
+                },
+                "reason": null,
+                "value": 1.0
+              },
+              "recall_at_k@5": {
+                "available": true,
+                "details": {
+                  "evaluated_count": 5,
+                  "is_complete_judgment_set": true,
+                  "relevant_count": 3,
+                  "relevant_retrieved_count": 3
+                },
+                "reason": null,
+                "value": 1.0
+              }
+            },
+            "query_id": "hold_f2g_20_ml_depth",
+            "query_type": "freelancer_to_gigs",
+            "ranked_candidates": [
+              {
+                "candidate_id": "hold_f2g_20_ml_depth_gig_01",
+                "rank": 1,
+                "raw_cosine_similarity": 0.9004783361517584,
+                "relevance_label": 2,
+                "score": 0.9502391680758793,
+                "semantic_score": 0.9502391680758793,
+                "vector_dimension": 384
+              },
+              {
+                "candidate_id": "hold_f2g_20_ml_depth_gig_02",
+                "rank": 2,
+                "raw_cosine_similarity": 0.8728924339028442,
+                "relevance_label": 2,
+                "score": 0.936446216951422,
+                "semantic_score": 0.936446216951422,
+                "vector_dimension": 384
+              },
+              {
+                "candidate_id": "hold_f2g_20_ml_depth_gig_03",
+                "rank": 3,
+                "raw_cosine_similarity": 0.8626577175566691,
+                "relevance_label": 1,
+                "score": 0.9313288587783346,
+                "semantic_score": 0.9313288587783346,
+                "vector_dimension": 384
+              },
+              {
+                "candidate_id": "hold_f2g_20_ml_depth_gig_04",
+                "rank": 4,
+                "raw_cosine_similarity": 0.8137740964953779,
+                "relevance_label": 0,
+                "score": 0.906887048247689,
+                "semantic_score": 0.906887048247689,
+                "vector_dimension": 384
+              },
+              {
+                "candidate_id": "hold_f2g_20_ml_depth_gig_05",
+                "rank": 5,
+                "raw_cosine_similarity": 0.8079697803718442,
+                "relevance_label": 0,
+                "score": 0.9039848901859221,
+                "semantic_score": 0.9039848901859221,
+                "vector_dimension": 384
+              }
+            ]
+          },
+          {
+            "metrics": {
+              "average_precision": {
+                "available": true,
+                "details": {
+                  "evaluated_count": 5,
+                  "is_complete_judgment_set": true,
+                  "relevant_count": 3,
+                  "relevant_retrieved_count": 3
+                },
+                "reason": null,
+                "value": 1.0
+              },
+              "graded_pairwise_inversion_rate": {
+                "available": true,
+                "details": {
+                  "comparable_pair_count": 8,
+                  "hard_negative_inversion_count": 0,
+                  "hard_negative_pair_count": 4,
+                  "inversion_count": 0,
+                  "inversion_pairs": []
+                },
+                "reason": null,
+                "value": 0.0
+              },
+              "ndcg_at_k@1": {
+                "available": true,
+                "details": {
+                  "dcg": 3.0,
+                  "evaluated_count": 1,
+                  "idcg": 3.0,
+                  "idcg_zero": false
+                },
+                "reason": null,
+                "value": 1.0
+              },
+              "ndcg_at_k@3": {
+                "available": true,
+                "details": {
+                  "dcg": 5.392789260714372,
+                  "evaluated_count": 3,
+                  "idcg": 5.392789260714372,
+                  "idcg_zero": false
+                },
+                "reason": null,
+                "value": 1.0
+              },
+              "ndcg_at_k@5": {
+                "available": true,
+                "details": {
+                  "dcg": 5.392789260714372,
+                  "evaluated_count": 5,
+                  "idcg": 5.392789260714372,
+                  "idcg_zero": false
+                },
+                "reason": null,
+                "value": 1.0
+              },
+              "precision_at_k@1": {
+                "available": true,
+                "details": {
+                  "evaluated_count": 1,
+                  "judged_count": 5,
+                  "relevant_retrieved_count": 1
+                },
+                "reason": null,
+                "value": 1.0
+              },
+              "precision_at_k@3": {
+                "available": true,
+                "details": {
+                  "evaluated_count": 3,
+                  "judged_count": 5,
+                  "relevant_retrieved_count": 3
+                },
+                "reason": null,
+                "value": 1.0
+              },
+              "precision_at_k@5": {
+                "available": true,
+                "details": {
+                  "evaluated_count": 5,
+                  "judged_count": 5,
+                  "relevant_retrieved_count": 3
+                },
+                "reason": null,
+                "value": 0.6
+              },
+              "recall_at_k@3": {
+                "available": true,
+                "details": {
+                  "evaluated_count": 3,
+                  "is_complete_judgment_set": true,
+                  "relevant_count": 3,
+                  "relevant_retrieved_count": 3
+                },
+                "reason": null,
+                "value": 1.0
+              },
+              "recall_at_k@5": {
+                "available": true,
+                "details": {
+                  "evaluated_count": 5,
+                  "is_complete_judgment_set": true,
+                  "relevant_count": 3,
+                  "relevant_retrieved_count": 3
+                },
+                "reason": null,
+                "value": 1.0
+              }
+            },
+            "query_id": "hold_g2f_21_api_framework",
+            "query_type": "gig_to_freelancers",
+            "ranked_candidates": [
+              {
+                "candidate_id": "hold_g2f_21_api_framework_freelancer_01",
+                "rank": 1,
+                "raw_cosine_similarity": 0.8922380415265468,
+                "relevance_label": 2,
+                "score": 0.9461190207632735,
+                "semantic_score": 0.9461190207632735,
+                "vector_dimension": 384
+              },
+              {
+                "candidate_id": "hold_g2f_21_api_framework_freelancer_02",
+                "rank": 2,
+                "raw_cosine_similarity": 0.8704279776671542,
+                "relevance_label": 2,
+                "score": 0.9352139888335771,
+                "semantic_score": 0.9352139888335771,
+                "vector_dimension": 384
+              },
+              {
+                "candidate_id": "hold_g2f_21_api_framework_freelancer_03",
+                "rank": 3,
+                "raw_cosine_similarity": 0.8492221822463835,
+                "relevance_label": 1,
+                "score": 0.9246110911231917,
+                "semantic_score": 0.9246110911231917,
+                "vector_dimension": 384
+              },
+              {
+                "candidate_id": "hold_g2f_21_api_framework_freelancer_05",
+                "rank": 4,
+                "raw_cosine_similarity": 0.8273695270422817,
+                "relevance_label": 0,
+                "score": 0.9136847635211409,
+                "semantic_score": 0.9136847635211409,
+                "vector_dimension": 384
+              },
+              {
+                "candidate_id": "hold_g2f_21_api_framework_freelancer_04",
+                "rank": 5,
+                "raw_cosine_similarity": 0.8067115755468356,
+                "relevance_label": 0,
+                "score": 0.9033557877734177,
+                "semantic_score": 0.9033557877734177,
+                "vector_dimension": 384
+              }
+            ]
+          },
+          {
+            "metrics": {
+              "average_precision": {
+                "available": true,
+                "details": {
+                  "evaluated_count": 5,
+                  "is_complete_judgment_set": true,
+                  "relevant_count": 3,
+                  "relevant_retrieved_count": 3
+                },
+                "reason": null,
+                "value": 1.0
+              },
+              "graded_pairwise_inversion_rate": {
+                "available": true,
+                "details": {
+                  "comparable_pair_count": 8,
+                  "hard_negative_inversion_count": 0,
+                  "hard_negative_pair_count": 2,
+                  "inversion_count": 0,
+                  "inversion_pairs": []
+                },
+                "reason": null,
+                "value": 0.0
+              },
+              "ndcg_at_k@1": {
+                "available": true,
+                "details": {
+                  "dcg": 3.0,
+                  "evaluated_count": 1,
+                  "idcg": 3.0,
+                  "idcg_zero": false
+                },
+                "reason": null,
+                "value": 1.0
+              },
+              "ndcg_at_k@3": {
+                "available": true,
+                "details": {
+                  "dcg": 4.130929753571458,
+                  "evaluated_count": 3,
+                  "idcg": 4.130929753571458,
+                  "idcg_zero": false
+                },
+                "reason": null,
+                "value": 1.0
+              },
+              "ndcg_at_k@5": {
+                "available": true,
+                "details": {
+                  "dcg": 4.130929753571458,
+                  "evaluated_count": 5,
+                  "idcg": 4.130929753571458,
+                  "idcg_zero": false
+                },
+                "reason": null,
+                "value": 1.0
+              },
+              "precision_at_k@1": {
+                "available": true,
+                "details": {
+                  "evaluated_count": 1,
+                  "judged_count": 5,
+                  "relevant_retrieved_count": 1
+                },
+                "reason": null,
+                "value": 1.0
+              },
+              "precision_at_k@3": {
+                "available": true,
+                "details": {
+                  "evaluated_count": 3,
+                  "judged_count": 5,
+                  "relevant_retrieved_count": 3
+                },
+                "reason": null,
+                "value": 1.0
+              },
+              "precision_at_k@5": {
+                "available": true,
+                "details": {
+                  "evaluated_count": 5,
+                  "judged_count": 5,
+                  "relevant_retrieved_count": 3
+                },
+                "reason": null,
+                "value": 0.6
+              },
+              "recall_at_k@3": {
+                "available": true,
+                "details": {
+                  "evaluated_count": 3,
+                  "is_complete_judgment_set": true,
+                  "relevant_count": 3,
+                  "relevant_retrieved_count": 3
+                },
+                "reason": null,
+                "value": 1.0
+              },
+              "recall_at_k@5": {
+                "available": true,
+                "details": {
+                  "evaluated_count": 5,
+                  "is_complete_judgment_set": true,
+                  "relevant_count": 3,
+                  "relevant_retrieved_count": 3
+                },
+                "reason": null,
+                "value": 1.0
+              }
+            },
+            "query_id": "hold_g2f_22_database_depth",
+            "query_type": "gig_to_freelancers",
+            "ranked_candidates": [
+              {
+                "candidate_id": "hold_g2f_22_database_depth_freelancer_01",
+                "rank": 1,
+                "raw_cosine_similarity": 0.8958514740663996,
+                "relevance_label": 2,
+                "score": 0.9479257370331998,
+                "semantic_score": 0.9479257370331998,
+                "vector_dimension": 384
+              },
+              {
+                "candidate_id": "hold_g2f_22_database_depth_freelancer_02",
+                "rank": 2,
+                "raw_cosine_similarity": 0.8595767772607352,
+                "relevance_label": 1,
+                "score": 0.9297883886303676,
+                "semantic_score": 0.9297883886303676,
+                "vector_dimension": 384
+              },
+              {
+                "candidate_id": "hold_g2f_22_database_depth_freelancer_03",
+                "rank": 3,
+                "raw_cosine_similarity": 0.8486185117793322,
+                "relevance_label": 1,
+                "score": 0.9243092558896662,
+                "semantic_score": 0.9243092558896662,
+                "vector_dimension": 384
+              },
+              {
+                "candidate_id": "hold_g2f_22_database_depth_freelancer_04",
+                "rank": 4,
+                "raw_cosine_similarity": 0.8112297032314528,
+                "relevance_label": 0,
+                "score": 0.9056148516157264,
+                "semantic_score": 0.9056148516157264,
+                "vector_dimension": 384
+              },
+              {
+                "candidate_id": "hold_g2f_22_database_depth_freelancer_05",
+                "rank": 5,
+                "raw_cosine_similarity": 0.7932500366990418,
+                "relevance_label": 0,
+                "score": 0.8966250183495209,
+                "semantic_score": 0.8966250183495209,
+                "vector_dimension": 384
+              }
+            ]
+          },
+          {
+            "metrics": {
+              "average_precision": {
+                "available": true,
+                "details": {
+                  "evaluated_count": 5,
+                  "is_complete_judgment_set": true,
+                  "relevant_count": 3,
+                  "relevant_retrieved_count": 3
+                },
+                "reason": null,
+                "value": 1.0
+              },
+              "graded_pairwise_inversion_rate": {
+                "available": true,
+                "details": {
+                  "comparable_pair_count": 8,
+                  "hard_negative_inversion_count": 0,
+                  "hard_negative_pair_count": 4,
+                  "inversion_count": 0,
+                  "inversion_pairs": []
+                },
+                "reason": null,
+                "value": 0.0
+              },
+              "ndcg_at_k@1": {
+                "available": true,
+                "details": {
+                  "dcg": 3.0,
+                  "evaluated_count": 1,
+                  "idcg": 3.0,
+                  "idcg_zero": false
+                },
+                "reason": null,
+                "value": 1.0
+              },
+              "ndcg_at_k@3": {
+                "available": true,
+                "details": {
+                  "dcg": 5.392789260714372,
+                  "evaluated_count": 3,
+                  "idcg": 5.392789260714372,
+                  "idcg_zero": false
+                },
+                "reason": null,
+                "value": 1.0
+              },
+              "ndcg_at_k@5": {
+                "available": true,
+                "details": {
+                  "dcg": 5.392789260714372,
+                  "evaluated_count": 5,
+                  "idcg": 5.392789260714372,
+                  "idcg_zero": false
+                },
+                "reason": null,
+                "value": 1.0
+              },
+              "precision_at_k@1": {
+                "available": true,
+                "details": {
+                  "evaluated_count": 1,
+                  "judged_count": 5,
+                  "relevant_retrieved_count": 1
+                },
+                "reason": null,
+                "value": 1.0
+              },
+              "precision_at_k@3": {
+                "available": true,
+                "details": {
+                  "evaluated_count": 3,
+                  "judged_count": 5,
+                  "relevant_retrieved_count": 3
+                },
+                "reason": null,
+                "value": 1.0
+              },
+              "precision_at_k@5": {
+                "available": true,
+                "details": {
+                  "evaluated_count": 5,
+                  "judged_count": 5,
+                  "relevant_retrieved_count": 3
+                },
+                "reason": null,
+                "value": 0.6
+              },
+              "recall_at_k@3": {
+                "available": true,
+                "details": {
+                  "evaluated_count": 3,
+                  "is_complete_judgment_set": true,
+                  "relevant_count": 3,
+                  "relevant_retrieved_count": 3
+                },
+                "reason": null,
+                "value": 1.0
+              },
+              "recall_at_k@5": {
+                "available": true,
+                "details": {
+                  "evaluated_count": 5,
+                  "is_complete_judgment_set": true,
+                  "relevant_count": 3,
+                  "relevant_retrieved_count": 3
+                },
+                "reason": null,
+                "value": 1.0
+              }
+            },
+            "query_id": "hold_g2f_23_cloud_architecture",
+            "query_type": "gig_to_freelancers",
+            "ranked_candidates": [
+              {
+                "candidate_id": "hold_g2f_23_cloud_architecture_freelancer_01",
+                "rank": 1,
+                "raw_cosine_similarity": 0.9132062193541978,
+                "relevance_label": 2,
+                "score": 0.9566031096770988,
+                "semantic_score": 0.9566031096770988,
+                "vector_dimension": 384
+              },
+              {
+                "candidate_id": "hold_g2f_23_cloud_architecture_freelancer_02",
+                "rank": 2,
+                "raw_cosine_similarity": 0.8642406057949924,
+                "relevance_label": 2,
+                "score": 0.9321203028974963,
+                "semantic_score": 0.9321203028974963,
+                "vector_dimension": 384
+              },
+              {
+                "candidate_id": "hold_g2f_23_cloud_architecture_freelancer_03",
+                "rank": 3,
+                "raw_cosine_similarity": 0.8426922431861912,
+                "relevance_label": 1,
+                "score": 0.9213461215930956,
+                "semantic_score": 0.9213461215930956,
+                "vector_dimension": 384
+              },
+              {
+                "candidate_id": "hold_g2f_23_cloud_architecture_freelancer_04",
+                "rank": 4,
+                "raw_cosine_similarity": 0.8110402950487015,
+                "relevance_label": 0,
+                "score": 0.9055201475243507,
+                "semantic_score": 0.9055201475243507,
+                "vector_dimension": 384
+              },
+              {
+                "candidate_id": "hold_g2f_23_cloud_architecture_freelancer_05",
+                "rank": 5,
+                "raw_cosine_similarity": 0.799077463002878,
+                "relevance_label": 0,
+                "score": 0.8995387315014389,
+                "semantic_score": 0.8995387315014389,
+                "vector_dimension": 384
+              }
+            ]
+          },
+          {
+            "metrics": {
+              "average_precision": {
+                "available": true,
+                "details": {
+                  "evaluated_count": 5,
+                  "is_complete_judgment_set": true,
+                  "relevant_count": 3,
+                  "relevant_retrieved_count": 3
+                },
+                "reason": null,
+                "value": 1.0
+              },
+              "graded_pairwise_inversion_rate": {
+                "available": true,
+                "details": {
+                  "comparable_pair_count": 8,
+                  "hard_negative_inversion_count": 0,
+                  "hard_negative_pair_count": 4,
+                  "inversion_count": 1,
+                  "inversion_pairs": [
+                    {
+                      "higher_candidate_id": "hold_g2f_24_ml_evidence_freelancer_02",
+                      "higher_label": 2,
+                      "lower_candidate_id": "hold_g2f_24_ml_evidence_freelancer_03",
+                      "lower_label": 1
+                    }
+                  ]
+                },
+                "reason": null,
+                "value": 0.125
+              },
+              "ndcg_at_k@1": {
+                "available": true,
+                "details": {
+                  "dcg": 3.0,
+                  "evaluated_count": 1,
+                  "idcg": 3.0,
+                  "idcg_zero": false
+                },
+                "reason": null,
+                "value": 1.0
+              },
+              "ndcg_at_k@3": {
+                "available": true,
+                "details": {
+                  "dcg": 5.130929753571458,
+                  "evaluated_count": 3,
+                  "idcg": 5.392789260714372,
+                  "idcg_zero": false
+                },
+                "reason": null,
+                "value": 0.9514426589871553
+              },
+              "ndcg_at_k@5": {
+                "available": true,
+                "details": {
+                  "dcg": 5.130929753571458,
+                  "evaluated_count": 5,
+                  "idcg": 5.392789260714372,
+                  "idcg_zero": false
+                },
+                "reason": null,
+                "value": 0.9514426589871553
+              },
+              "precision_at_k@1": {
+                "available": true,
+                "details": {
+                  "evaluated_count": 1,
+                  "judged_count": 5,
+                  "relevant_retrieved_count": 1
+                },
+                "reason": null,
+                "value": 1.0
+              },
+              "precision_at_k@3": {
+                "available": true,
+                "details": {
+                  "evaluated_count": 3,
+                  "judged_count": 5,
+                  "relevant_retrieved_count": 3
+                },
+                "reason": null,
+                "value": 1.0
+              },
+              "precision_at_k@5": {
+                "available": true,
+                "details": {
+                  "evaluated_count": 5,
+                  "judged_count": 5,
+                  "relevant_retrieved_count": 3
+                },
+                "reason": null,
+                "value": 0.6
+              },
+              "recall_at_k@3": {
+                "available": true,
+                "details": {
+                  "evaluated_count": 3,
+                  "is_complete_judgment_set": true,
+                  "relevant_count": 3,
+                  "relevant_retrieved_count": 3
+                },
+                "reason": null,
+                "value": 1.0
+              },
+              "recall_at_k@5": {
+                "available": true,
+                "details": {
+                  "evaluated_count": 5,
+                  "is_complete_judgment_set": true,
+                  "relevant_count": 3,
+                  "relevant_retrieved_count": 3
+                },
+                "reason": null,
+                "value": 1.0
+              }
+            },
+            "query_id": "hold_g2f_24_ml_evidence",
+            "query_type": "gig_to_freelancers",
+            "ranked_candidates": [
+              {
+                "candidate_id": "hold_g2f_24_ml_evidence_freelancer_01",
+                "rank": 1,
+                "raw_cosine_similarity": 0.9202541450499286,
+                "relevance_label": 2,
+                "score": 0.9601270725249643,
+                "semantic_score": 0.9601270725249643,
+                "vector_dimension": 384
+              },
+              {
+                "candidate_id": "hold_g2f_24_ml_evidence_freelancer_03",
+                "rank": 2,
+                "raw_cosine_similarity": 0.8755321168660369,
+                "relevance_label": 1,
+                "score": 0.9377660584330185,
+                "semantic_score": 0.9377660584330185,
+                "vector_dimension": 384
+              },
+              {
+                "candidate_id": "hold_g2f_24_ml_evidence_freelancer_02",
+                "rank": 3,
+                "raw_cosine_similarity": 0.8657932790099991,
+                "relevance_label": 2,
+                "score": 0.9328966395049996,
+                "semantic_score": 0.9328966395049996,
+                "vector_dimension": 384
+              },
+              {
+                "candidate_id": "hold_g2f_24_ml_evidence_freelancer_05",
+                "rank": 4,
+                "raw_cosine_similarity": 0.8579560665259215,
+                "relevance_label": 0,
+                "score": 0.9289780332629607,
+                "semantic_score": 0.9289780332629607,
+                "vector_dimension": 384
+              },
+              {
+                "candidate_id": "hold_g2f_24_ml_evidence_freelancer_04",
+                "rank": 5,
+                "raw_cosine_similarity": 0.8422398806707939,
+                "relevance_label": 0,
+                "score": 0.9211199403353969,
+                "semantic_score": 0.9211199403353969,
+                "vector_dimension": 384
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "schema_version": 1,
+  "split": "holdout"
+}

@@ -3,8 +3,12 @@ import { Navigate, Route, Routes } from "react-router-dom";
 import { AppLayout } from "./components/AppLayout";
 import { LazyPageBoundary } from "./components/LazyPageBoundary";
 import { ProtectedRoute } from "./components/ProtectedRoute";
+import { AccountSetupBoundary } from "./components/AccountSetupBoundary";
+import { PublicAccountBoundary } from "./components/PublicAccountBoundary";
 
 const AdminDashboardPage = lazy(() => import("./pages/AdminDashboardPage").then((module) => ({ default: module.AdminDashboardPage })));
+const AccountSetupPage = lazy(() => import("./pages/AccountSetupPage").then((module) => ({ default: module.AccountSetupPage })));
+const AuthCallbackPage = lazy(() => import("./pages/AuthCallbackPage").then((module) => ({ default: module.AuthCallbackPage })));
 const ApplicantInboxPage = lazy(() => import("./pages/ApplicantInboxPage").then((module) => ({ default: module.ApplicantInboxPage })));
 const ApplicationDetailPage = lazy(() => import("./pages/ApplicationDetailPage").then((module) => ({ default: module.ApplicationDetailPage })));
 const ApplyToGigPage = lazy(() => import("./pages/ApplyToGigPage").then((module) => ({ default: module.ApplyToGigPage })));
@@ -36,9 +40,11 @@ export default function App() {
   return (
     <AppLayout>
       <Routes>
-        <Route path="/" element={page(<LandingPage />)} />
-        <Route path="/login" element={page(<LoginPage />)} />
-        <Route path="/signup" element={page(<SignupPage />)} />
+        <Route path="/" element={<PublicAccountBoundary mode="landing">{page(<LandingPage />)}</PublicAccountBoundary>} />
+        <Route path="/login" element={<PublicAccountBoundary mode="auth">{page(<LoginPage />)}</PublicAccountBoundary>} />
+        <Route path="/signup" element={<PublicAccountBoundary mode="auth">{page(<SignupPage />)}</PublicAccountBoundary>} />
+        <Route path="/auth/callback" element={page(<AuthCallbackPage />)} />
+        <Route path="/account/setup" element={<AccountSetupBoundary>{page(<AccountSetupPage />)}</AccountSetupBoundary>} />
         <Route path="/dashboard/freelancer" element={<ProtectedRoute allowedRole="freelancer">{page(<FreelancerDashboardPage />)}</ProtectedRoute>} />
         <Route path="/profile/freelancer" element={<ProtectedRoute allowedRole="freelancer">{page(<FreelancerProfilePage />)}</ProtectedRoute>} />
         <Route path="/profile/resume-parse" element={<ProtectedRoute allowedRole="freelancer">{page(<ResumeParsePage />)}</ProtectedRoute>} />

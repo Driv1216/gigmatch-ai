@@ -1,6 +1,6 @@
 /* eslint-disable react-refresh/only-export-components */
 import type { User } from "@supabase/supabase-js";
-import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
+import { createContext, useContext, useEffect, useRef, useState, type ReactNode } from "react";
 import { fetchUserProfile, type UserProfile, type UserRole } from "../lib/auth";
 import { supabase } from "../lib/supabaseClient";
 
@@ -9,10 +9,13 @@ type AuthContextValue = {
   profile: UserProfile | null;
   role: UserRole | null;
   loading: boolean;
+  profileStatus: ProfileStatus;
   profileError: string | null;
   refreshProfile: () => Promise<UserProfile | null>;
   logout: () => Promise<void>;
 };
+
+export type ProfileStatus = "loading" | "ready" | "missing" | "error";
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 
@@ -24,24 +27,40 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const [user, setUser] = useState<User | null>(null);
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
+  const [profileStatus, setProfileStatus] = useState<ProfileStatus>("loading");
   const [profileError, setProfileError] = useState<string | null>(null);
+  const profileRequest = useRef(0);
 
   async function loadProfile(nextUser: User | null) {
+    const requestId = ++profileRequest.current;
     setProfileError(null);
 
     if (!nextUser) {
       setProfile(null);
+      setProfileStatus("missing");
       return null;
     }
 
-    const nextProfile = await fetchUserProfile(nextUser.id);
-    setProfile(nextProfile);
+    setProfileStatus("loading");
 
-    if (!nextProfile) {
-      setProfileError("Your account exists, but no role profile was found.");
+    try {
+      const nextProfile = await fetchUserProfile(nextUser.id);
+
+      if (requestId !== profileRequest.current) {
+        return null;
+      }
+
+      setProfile(nextProfile);
+      setProfileStatus(nextProfile ? "ready" : "missing");
+      return nextProfile;
+    } catch (profileLoadError) {
+      if (requestId === profileRequest.current) {
+        setProfile(null);
+        setProfileStatus("error");
+        setProfileError(profileLoadError instanceof Error ? profileLoadError.message : "Unable to load profile.");
+      }
+      throw profileLoadError;
     }
-
-    return nextProfile;
   }
 
   async function refreshProfile() {
@@ -50,6 +69,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     if (error || !data.user) {
       setUser(null);
       setProfile(null);
+      setProfileStatus("missing");
       setProfileError(null);
       return null;
     }
@@ -59,9 +79,11 @@ export function AuthProvider({ children }: AuthProviderProps) {
   }
 
   async function logout() {
+    profileRequest.current += 1;
     await supabase.auth.signOut();
     setUser(null);
     setProfile(null);
+    setProfileStatus("missing");
     setProfileError(null);
   }
 
@@ -79,6 +101,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
       if (error || !data.user) {
         setUser(null);
         setProfile(null);
+        setProfileStatus("missing");
         setProfileError(null);
         setLoading(false);
         return;
@@ -88,9 +111,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
       try {
         await loadProfile(data.user);
-      } catch (profileLoadError) {
-        setProfile(null);
-        setProfileError(profileLoadError instanceof Error ? profileLoadError.message : "Unable to load profile.");
+      } catch {
+        // loadProfile owns the fail-closed profile error state.
       } finally {
         if (isMounted) {
           setLoading(false);
@@ -105,15 +127,16 @@ export function AuthProvider({ children }: AuthProviderProps) {
     } = supabase.auth.onAuthStateChange((_event, session) => {
       const nextUser = session?.user ?? null;
       setUser(nextUser);
+      setLoading(false);
 
-      loadProfile(nextUser).catch((profileLoadError) => {
-        setProfile(null);
-        setProfileError(profileLoadError instanceof Error ? profileLoadError.message : "Unable to load profile.");
+      loadProfile(nextUser).catch(() => {
+        // loadProfile owns the fail-closed profile error state.
       });
     });
 
     return () => {
       isMounted = false;
+      profileRequest.current += 1;
       subscription.unsubscribe();
     };
   }, []);
@@ -123,6 +146,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     profile,
     role: profile?.role ?? null,
     loading,
+    profileStatus,
     profileError,
     refreshProfile,
     logout,

@@ -65,6 +65,7 @@ class EvaluationRunnerTests(unittest.TestCase):
                         ("recall_at_k", 2),
                         ("ndcg_at_k", 2),
                         ("average_precision", None),
+                        ("graded_pairwise_inversion_rate", None),
                     },
                 )
                 self.assertTrue(all(metric.is_available for metric in strategy_result.metrics))
@@ -106,6 +107,7 @@ class EvaluationRunnerTests(unittest.TestCase):
                     ("mean_recall_at_k", 3),
                     ("mean_ndcg_at_k", 3),
                     ("mean_average_precision", None),
+                    ("mean_graded_pairwise_inversion_rate", None),
                 },
             )
             self.assertTrue(all(metric.is_available for metric in aggregate_metrics))

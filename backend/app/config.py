@@ -9,7 +9,13 @@ class Settings(BaseSettings):
     supabase_url: str = ""
     supabase_publishable_key: str = ""
     supabase_secret_key: str = ""
-    embedding_model_name: str = ""
+    embedding_model_name: str = "intfloat/e5-small-v2"
+    embedding_model_revision: str = "ffb93f3bd4047442299a41ebb6fa998a38507c52"
+    embedding_input_policy: str = "e5_retrieval"
+    embedding_cache_folder: str | None = None
+    embedding_local_files_only: bool = False
+    hybrid_keyword_weight: float = Field(default=0.75, ge=0.0)
+    hybrid_semantic_weight: float = Field(default=0.25, ge=0.0)
     applicant_shortlist_capacity: int = Field(default=5, ge=1, le=100)
     applicant_advancement_capacity: int = Field(default=5, ge=1, le=100)
     qa_message_burst_limit: int = Field(default=8, ge=1, le=100)

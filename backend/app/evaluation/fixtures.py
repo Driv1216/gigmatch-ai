@@ -8,6 +8,7 @@ from pathlib import Path
 from typing import Any
 
 from app.evaluation.contracts import (
+    BenchmarkSplit,
     EvaluationEntity,
     EvaluationFixture,
     EvaluationLabelSource,
@@ -75,6 +76,7 @@ def validate_evaluation_fixture(raw_fixture: Mapping[str, Any], source_name: str
         fixture_id=fixture_id,
         description=description,
         queries=tuple(queries),
+        benchmark_version=_optional_text(raw_fixture.get("benchmark_version"), f"{source_name}: benchmark_version"),
     )
 
 
@@ -89,6 +91,7 @@ def _parse_query(raw_query: Any, source_name: str) -> EvaluationQuery:
         f"{source_name}: is_complete_judgment_set",
     )
     notes = _optional_text(raw_query.get("notes"), f"{source_name}: notes")
+    split = _parse_optional_split(raw_query.get("split"), f"{source_name}: split")
 
     query_entity = _build_query_entity(
         query_type,
@@ -114,6 +117,7 @@ def _parse_query(raw_query: Any, source_name: str) -> EvaluationQuery:
         judgments=judgments,
         is_complete_judgment_set=is_complete_judgment_set,
         notes=notes,
+        split=split,
     )
 
 
@@ -169,6 +173,9 @@ def _parse_judgments(raw_judgments: Any, source_name: str) -> tuple[RelevanceJud
                 relevance_label=_parse_relevance_label(raw_judgment.get("relevance_label"), f"{judgment_source}: relevance_label"),
                 label_source=_parse_label_source(raw_judgment.get("label_source"), f"{judgment_source}: label_source"),
                 notes=_optional_text(raw_judgment.get("notes"), f"{judgment_source}: notes"),
+                case_id=_optional_text(raw_judgment.get("case_id"), f"{judgment_source}: case_id"),
+                rationale=_optional_text(raw_judgment.get("rationale"), f"{judgment_source}: rationale"),
+                scenario_tags=_parse_optional_tags(raw_judgment.get("scenario_tags"), f"{judgment_source}: scenario_tags"),
             )
         )
 
@@ -230,6 +237,27 @@ def _parse_label_source(value: Any, source_name: str) -> EvaluationLabelSource:
     except (TypeError, ValueError) as exc:
         allowed = ", ".join(item.value for item in EvaluationLabelSource)
         raise EvaluationFixtureValidationError(f"{source_name}: must be one of: {allowed}") from exc
+
+
+def _parse_optional_split(value: Any, source_name: str) -> BenchmarkSplit | None:
+    if value is None:
+        return None
+    try:
+        return BenchmarkSplit(value)
+    except (TypeError, ValueError) as exc:
+        allowed = ", ".join(item.value for item in BenchmarkSplit)
+        raise EvaluationFixtureValidationError(f"{source_name}: must be one of: {allowed}") from exc
+
+
+def _parse_optional_tags(value: Any, source_name: str) -> tuple[str, ...]:
+    if value is None:
+        return ()
+    if not isinstance(value, list) or not value:
+        raise EvaluationFixtureValidationError(f"{source_name}: must be a non-empty array when provided")
+    tags = tuple(_required_non_empty_text(item, f"{source_name}[]") for item in value)
+    if len(tags) != len(set(tags)):
+        raise EvaluationFixtureValidationError(f"{source_name}: tags must be unique")
+    return tags
 
 
 def _required_non_empty_text(value: Any, source_name: str) -> str:

@@ -16,11 +16,11 @@ from app.core.auth import (
     SupabaseAuthVerifier,
     extract_bearer_token,
 )
-from app.matching.semantic import (
-    EmbeddingProvider,
-    SemanticRankingUnavailableError,
-    SentenceTransformerEmbeddingProvider,
+from app.matching.provider import (
+    get_embedding_provider_factory,
+    get_production_hybrid_config,
 )
+from app.matching.semantic import EmbeddingProvider
 from app.marketplace.applicant_review import (
     build_applicant_detail,
     build_applicant_list,
@@ -39,7 +39,6 @@ from app.marketplace.applicant_review_data_access import (
     MarketplaceWriteError,
     SupabaseApplicantReviewRepository,
 )
-from app.marketplace.ranking import SemanticUnavailableReason
 
 router = APIRouter()
 
@@ -70,18 +69,6 @@ def get_applicant_review_repository() -> ApplicantReviewRepository:
     return SupabaseApplicantReviewRepository()
 
 
-def get_embedding_provider() -> EmbeddingProvider:
-    if not settings.embedding_model_name:
-        raise SemanticRankingUnavailableError(
-            SemanticUnavailableReason.EMBEDDING_PROVIDER_NOT_CONFIGURED
-        )
-    return SentenceTransformerEmbeddingProvider(settings.embedding_model_name)
-
-
-def get_embedding_provider_factory() -> Callable[[], EmbeddingProvider]:
-    return get_embedding_provider
-
-
 @router.get("/gigs/{gig_id}/applicants", response_model=ApplicantListResponse)
 def list_gig_applicants(
     gig_id: str,
@@ -108,6 +95,7 @@ def list_gig_applicants(
             page=page,
             page_size=page_size,
             provider_factory=provider_factory,
+            hybrid_config=get_production_hybrid_config(),
         )
     )
 
@@ -130,6 +118,7 @@ def get_gig_applicant(
     return build_applicant_detail(
         application,
         provider_factory=provider_factory,
+        hybrid_config=get_production_hybrid_config(),
         history_page=history_page,
         history_page_size=history_page_size,
     )
@@ -319,7 +308,11 @@ def _reload_review_detail(
     current = repository.get_owned_review_application(str(previous.get("id")), client_id)
     if current is None:
         raise HTTPException(status_code=500, detail="applicant_review_write_failed")
-    return build_applicant_detail(current, provider_factory=provider_factory)
+    return build_applicant_detail(
+        current,
+        provider_factory=provider_factory,
+        hybrid_config=get_production_hybrid_config(),
+    )
 
 
 def _review_call(

@@ -6,7 +6,8 @@ GigMatch AI ranks gigs for freelancers and freelancers for client-owned gigs usi
 
 ```text
 Supabase records -> reviewed parse data -> normalized profiles
-  -> keyword + semantic scores -> hybrid order
+  -> model-independent semantic text
+  -> keyword score + batched E5 semantic score -> hybrid order
   -> evidence and skill-gap explanation -> role-safe response
 ```
 
@@ -20,24 +21,33 @@ The deterministic baseline measures canonical skill coverage and structured alig
 
 ### Semantic
 
-Stable text is assembled from allowed matching fields, embedded through the `EmbeddingProvider` interface, and compared with cosine similarity. Runtime matching uses the optional `SentenceTransformerEmbeddingProvider`; deterministic fake embeddings are limited to tests and fixtures.
+Stable text is assembled from allowed matching fields, embedded through the `EmbeddingProvider` interface, and compared with cosine similarity normalized to `[0,1]`. Runtime matching uses `intfloat/e5-small-v2` pinned to revision `ffb93f3bd4047442299a41ebb6fa998a38507c52` on CPU with remote code disabled. Deterministic fake embeddings remain limited to ordinary tests and controlled fixtures.
 
-When the optional dependency/model is unavailable or returns invalid vectors, the system exposes a typed availability reason instead of fabricating a result.
+Canonical semantic text is model-independent. The provider's `e5_retrieval` policy adds `query:` only to the active query and `passage:` to candidates:
+
+- Freelancer → gigs: the freelancer is the query and gigs are passages.
+- Gig → freelancers: the gig is the query and freelancers are passages.
+
+One query and its candidate pool are encoded in one request-level batch. The runtime rejects cardinality mismatch, empty vectors, inconsistent dimensions, non-numeric values, NaN/infinity, or a dimension that changes during the provider lifetime.
+
+The provider is constructed centrally and reused at process scope. When dependencies, configuration, the pinned model, cache/download, or encoding are unavailable—or vectors are invalid—the system exposes a typed availability reason instead of fabricating a result.
 
 ### Hybrid
 
 ```text
-hybrid_score = (0.55 * keyword_score) + (0.45 * semantic_score)
+hybrid_score = (0.75 * keyword_score) + (0.25 * semantic_score)
 ```
 
-Compact component scores remain available for explanation and evaluation. Fallback context is recorded where supported by the contract.
+This keyword-majority weighting is a conservative product decision. It is not a claim that the weight was benchmark-optimal. Compact component scores remain available for explanation and evaluation.
+
+If semantic execution fails, matching and applicant review recompute the complete candidate ordering with the deterministic keyword ranker. The response identifies `keyword_fallback`, includes the safe unavailability reason, and does not claim semantic or hybrid scores. Administrator evaluation returns a sanitized `503` semantic-unavailable response rather than internal loader details.
 
 ## API surface
 
 - `GET /matching/recommended-gigs`: authenticates a freelancer, loads their match profile, ranks eligible open gigs, and returns bounded results.
 - `GET /matching/gigs/{gig_id}/recommended-freelancers`: authenticates a client, verifies gig ownership, ranks eligible freelancers, and returns safe summaries.
 
-Both accept `limit` from 1 to 50 (default 10). Typical errors are `401` authentication, `403` role/ownership/profile policy, `404` missing gig, `422` invalid input, and `503` required embedding infrastructure unavailable. The frontend preserves returned order.
+Both accept `limit` from 1 to 50 (default 10). Typical errors are `401` authentication, `403` role/ownership/profile policy, `404` missing gig, and `422` invalid input. Semantic infrastructure failure on these recommendation paths produces an honest keyword response rather than a failed request. The frontend preserves returned order.
 
 ## Explanation contract
 
@@ -51,9 +61,11 @@ Responses exclude full resume text, raw parse rows, non-approved profile details
 
 ## Evaluation
 
-The administrator-only evaluator compares keyword, semantic, and hybrid strategies over seeded fixtures. Relevance labels are `0` (not relevant), `1` (partially relevant), and `2` (strongly relevant), with a recorded source.
+The administrator-only evaluator compares keyword, semantic, and hybrid strategies over small seeded fixtures. Relevance labels are `0` (not relevant), `1` (partially relevant), and `2` (strongly relevant), with a recorded source.
 
-Metrics include Precision@K, Recall@K, NDCG@K, Average Precision, and MAP availability. Recall/MAP are reported only for sufficiently complete judgments. Results describe fixtures, not real-world accuracy or business impact.
+The separate frozen R1 benchmark contains 24 complete queries and 120 judgments: 16 queries/80 judgments for selection and eight queries/40 judgments for a locked holdout, balanced across both ranking directions. It reports Precision@K, Recall@K, NDCG@K, Average Precision/MAP, graded pairwise inversions, per-query rankings, failures, latency, memory, and model size.
+
+Keyword was the strongest selection aggregate. E5 was the strongest semantic provider among MiniLM, BGE-small, GTE-small, and E5-small-v2. The final production `0.75/0.25` weight is an explicit conservative product choice and is not described as benchmark-optimal. Full evidence and limitations are preserved in the [R1 closure](verification/semantic-matching-refinement-closure.md).
 
 ## Testing and limitations
 
@@ -64,4 +76,4 @@ cd backend
 .venv/bin/python -m unittest discover -s tests -v
 ```
 
-The taxonomy is curated, semantic quality depends on the model and input, production-scale vector retrieval/behavioral learning are not included, and evidence-based explanations do not certify candidate ability or client suitability.
+The taxonomy is curated, semantic quality depends on the model and input, and the controlled benchmark is too small to establish real-user or business outcomes. Production-scale vector retrieval, persistent embeddings, behavioral learning, remote embedding APIs, fine-tuning, and GPU assumptions are not included. Evidence-based explanations do not certify candidate ability or client suitability.

@@ -2,6 +2,8 @@
 
 GigMatch AI converts resume and gig text into reviewable structured matching data. Extraction is deterministic and stateless; users control what is persisted.
 
+Reviewed parsing output is one evidence source for matching; it does not bypass structured profile/gig authority or flow directly to the semantic model as raw private text.
+
 ## Inputs and flow
 
 Supported inputs are pasted text, text-based PDF resumes, and DOCX resumes. Files are limited to 5 MB and are processed in memory, not retained.
@@ -40,6 +42,8 @@ Accepts one `.pdf` or `.docx` multipart upload and returns text plus file name/t
 `backend/app/parsing/skills_taxonomy.json` defines canonical skills, aliases, and categories. Boundary-aware normalization maps variants such as `postgres`, `postgresql`, and `psql` to `PostgreSQL` without matching partial words such as `react` inside `reactive`.
 
 Freelancers save reviewed resume data; clients save reviewed parses only for owned gigs. Supabase Auth and RLS enforce role/ownership. Resume records prioritize structured skills and a limited preview rather than the full file. Gig parses do not silently rewrite the original gig. Uploaded files are not stored.
+
+Matching builders combine the latest eligible reviewed parse with structured records, normalize taxonomy aliases, and deduplicate evidence. Canonical semantic text is then built only from approved matching fields. Evaluation rationales, scenario tags, case IDs, raw documents, and private metadata never become model input. See [Matching and Explainability](matching.md).
 
 ## Privacy, testing, and limitations
 

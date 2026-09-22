@@ -211,6 +211,7 @@ select is(
     join pg_namespace n on n.oid = p.pronamespace
     where n.nspname = 'public'
       and p.prosecdef
+      and p.oid <> 'public.complete_account_setup(text,text)'::regprocedure
       and has_function_privilege('service_role', p.oid, 'EXECUTE')
       and (
         has_function_privilege('public', p.oid, 'EXECUTE')

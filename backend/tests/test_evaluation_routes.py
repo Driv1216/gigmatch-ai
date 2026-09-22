@@ -9,6 +9,8 @@ from app.api.routes import evaluation as evaluation_routes
 from app.evaluation import load_seeded_evaluation_fixtures, run_evaluation
 from app.main import app
 from app.matching.semantic import DeterministicFakeEmbeddingProvider
+from app.matching.semantic import SemanticRankingUnavailableError
+from app.marketplace.ranking import SemanticUnavailableReason
 from tests.test_matching_data_access import FakeAuthVerifier, make_repo
 
 FORBIDDEN_EVALUATION_RESPONSE_FRAGMENTS = (
@@ -185,6 +187,29 @@ class EvaluationRouteTests(unittest.TestCase):
 
         self.assertEqual(status, 200)
         self.assertEqual(self.repo.calls, [("get_user_profile", "admin-1")])
+
+    def test_semantic_provider_failure_returns_sanitized_unavailable_response(self):
+        def unavailable_provider():
+            raise SemanticRankingUnavailableError(
+                SemanticUnavailableReason.EMBEDDING_PROVIDER_UNAVAILABLE,
+                "private model loader details",
+            )
+
+        app.dependency_overrides[evaluation_routes.get_embedding_provider_factory] = (
+            lambda: unavailable_provider
+        )
+
+        status, data = get_json("/evaluation/matching", {"authorization": "Bearer token"})
+
+        self.assertEqual(status, 503)
+        self.assertEqual(
+            data["detail"],
+            {
+                "code": "semantic_evaluation_unavailable",
+                "reason": "embedding_provider_unavailable",
+            },
+        )
+        self.assertNotIn("private model loader details", json.dumps(data))
 
     def test_response_excludes_private_raw_fields_and_fake_claims(self):
         status, data = get_json("/evaluation/matching", {"authorization": "Bearer token"})

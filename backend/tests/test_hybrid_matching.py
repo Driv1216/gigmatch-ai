@@ -70,9 +70,9 @@ class HybridMatchingTests(unittest.TestCase):
 
         self.assertAlmostEqual(score.keyword_score, 0.8)
         self.assertAlmostEqual(score.semantic_score, 0.9)
-        self.assertAlmostEqual(score.hybrid_score, (0.55 * 0.8) + (0.45 * 0.9))
-        self.assertAlmostEqual(score.keyword_weight, 0.55)
-        self.assertAlmostEqual(score.semantic_weight, 0.45)
+        self.assertAlmostEqual(score.hybrid_score, (0.75 * 0.8) + (0.25 * 0.9))
+        self.assertAlmostEqual(score.keyword_weight, 0.75)
+        self.assertAlmostEqual(score.semantic_weight, 0.25)
 
     def test_custom_weights_are_supported_and_normalized(self):
         provider = ControlledEmbeddingProvider()

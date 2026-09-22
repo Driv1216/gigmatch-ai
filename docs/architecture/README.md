@@ -36,7 +36,7 @@ The backend separates HTTP transport from domain behavior:
 
 - `app/api/routes`: request validation, authentication dependencies, status mapping, and response contracts.
 - `app/marketplace`: gigs, applications, review, Q&A, selection, engagements, contact, dashboards, policy, and data access.
-- `app/matching`: normalized entities, keyword/semantic/hybrid ranking, explanations, and candidate loading.
+- `app/matching`: normalized entities, keyword/semantic/hybrid ranking, centralized provider construction, explanations, and candidate loading.
 - `app/parsing`: normalization, skill taxonomy, deterministic extraction, and document services.
 - `app/evaluation`: seeded fixtures, ranking comparisons, and information-retrieval metrics.
 
@@ -85,9 +85,13 @@ Material gig edits preserve versions and require affected applicants to reaffirm
 
 ## Matching and explainability
 
-Keyword ranking scores skill coverage and structured alignment. Semantic ranking builds stable allowed text and compares embeddings with cosine similarity. Hybrid ranking combines them with default weights of 55% keyword and 45% semantic score.
+Keyword ranking scores skill coverage and structured alignment. Semantic ranking builds stable allowed text and compares embeddings with cosine similarity. Production hybrid ranking uses a conservative 75% keyword and 25% semantic policy.
 
-A configured sentence-transformers provider supplies runtime embeddings; deterministic providers exist for tests. Missing or invalid providers produce typed failures/fallback metadata, not invented similarity.
+The production provider is revision-pinned to `intfloat/e5-small-v2` at `ffb93f3bd4047442299a41ebb6fa998a38507c52`, executes on CPU, and disallows remote code. Canonical freelancer and gig text remains model-independent. At the narrow provider boundary, E5 receives `query:` for the active query and `passage:` for candidates in both supported directions.
+
+Provider construction is centralized across recommendations, applicant review, and administrator evaluation. One lazily loaded provider instance is reused per process. Each ranking request embeds the query and complete candidate pool in one batch, then validates cardinality, numeric finiteness, nonempty/equal dimensions, and dimension stability. Deterministic providers remain the default in ordinary tests.
+
+The `0.75/0.25` production weighting is a product decision, not a benchmark-optimality claim. The controlled R1 benchmark found keyword exceptionally strong and E5 the strongest semantic provider tested. See the [matching guide](../matching.md) and [R1 closure](../verification/semantic-matching-refinement-closure.md).
 
 Explanations are built after ranking and cannot alter order. They include reason codes, scores, matched/missing skills, gap severity, and deterministic text. Raw resume content, source text, vectors, and private fields stay internal.
 
@@ -103,7 +107,7 @@ Encryption keys are versioned. Rotation activates a new key while retaining prev
 - Role and ownership failures do not expose private resource details.
 - Version conflicts reject stale commands and require refresh.
 - Request IDs support idempotent critical workflows.
-- Semantic unavailability is explicit.
+- Semantic import, configuration, model-load, cache/download, encoding, and invalid-vector failures are mapped to explicit safe reason codes. Matching and applicant review fall back globally to keyword; administrator evaluation returns a sanitized unavailable response.
 - Invalid/oversized documents and scanned PDFs produce safe validation or warning responses.
 - Database constraints remain the final guard against contradictory state.
 

@@ -23,6 +23,9 @@ GigMatch AI implements the path from account setup through gig discovery, explai
 - Added seeded relevance fixtures and conservative metric contracts.
 - Implemented Precision@K, Recall@K, NDCG@K, Average Precision, and MAP availability.
 - Added an administrator-only API and console for ranking comparison.
+- Completed R1 as a frozen 120-judgment semantic refinement cycle with a query-level selection/holdout split, exact model revisions, pairwise inversion analysis, runtime evidence, and checksum-gated external execution.
+- Selected E5 as the strongest tested semantic provider, then integrated a conservative keyword-majority `0.75/0.25` product policy without claiming benchmark-optimal superiority.
+- Added centralized process-level provider reuse, request-level batch embedding, strict vector validation, sanitized fallback behavior, and an opt-in real-model smoke test in both ranking directions.
 
 ## Marketplace workflow
 
@@ -38,7 +41,8 @@ GigMatch AI implements the path from account setup through gig discovery, explai
 - Completed database, backend, frontend, browser, concurrency, and security verification for the application-to-engagement flow.
 - Migrated the canonical frontend to the current Switchboard interface.
 - Hardened password/OAuth, verification, account completion, and profile-creation authority.
+- Verified the R1 production semantic path under Python 3.13.13 alongside 458 passing backend tests and 189 passing frontend tests; Python 3.14 semantic compatibility remains unverified.
 
 ## Historical evidence
 
-Detailed specifications, invariant maps, SQL results, concurrency tests, and closure notes remain under `docs/verification/` and in `milestone-7-product-spec.md`. They preserve engineering history and may describe work as future relative to their original date.
+Detailed specifications, invariant maps, SQL results, concurrency tests, and closure notes remain under `docs/verification/` and in `milestone-7-product-spec.md`. The [R1 semantic closure](verification/semantic-matching-refinement-closure.md) is the evidence record for the current model configuration. Historical files preserve engineering history and may describe work as future relative to their original date.

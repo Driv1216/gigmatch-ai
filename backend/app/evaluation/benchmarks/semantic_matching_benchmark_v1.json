@@ -1,0 +1,4247 @@
+{
+  "fixture_id": "semantic_matching_benchmark_v1",
+  "benchmark_version": "1",
+  "description": "Frozen controlled GigMatch freelancer-to-gig and gig-to-freelancer benchmark v1. Synthetic evaluation data only.",
+  "queries": [
+    {
+      "query_id": "sel_f2g_01_api_synonyms",
+      "query_type": "freelancer_to_gigs",
+      "split": "selection",
+      "query_entity": {
+        "user_id": "sel_f2g_01_api_synonyms_freelancer",
+        "display_name": "Controlled benchmark freelancer",
+        "headline": "Python web service engineer",
+        "bio": "Builds REST services and PostgreSQL-backed integrations.",
+        "primary_role": "Backend Engineer",
+        "experience_level": "intermediate",
+        "tech_categories": [
+          "backend"
+        ],
+        "skills": [
+          "Python",
+          "FastAPI",
+          "PostgreSQL"
+        ],
+        "tools": [
+          "Docker"
+        ],
+        "projects": []
+      },
+      "candidate_entities": [
+        {
+          "id": "sel_f2g_01_api_synonyms_gig_01",
+          "client_id": "sel_f2g_01_api_synonyms_client_1",
+          "title": "FastAPI REST service",
+          "description": "Build Python API endpoints and PostgreSQL persistence.",
+          "tech_category": "backend",
+          "required_skills": [
+            "Python",
+            "FastAPI",
+            "PostgreSQL"
+          ],
+          "preferred_skills": [
+            "Docker"
+          ],
+          "difficulty_level": "intermediate",
+          "seniority_needed": "intermediate",
+          "deliverables": [
+            "Working implementation"
+          ],
+          "status": "open"
+        },
+        {
+          "id": "sel_f2g_01_api_synonyms_gig_02",
+          "client_id": "sel_f2g_01_api_synonyms_client_2",
+          "title": "Python web API integration",
+          "description": "Create HTTP service integrations using a Python web framework and relational storage.",
+          "tech_category": "backend",
+          "required_skills": [
+            "Python",
+            "Django",
+            "SQL"
+          ],
+          "preferred_skills": [],
+          "difficulty_level": "intermediate",
+          "seniority_needed": "intermediate",
+          "deliverables": [
+            "Working implementation"
+          ],
+          "status": "open"
+        },
+        {
+          "id": "sel_f2g_01_api_synonyms_gig_03",
+          "client_id": "sel_f2g_01_api_synonyms_client_3",
+          "title": "Automation scripts",
+          "description": "Write Python scripts for scheduled CSV imports.",
+          "tech_category": "data",
+          "required_skills": [
+            "Python"
+          ],
+          "preferred_skills": [],
+          "difficulty_level": "intermediate",
+          "seniority_needed": "intermediate",
+          "deliverables": [
+            "Working implementation"
+          ],
+          "status": "open"
+        },
+        {
+          "id": "sel_f2g_01_api_synonyms_gig_04",
+          "client_id": "sel_f2g_01_api_synonyms_client_4",
+          "title": "React component library",
+          "description": "Build reusable browser UI components.",
+          "tech_category": "frontend",
+          "required_skills": [
+            "React",
+            "TypeScript"
+          ],
+          "preferred_skills": [],
+          "difficulty_level": "intermediate",
+          "seniority_needed": "intermediate",
+          "deliverables": [
+            "Working implementation"
+          ],
+          "status": "open"
+        },
+        {
+          "id": "sel_f2g_01_api_synonyms_gig_05",
+          "client_id": "sel_f2g_01_api_synonyms_client_5",
+          "title": "Java Spring service",
+          "description": "Build a JVM microservice with Spring Boot.",
+          "tech_category": "backend",
+          "required_skills": [
+            "Java",
+            "Spring Boot"
+          ],
+          "preferred_skills": [],
+          "difficulty_level": "intermediate",
+          "seniority_needed": "intermediate",
+          "deliverables": [
+            "Working implementation"
+          ],
+          "status": "open"
+        }
+      ],
+      "judgments": [
+        {
+          "case_id": "sel_f2g_01_api_synonyms_case_01",
+          "candidate_id": "sel_f2g_01_api_synonyms_gig_01",
+          "relevance_label": 2,
+          "label_source": "seeded_fixture",
+          "rationale": "Exact backend API stack and delivery experience align.",
+          "scenario_tags": [
+            "backend_api_transfer",
+            "exact_alias"
+          ]
+        },
+        {
+          "case_id": "sel_f2g_01_api_synonyms_case_02",
+          "candidate_id": "sel_f2g_01_api_synonyms_gig_02",
+          "relevance_label": 2,
+          "label_source": "seeded_fixture",
+          "rationale": "Closely transferable API and relational database work despite a framework difference.",
+          "scenario_tags": [
+            "backend_api_transfer",
+            "synonyms",
+            "database_relationship"
+          ]
+        },
+        {
+          "case_id": "sel_f2g_01_api_synonyms_case_03",
+          "candidate_id": "sel_f2g_01_api_synonyms_gig_03",
+          "relevance_label": 1,
+          "label_source": "seeded_fixture",
+          "rationale": "Python transfers, but API service depth and FastAPI requirements are absent.",
+          "scenario_tags": [
+            "backend_api_transfer",
+            "python_scripting_ml"
+          ]
+        },
+        {
+          "case_id": "sel_f2g_01_api_synonyms_case_04",
+          "candidate_id": "sel_f2g_01_api_synonyms_gig_04",
+          "relevance_label": 0,
+          "label_source": "seeded_fixture",
+          "rationale": "Frontend component work does not match the backend API profile.",
+          "scenario_tags": [
+            "backend_api_transfer",
+            "frontend_backend_mismatch"
+          ]
+        },
+        {
+          "case_id": "sel_f2g_01_api_synonyms_case_05",
+          "candidate_id": "sel_f2g_01_api_synonyms_gig_05",
+          "relevance_label": 0,
+          "label_source": "seeded_fixture",
+          "rationale": "The domain is backend APIs but the required language and framework evidence are missing.",
+          "scenario_tags": [
+            "backend_api_transfer",
+            "java_javascript"
+          ]
+        }
+      ],
+      "is_complete_judgment_set": true,
+      "notes": "Controlled backend_api_transfer query; rationale and tags are evaluation metadata only."
+    },
+    {
+      "query_id": "sel_f2g_02_react_frameworks",
+      "query_type": "freelancer_to_gigs",
+      "split": "selection",
+      "query_entity": {
+        "user_id": "sel_f2g_02_react_frameworks_freelancer",
+        "display_name": "Controlled benchmark freelancer",
+        "headline": "React interface developer",
+        "bio": "Builds accessible single-page applications.",
+        "primary_role": "Frontend Developer",
+        "experience_level": "intermediate",
+        "tech_categories": [
+          "frontend"
+        ],
+        "skills": [
+          "React",
+          "TypeScript",
+          "JavaScript"
+        ],
+        "tools": [
+          "Vite"
+        ],
+        "projects": []
+      },
+      "candidate_entities": [
+        {
+          "id": "sel_f2g_02_react_frameworks_gig_01",
+          "client_id": "sel_f2g_02_react_frameworks_client_1",
+          "title": "React TypeScript dashboard",
+          "description": "Implement accessible dashboard views.",
+          "tech_category": "frontend",
+          "required_skills": [
+            "React",
+            "TypeScript"
+          ],
+          "preferred_skills": [
+            "Vite"
+          ],
+          "difficulty_level": "intermediate",
+          "seniority_needed": "intermediate",
+          "deliverables": [
+            "Working implementation"
+          ],
+          "status": "open"
+        },
+        {
+          "id": "sel_f2g_02_react_frameworks_gig_02",
+          "client_id": "sel_f2g_02_react_frameworks_client_2",
+          "title": "Next.js product interface",
+          "description": "Build a React-based product using Next.js and TypeScript.",
+          "tech_category": "frontend",
+          "required_skills": [
+            "Next.js",
+            "TypeScript"
+          ],
+          "preferred_skills": [],
+          "difficulty_level": "intermediate",
+          "seniority_needed": "intermediate",
+          "deliverables": [
+            "Working implementation"
+          ],
+          "status": "open"
+        },
+        {
+          "id": "sel_f2g_02_react_frameworks_gig_03",
+          "client_id": "sel_f2g_02_react_frameworks_client_3",
+          "title": "Vue migration",
+          "description": "Move browser UI components to Vue.",
+          "tech_category": "frontend",
+          "required_skills": [
+            "Vue.js",
+            "JavaScript"
+          ],
+          "preferred_skills": [],
+          "difficulty_level": "intermediate",
+          "seniority_needed": "intermediate",
+          "deliverables": [
+            "Working implementation"
+          ],
+          "status": "open"
+        },
+        {
+          "id": "sel_f2g_02_react_frameworks_gig_04",
+          "client_id": "sel_f2g_02_react_frameworks_client_4",
+          "title": "React Native mobile app",
+          "description": "Create native mobile screens and device integrations.",
+          "tech_category": "mobile",
+          "required_skills": [
+            "React Native",
+            "TypeScript"
+          ],
+          "preferred_skills": [],
+          "difficulty_level": "intermediate",
+          "seniority_needed": "intermediate",
+          "deliverables": [
+            "Working implementation"
+          ],
+          "status": "open"
+        },
+        {
+          "id": "sel_f2g_02_react_frameworks_gig_05",
+          "client_id": "sel_f2g_02_react_frameworks_client_5",
+          "title": "FastAPI service",
+          "description": "Build Python endpoints.",
+          "tech_category": "backend",
+          "required_skills": [
+            "Python",
+            "FastAPI"
+          ],
+          "preferred_skills": [],
+          "difficulty_level": "intermediate",
+          "seniority_needed": "intermediate",
+          "deliverables": [
+            "Working implementation"
+          ],
+          "status": "open"
+        }
+      ],
+      "judgments": [
+        {
+          "case_id": "sel_f2g_02_react_frameworks_case_01",
+          "candidate_id": "sel_f2g_02_react_frameworks_gig_01",
+          "relevance_label": 2,
+          "label_source": "seeded_fixture",
+          "rationale": "Exact framework, language, and tooling match.",
+          "scenario_tags": [
+            "frontend_framework",
+            "exact_alias"
+          ]
+        },
+        {
+          "case_id": "sel_f2g_02_react_frameworks_case_02",
+          "candidate_id": "sel_f2g_02_react_frameworks_gig_02",
+          "relevance_label": 2,
+          "label_source": "seeded_fixture",
+          "rationale": "Next.js is a closely related React framework and TypeScript aligns.",
+          "scenario_tags": [
+            "frontend_framework",
+            "framework_relationship"
+          ]
+        },
+        {
+          "case_id": "sel_f2g_02_react_frameworks_case_03",
+          "candidate_id": "sel_f2g_02_react_frameworks_gig_03",
+          "relevance_label": 1,
+          "label_source": "seeded_fixture",
+          "rationale": "Frontend and JavaScript experience transfer, but the main framework differs.",
+          "scenario_tags": [
+            "frontend_framework",
+            "framework_relationship"
+          ]
+        },
+        {
+          "case_id": "sel_f2g_02_react_frameworks_case_04",
+          "candidate_id": "sel_f2g_02_react_frameworks_gig_04",
+          "relevance_label": 0,
+          "label_source": "seeded_fixture",
+          "rationale": "Shared React concepts do not establish native mobile delivery experience.",
+          "scenario_tags": [
+            "frontend_framework",
+            "react_react_native"
+          ]
+        },
+        {
+          "case_id": "sel_f2g_02_react_frameworks_case_05",
+          "candidate_id": "sel_f2g_02_react_frameworks_gig_05",
+          "relevance_label": 0,
+          "label_source": "seeded_fixture",
+          "rationale": "Backend API work conflicts with the frontend specialization.",
+          "scenario_tags": [
+            "frontend_framework",
+            "frontend_backend_mismatch"
+          ]
+        }
+      ],
+      "is_complete_judgment_set": true,
+      "notes": "Controlled frontend_framework query; rationale and tags are evaluation metadata only."
+    },
+    {
+      "query_id": "sel_f2g_03_docker_kubernetes",
+      "query_type": "freelancer_to_gigs",
+      "split": "selection",
+      "query_entity": {
+        "user_id": "sel_f2g_03_docker_kubernetes_freelancer",
+        "display_name": "Controlled benchmark freelancer",
+        "headline": "Backend developer using containers",
+        "bio": "Packages services in Docker and maintains compose-based local environments.",
+        "primary_role": "Backend Developer",
+        "experience_level": "intermediate",
+        "tech_categories": [
+          "backend",
+          "devops"
+        ],
+        "skills": [
+          "Python",
+          "Docker"
+        ],
+        "tools": [
+          "Docker Compose"
+        ],
+        "projects": []
+      },
+      "candidate_entities": [
+        {
+          "id": "sel_f2g_03_docker_kubernetes_gig_01",
+          "client_id": "sel_f2g_03_docker_kubernetes_client_1",
+          "title": "Containerize Python services",
+          "description": "Create Docker images and compose environments.",
+          "tech_category": "devops",
+          "required_skills": [
+            "Docker",
+            "Python"
+          ],
+          "preferred_skills": [
+            "Docker Compose"
+          ],
+          "difficulty_level": "intermediate",
+          "seniority_needed": "intermediate",
+          "deliverables": [
+            "Working implementation"
+          ],
+          "status": "open"
+        },
+        {
+          "id": "sel_f2g_03_docker_kubernetes_gig_02",
+          "client_id": "sel_f2g_03_docker_kubernetes_client_2",
+          "title": "Container packaging cleanup",
+          "description": "Standardize OCI container builds for backend services.",
+          "tech_category": "devops",
+          "required_skills": [
+            "Docker"
+          ],
+          "preferred_skills": [],
+          "difficulty_level": "intermediate",
+          "seniority_needed": "intermediate",
+          "deliverables": [
+            "Working implementation"
+          ],
+          "status": "open"
+        },
+        {
+          "id": "sel_f2g_03_docker_kubernetes_gig_03",
+          "client_id": "sel_f2g_03_docker_kubernetes_client_3",
+          "title": "Kubernetes deployment support",
+          "description": "Maintain manifests for a managed Kubernetes cluster.",
+          "tech_category": "devops",
+          "required_skills": [
+            "Kubernetes",
+            "Docker"
+          ],
+          "preferred_skills": [],
+          "difficulty_level": "intermediate",
+          "seniority_needed": "intermediate",
+          "deliverables": [
+            "Working implementation"
+          ],
+          "status": "open"
+        },
+        {
+          "id": "sel_f2g_03_docker_kubernetes_gig_04",
+          "client_id": "sel_f2g_03_docker_kubernetes_client_4",
+          "title": "Platform cluster architecture",
+          "description": "Design production multi-cluster Kubernetes networking.",
+          "tech_category": "cloud",
+          "required_skills": [
+            "Kubernetes",
+            "Terraform"
+          ],
+          "preferred_skills": [],
+          "difficulty_level": "intermediate",
+          "seniority_needed": "senior",
+          "deliverables": [
+            "Working implementation"
+          ],
+          "status": "open"
+        },
+        {
+          "id": "sel_f2g_03_docker_kubernetes_gig_05",
+          "client_id": "sel_f2g_03_docker_kubernetes_client_5",
+          "title": "Mobile UI prototype",
+          "description": "Build React Native screens.",
+          "tech_category": "mobile",
+          "required_skills": [
+            "React Native"
+          ],
+          "preferred_skills": [],
+          "difficulty_level": "intermediate",
+          "seniority_needed": "intermediate",
+          "deliverables": [
+            "Working implementation"
+          ],
+          "status": "open"
+        }
+      ],
+      "judgments": [
+        {
+          "case_id": "sel_f2g_03_docker_kubernetes_case_01",
+          "candidate_id": "sel_f2g_03_docker_kubernetes_gig_01",
+          "relevance_label": 2,
+          "label_source": "seeded_fixture",
+          "rationale": "Exact containerization and Python evidence align.",
+          "scenario_tags": [
+            "containerization_docker",
+            "exact_alias"
+          ]
+        },
+        {
+          "case_id": "sel_f2g_03_docker_kubernetes_case_02",
+          "candidate_id": "sel_f2g_03_docker_kubernetes_gig_02",
+          "relevance_label": 2,
+          "label_source": "seeded_fixture",
+          "rationale": "Container packaging is directly related to demonstrated Docker work.",
+          "scenario_tags": [
+            "containerization_docker",
+            "synonyms"
+          ]
+        },
+        {
+          "case_id": "sel_f2g_03_docker_kubernetes_case_03",
+          "candidate_id": "sel_f2g_03_docker_kubernetes_gig_03",
+          "relevance_label": 1,
+          "label_source": "seeded_fixture",
+          "rationale": "Docker is relevant, but Kubernetes orchestration expertise is not demonstrated.",
+          "scenario_tags": [
+            "containerization_docker",
+            "docker_kubernetes"
+          ]
+        },
+        {
+          "case_id": "sel_f2g_03_docker_kubernetes_case_04",
+          "candidate_id": "sel_f2g_03_docker_kubernetes_gig_04",
+          "relevance_label": 0,
+          "label_source": "seeded_fixture",
+          "rationale": "Senior cluster architecture substantially exceeds Docker familiarity.",
+          "scenario_tags": [
+            "containerization_docker",
+            "docker_kubernetes",
+            "seniority_mismatch"
+          ]
+        },
+        {
+          "case_id": "sel_f2g_03_docker_kubernetes_case_05",
+          "candidate_id": "sel_f2g_03_docker_kubernetes_gig_05",
+          "relevance_label": 0,
+          "label_source": "seeded_fixture",
+          "rationale": "Mobile UI work is unrelated to containerized backend delivery.",
+          "scenario_tags": [
+            "containerization_docker",
+            "frontend_backend_mismatch"
+          ]
+        }
+      ],
+      "is_complete_judgment_set": true,
+      "notes": "Controlled containerization_docker query; rationale and tags are evaluation metadata only."
+    },
+    {
+      "query_id": "sel_f2g_04_sql_database",
+      "query_type": "freelancer_to_gigs",
+      "split": "selection",
+      "query_entity": {
+        "user_id": "sel_f2g_04_sql_database_freelancer",
+        "display_name": "Controlled benchmark freelancer",
+        "headline": "Application developer with SQL",
+        "bio": "Writes CRUD queries for business applications.",
+        "primary_role": "Full-stack Developer",
+        "experience_level": "intermediate",
+        "tech_categories": [
+          "backend",
+          "database"
+        ],
+        "skills": [
+          "JavaScript",
+          "SQL"
+        ],
+        "tools": [
+          "PostgreSQL"
+        ],
+        "projects": []
+      },
+      "candidate_entities": [
+        {
+          "id": "sel_f2g_04_sql_database_gig_01",
+          "client_id": "sel_f2g_04_sql_database_client_1",
+          "title": "Application reporting queries",
+          "description": "Add SQL reports to an existing web application.",
+          "tech_category": "backend",
+          "required_skills": [
+            "SQL",
+            "JavaScript"
+          ],
+          "preferred_skills": [],
+          "difficulty_level": "intermediate",
+          "seniority_needed": "intermediate",
+          "deliverables": [
+            "Working implementation"
+          ],
+          "status": "open"
+        },
+        {
+          "id": "sel_f2g_04_sql_database_gig_02",
+          "client_id": "sel_f2g_04_sql_database_client_2",
+          "title": "PostgreSQL CRUD API",
+          "description": "Implement database-backed endpoints and ordinary schema changes.",
+          "tech_category": "backend",
+          "required_skills": [
+            "PostgreSQL",
+            "REST API"
+          ],
+          "preferred_skills": [],
+          "difficulty_level": "intermediate",
+          "seniority_needed": "intermediate",
+          "deliverables": [
+            "Working implementation"
+          ],
+          "status": "open"
+        },
+        {
+          "id": "sel_f2g_04_sql_database_gig_03",
+          "client_id": "sel_f2g_04_sql_database_client_3",
+          "title": "Database migration assistance",
+          "description": "Write bounded migration scripts and validate records.",
+          "tech_category": "database",
+          "required_skills": [
+            "SQL",
+            "PostgreSQL"
+          ],
+          "preferred_skills": [],
+          "difficulty_level": "intermediate",
+          "seniority_needed": "intermediate",
+          "deliverables": [
+            "Working implementation"
+          ],
+          "status": "open"
+        },
+        {
+          "id": "sel_f2g_04_sql_database_gig_04",
+          "client_id": "sel_f2g_04_sql_database_client_4",
+          "title": "Distributed database architect",
+          "description": "Design sharding, replication, and failover for high-scale systems.",
+          "tech_category": "database",
+          "required_skills": [
+            "Database Design",
+            "PostgreSQL"
+          ],
+          "preferred_skills": [],
+          "difficulty_level": "intermediate",
+          "seniority_needed": "senior",
+          "deliverables": [
+            "Working implementation"
+          ],
+          "status": "open"
+        },
+        {
+          "id": "sel_f2g_04_sql_database_gig_05",
+          "client_id": "sel_f2g_04_sql_database_client_5",
+          "title": "Computer vision model",
+          "description": "Train image classifiers.",
+          "tech_category": "AI/ML",
+          "required_skills": [
+            "PyTorch",
+            "Computer Vision"
+          ],
+          "preferred_skills": [],
+          "difficulty_level": "intermediate",
+          "seniority_needed": "intermediate",
+          "deliverables": [
+            "Working implementation"
+          ],
+          "status": "open"
+        }
+      ],
+      "judgments": [
+        {
+          "case_id": "sel_f2g_04_sql_database_case_01",
+          "candidate_id": "sel_f2g_04_sql_database_gig_01",
+          "relevance_label": 2,
+          "label_source": "seeded_fixture",
+          "rationale": "Application-level SQL and JavaScript are exact evidence.",
+          "scenario_tags": [
+            "sql_database_engineering",
+            "exact_alias"
+          ]
+        },
+        {
+          "case_id": "sel_f2g_04_sql_database_case_02",
+          "candidate_id": "sel_f2g_04_sql_database_gig_02",
+          "relevance_label": 2,
+          "label_source": "seeded_fixture",
+          "rationale": "Relational application work is strongly transferable.",
+          "scenario_tags": [
+            "sql_database_engineering",
+            "database_relationship",
+            "backend_api_transfer"
+          ]
+        },
+        {
+          "case_id": "sel_f2g_04_sql_database_case_03",
+          "candidate_id": "sel_f2g_04_sql_database_gig_03",
+          "relevance_label": 1,
+          "label_source": "seeded_fixture",
+          "rationale": "SQL applies, but dedicated database operations depth is only partial.",
+          "scenario_tags": [
+            "sql_database_engineering",
+            "database_relationship"
+          ]
+        },
+        {
+          "case_id": "sel_f2g_04_sql_database_case_04",
+          "candidate_id": "sel_f2g_04_sql_database_gig_04",
+          "relevance_label": 0,
+          "label_source": "seeded_fixture",
+          "rationale": "Generic application SQL does not demonstrate senior database architecture.",
+          "scenario_tags": [
+            "sql_database_engineering",
+            "database_relationship",
+            "seniority_mismatch"
+          ]
+        },
+        {
+          "case_id": "sel_f2g_04_sql_database_case_05",
+          "candidate_id": "sel_f2g_04_sql_database_gig_05",
+          "relevance_label": 0,
+          "label_source": "seeded_fixture",
+          "rationale": "Machine-learning model work is unrelated to application SQL.",
+          "scenario_tags": [
+            "sql_database_engineering",
+            "ml_nlp"
+          ]
+        }
+      ],
+      "is_complete_judgment_set": true,
+      "notes": "Controlled sql_database_engineering query; rationale and tags are evaluation metadata only."
+    },
+    {
+      "query_id": "sel_f2g_05_aws_cloud",
+      "query_type": "freelancer_to_gigs",
+      "split": "selection",
+      "query_entity": {
+        "user_id": "sel_f2g_05_aws_cloud_freelancer",
+        "display_name": "Controlled benchmark freelancer",
+        "headline": "Backend developer with AWS exposure",
+        "bio": "Deploys small services to EC2 and stores files in S3.",
+        "primary_role": "Backend Developer",
+        "experience_level": "junior",
+        "tech_categories": [
+          "backend",
+          "cloud"
+        ],
+        "skills": [
+          "Python",
+          "AWS"
+        ],
+        "tools": [
+          "EC2",
+          "S3"
+        ],
+        "projects": []
+      },
+      "candidate_entities": [
+        {
+          "id": "sel_f2g_05_aws_cloud_gig_01",
+          "client_id": "sel_f2g_05_aws_cloud_client_1",
+          "title": "Maintain small AWS service",
+          "description": "Deploy a Python service to EC2 and manage S3 assets.",
+          "tech_category": "cloud",
+          "required_skills": [
+            "Python",
+            "AWS"
+          ],
+          "preferred_skills": [
+            "S3"
+          ],
+          "difficulty_level": "intermediate",
+          "seniority_needed": "intermediate",
+          "deliverables": [
+            "Working implementation"
+          ],
+          "status": "open"
+        },
+        {
+          "id": "sel_f2g_05_aws_cloud_gig_02",
+          "client_id": "sel_f2g_05_aws_cloud_client_2",
+          "title": "Cloud deployment assistant",
+          "description": "Support ordinary compute and object-storage deployments.",
+          "tech_category": "cloud",
+          "required_skills": [
+            "AWS",
+            "Docker"
+          ],
+          "preferred_skills": [],
+          "difficulty_level": "intermediate",
+          "seniority_needed": "intermediate",
+          "deliverables": [
+            "Working implementation"
+          ],
+          "status": "open"
+        },
+        {
+          "id": "sel_f2g_05_aws_cloud_gig_03",
+          "client_id": "sel_f2g_05_aws_cloud_client_3",
+          "title": "Serverless API prototype",
+          "description": "Build a small Lambda-backed Python endpoint.",
+          "tech_category": "backend",
+          "required_skills": [
+            "Python",
+            "AWS Lambda"
+          ],
+          "preferred_skills": [],
+          "difficulty_level": "intermediate",
+          "seniority_needed": "intermediate",
+          "deliverables": [
+            "Working implementation"
+          ],
+          "status": "open"
+        },
+        {
+          "id": "sel_f2g_05_aws_cloud_gig_04",
+          "client_id": "sel_f2g_05_aws_cloud_client_4",
+          "title": "Enterprise cloud architect",
+          "description": "Design multi-account networking, governance, and disaster recovery.",
+          "tech_category": "cloud",
+          "required_skills": [
+            "AWS",
+            "Terraform"
+          ],
+          "preferred_skills": [],
+          "difficulty_level": "intermediate",
+          "seniority_needed": "senior",
+          "deliverables": [
+            "Working implementation"
+          ],
+          "status": "open"
+        },
+        {
+          "id": "sel_f2g_05_aws_cloud_gig_05",
+          "client_id": "sel_f2g_05_aws_cloud_client_5",
+          "title": "Android application",
+          "description": "Implement Kotlin screens.",
+          "tech_category": "mobile",
+          "required_skills": [
+            "Kotlin"
+          ],
+          "preferred_skills": [],
+          "difficulty_level": "intermediate",
+          "seniority_needed": "intermediate",
+          "deliverables": [
+            "Working implementation"
+          ],
+          "status": "open"
+        }
+      ],
+      "judgments": [
+        {
+          "case_id": "sel_f2g_05_aws_cloud_case_01",
+          "candidate_id": "sel_f2g_05_aws_cloud_gig_01",
+          "relevance_label": 2,
+          "label_source": "seeded_fixture",
+          "rationale": "The bounded AWS tasks match the demonstrated exposure.",
+          "scenario_tags": [
+            "aws_exposure_architecture",
+            "exact_alias",
+            "cloud_relationship"
+          ]
+        },
+        {
+          "case_id": "sel_f2g_05_aws_cloud_case_02",
+          "candidate_id": "sel_f2g_05_aws_cloud_gig_02",
+          "relevance_label": 1,
+          "label_source": "seeded_fixture",
+          "rationale": "Cloud concepts align but Docker is not demonstrated.",
+          "scenario_tags": [
+            "aws_exposure_architecture",
+            "cloud_relationship"
+          ]
+        },
+        {
+          "case_id": "sel_f2g_05_aws_cloud_case_03",
+          "candidate_id": "sel_f2g_05_aws_cloud_gig_03",
+          "relevance_label": 1,
+          "label_source": "seeded_fixture",
+          "rationale": "Python and AWS transfer, but Lambda evidence is absent.",
+          "scenario_tags": [
+            "aws_exposure_architecture",
+            "cloud_relationship",
+            "backend_api_transfer"
+          ]
+        },
+        {
+          "case_id": "sel_f2g_05_aws_cloud_case_04",
+          "candidate_id": "sel_f2g_05_aws_cloud_gig_04",
+          "relevance_label": 0,
+          "label_source": "seeded_fixture",
+          "rationale": "Basic EC2/S3 exposure is not cloud architecture expertise.",
+          "scenario_tags": [
+            "aws_exposure_architecture",
+            "seniority_mismatch"
+          ]
+        },
+        {
+          "case_id": "sel_f2g_05_aws_cloud_case_05",
+          "candidate_id": "sel_f2g_05_aws_cloud_gig_05",
+          "relevance_label": 0,
+          "label_source": "seeded_fixture",
+          "rationale": "Mobile development is unrelated to the cloud profile.",
+          "scenario_tags": [
+            "aws_exposure_architecture",
+            "frontend_backend_mismatch"
+          ]
+        }
+      ],
+      "is_complete_judgment_set": true,
+      "notes": "Controlled aws_exposure_architecture query; rationale and tags are evaluation metadata only."
+    },
+    {
+      "query_id": "sel_f2g_06_python_ml",
+      "query_type": "freelancer_to_gigs",
+      "split": "selection",
+      "query_entity": {
+        "user_id": "sel_f2g_06_python_ml_freelancer",
+        "display_name": "Controlled benchmark freelancer",
+        "headline": "Python automation developer",
+        "bio": "Writes ETL scripts and Pandas data cleanup jobs.",
+        "primary_role": "Automation Developer",
+        "experience_level": "junior",
+        "tech_categories": [
+          "data"
+        ],
+        "skills": [
+          "Python",
+          "Pandas"
+        ],
+        "tools": [
+          "Jupyter"
+        ],
+        "projects": []
+      },
+      "candidate_entities": [
+        {
+          "id": "sel_f2g_06_python_ml_gig_01",
+          "client_id": "sel_f2g_06_python_ml_client_1",
+          "title": "CSV automation cleanup",
+          "description": "Improve Python and Pandas data scripts.",
+          "tech_category": "data",
+          "required_skills": [
+            "Python",
+            "Pandas"
+          ],
+          "preferred_skills": [],
+          "difficulty_level": "intermediate",
+          "seniority_needed": "intermediate",
+          "deliverables": [
+            "Working implementation"
+          ],
+          "status": "open"
+        },
+        {
+          "id": "sel_f2g_06_python_ml_gig_02",
+          "client_id": "sel_f2g_06_python_ml_client_2",
+          "title": "Data preparation pipeline",
+          "description": "Transform tabular data before analytics.",
+          "tech_category": "data",
+          "required_skills": [
+            "Python",
+            "SQL"
+          ],
+          "preferred_skills": [],
+          "difficulty_level": "intermediate",
+          "seniority_needed": "intermediate",
+          "deliverables": [
+            "Working implementation"
+          ],
+          "status": "open"
+        },
+        {
+          "id": "sel_f2g_06_python_ml_gig_03",
+          "client_id": "sel_f2g_06_python_ml_client_3",
+          "title": "ML dataset preparation",
+          "description": "Clean and label text data for an existing model.",
+          "tech_category": "AI/ML",
+          "required_skills": [
+            "Python",
+            "Pandas"
+          ],
+          "preferred_skills": [],
+          "difficulty_level": "intermediate",
+          "seniority_needed": "intermediate",
+          "deliverables": [
+            "Working implementation"
+          ],
+          "status": "open"
+        },
+        {
+          "id": "sel_f2g_06_python_ml_gig_04",
+          "client_id": "sel_f2g_06_python_ml_client_4",
+          "title": "Production NLP engineer",
+          "description": "Train transformer models and operate inference services.",
+          "tech_category": "AI/ML",
+          "required_skills": [
+            "PyTorch",
+            "NLP",
+            "Transformers"
+          ],
+          "preferred_skills": [],
+          "difficulty_level": "intermediate",
+          "seniority_needed": "senior",
+          "deliverables": [
+            "Working implementation"
+          ],
+          "status": "open"
+        },
+        {
+          "id": "sel_f2g_06_python_ml_gig_05",
+          "client_id": "sel_f2g_06_python_ml_client_5",
+          "title": "React website",
+          "description": "Build browser components.",
+          "tech_category": "frontend",
+          "required_skills": [
+            "React"
+          ],
+          "preferred_skills": [],
+          "difficulty_level": "intermediate",
+          "seniority_needed": "intermediate",
+          "deliverables": [
+            "Working implementation"
+          ],
+          "status": "open"
+        }
+      ],
+      "judgments": [
+        {
+          "case_id": "sel_f2g_06_python_ml_case_01",
+          "candidate_id": "sel_f2g_06_python_ml_gig_01",
+          "relevance_label": 2,
+          "label_source": "seeded_fixture",
+          "rationale": "Exact scripting and dataframe skills align.",
+          "scenario_tags": [
+            "python_scripting_ml",
+            "exact_alias"
+          ]
+        },
+        {
+          "case_id": "sel_f2g_06_python_ml_case_02",
+          "candidate_id": "sel_f2g_06_python_ml_gig_02",
+          "relevance_label": 1,
+          "label_source": "seeded_fixture",
+          "rationale": "Python data preparation transfers, but SQL is missing.",
+          "scenario_tags": [
+            "python_scripting_ml",
+            "database_relationship"
+          ]
+        },
+        {
+          "case_id": "sel_f2g_06_python_ml_case_03",
+          "candidate_id": "sel_f2g_06_python_ml_gig_03",
+          "relevance_label": 1,
+          "label_source": "seeded_fixture",
+          "rationale": "Preparation skills apply, but model engineering is not required.",
+          "scenario_tags": [
+            "python_scripting_ml",
+            "ml_nlp"
+          ]
+        },
+        {
+          "case_id": "sel_f2g_06_python_ml_case_04",
+          "candidate_id": "sel_f2g_06_python_ml_gig_04",
+          "relevance_label": 0,
+          "label_source": "seeded_fixture",
+          "rationale": "Python scripting does not demonstrate ML or NLP engineering.",
+          "scenario_tags": [
+            "python_scripting_ml",
+            "ml_nlp",
+            "seniority_mismatch"
+          ]
+        },
+        {
+          "case_id": "sel_f2g_06_python_ml_case_05",
+          "candidate_id": "sel_f2g_06_python_ml_gig_05",
+          "relevance_label": 0,
+          "label_source": "seeded_fixture",
+          "rationale": "Frontend work is unrelated to Python automation.",
+          "scenario_tags": [
+            "python_scripting_ml",
+            "frontend_backend_mismatch"
+          ]
+        }
+      ],
+      "is_complete_judgment_set": true,
+      "notes": "Controlled python_scripting_ml query; rationale and tags are evaluation metadata only."
+    },
+    {
+      "query_id": "sel_f2g_07_java_javascript",
+      "query_type": "freelancer_to_gigs",
+      "split": "selection",
+      "query_entity": {
+        "user_id": "sel_f2g_07_java_javascript_freelancer",
+        "display_name": "Controlled benchmark freelancer",
+        "headline": "Java enterprise developer",
+        "bio": "Builds Spring services on the JVM.",
+        "primary_role": "Backend Engineer",
+        "experience_level": "senior",
+        "tech_categories": [
+          "backend"
+        ],
+        "skills": [
+          "Java",
+          "Spring Boot"
+        ],
+        "tools": [
+          "Maven"
+        ],
+        "projects": []
+      },
+      "candidate_entities": [
+        {
+          "id": "sel_f2g_07_java_javascript_gig_01",
+          "client_id": "sel_f2g_07_java_javascript_client_1",
+          "title": "Spring Boot service",
+          "description": "Implement Java service endpoints.",
+          "tech_category": "backend",
+          "required_skills": [
+            "Java",
+            "Spring Boot"
+          ],
+          "preferred_skills": [],
+          "difficulty_level": "intermediate",
+          "seniority_needed": "intermediate",
+          "deliverables": [
+            "Working implementation"
+          ],
+          "status": "open"
+        },
+        {
+          "id": "sel_f2g_07_java_javascript_gig_02",
+          "client_id": "sel_f2g_07_java_javascript_client_2",
+          "title": "JVM API modernization",
+          "description": "Modernize REST services built on the Java platform.",
+          "tech_category": "backend",
+          "required_skills": [
+            "Java",
+            "REST API"
+          ],
+          "preferred_skills": [],
+          "difficulty_level": "intermediate",
+          "seniority_needed": "intermediate",
+          "deliverables": [
+            "Working implementation"
+          ],
+          "status": "open"
+        },
+        {
+          "id": "sel_f2g_07_java_javascript_gig_03",
+          "client_id": "sel_f2g_07_java_javascript_client_3",
+          "title": "Kotlin backend extension",
+          "description": "Add endpoints to a Kotlin JVM service.",
+          "tech_category": "backend",
+          "required_skills": [
+            "Kotlin",
+            "REST API"
+          ],
+          "preferred_skills": [],
+          "difficulty_level": "intermediate",
+          "seniority_needed": "intermediate",
+          "deliverables": [
+            "Working implementation"
+          ],
+          "status": "open"
+        },
+        {
+          "id": "sel_f2g_07_java_javascript_gig_04",
+          "client_id": "sel_f2g_07_java_javascript_client_4",
+          "title": "JavaScript Node service",
+          "description": "Build APIs in Node.js and TypeScript.",
+          "tech_category": "backend",
+          "required_skills": [
+            "JavaScript",
+            "Node.js"
+          ],
+          "preferred_skills": [],
+          "difficulty_level": "intermediate",
+          "seniority_needed": "intermediate",
+          "deliverables": [
+            "Working implementation"
+          ],
+          "status": "open"
+        },
+        {
+          "id": "sel_f2g_07_java_javascript_gig_05",
+          "client_id": "sel_f2g_07_java_javascript_client_5",
+          "title": "React UI",
+          "description": "Create TypeScript components.",
+          "tech_category": "frontend",
+          "required_skills": [
+            "React",
+            "TypeScript"
+          ],
+          "preferred_skills": [],
+          "difficulty_level": "intermediate",
+          "seniority_needed": "intermediate",
+          "deliverables": [
+            "Working implementation"
+          ],
+          "status": "open"
+        }
+      ],
+      "judgments": [
+        {
+          "case_id": "sel_f2g_07_java_javascript_case_01",
+          "candidate_id": "sel_f2g_07_java_javascript_gig_01",
+          "relevance_label": 2,
+          "label_source": "seeded_fixture",
+          "rationale": "Exact language and framework evidence align.",
+          "scenario_tags": [
+            "java_javascript",
+            "exact_alias",
+            "backend_api_transfer"
+          ]
+        },
+        {
+          "case_id": "sel_f2g_07_java_javascript_case_02",
+          "candidate_id": "sel_f2g_07_java_javascript_gig_02",
+          "relevance_label": 2,
+          "label_source": "seeded_fixture",
+          "rationale": "JVM and API experience transfer directly.",
+          "scenario_tags": [
+            "java_javascript",
+            "synonyms",
+            "backend_api_transfer"
+          ]
+        },
+        {
+          "case_id": "sel_f2g_07_java_javascript_case_03",
+          "candidate_id": "sel_f2g_07_java_javascript_gig_03",
+          "relevance_label": 1,
+          "label_source": "seeded_fixture",
+          "rationale": "JVM backend knowledge transfers, but Kotlin is not demonstrated.",
+          "scenario_tags": [
+            "java_javascript",
+            "framework_relationship"
+          ]
+        },
+        {
+          "case_id": "sel_f2g_07_java_javascript_case_04",
+          "candidate_id": "sel_f2g_07_java_javascript_gig_04",
+          "relevance_label": 0,
+          "label_source": "seeded_fixture",
+          "rationale": "Java and JavaScript are distinct languages despite similar names.",
+          "scenario_tags": [
+            "java_javascript",
+            "frontend_backend_mismatch"
+          ]
+        },
+        {
+          "case_id": "sel_f2g_07_java_javascript_case_05",
+          "candidate_id": "sel_f2g_07_java_javascript_gig_05",
+          "relevance_label": 0,
+          "label_source": "seeded_fixture",
+          "rationale": "Frontend JavaScript work is outside the Java backend profile.",
+          "scenario_tags": [
+            "java_javascript",
+            "frontend_backend_mismatch"
+          ]
+        }
+      ],
+      "is_complete_judgment_set": true,
+      "notes": "Controlled java_javascript query; rationale and tags are evaluation metadata only."
+    },
+    {
+      "query_id": "sel_f2g_08_nlp_synonyms",
+      "query_type": "freelancer_to_gigs",
+      "split": "selection",
+      "query_entity": {
+        "user_id": "sel_f2g_08_nlp_synonyms_freelancer",
+        "display_name": "Controlled benchmark freelancer",
+        "headline": "NLP engineer",
+        "bio": "Builds text classification and sentence embedding pipelines.",
+        "primary_role": "Machine Learning Engineer",
+        "experience_level": "intermediate",
+        "tech_categories": [
+          "AI/ML"
+        ],
+        "skills": [
+          "Python",
+          "NLP",
+          "PyTorch"
+        ],
+        "tools": [
+          "Transformers"
+        ],
+        "projects": []
+      },
+      "candidate_entities": [
+        {
+          "id": "sel_f2g_08_nlp_synonyms_gig_01",
+          "client_id": "sel_f2g_08_nlp_synonyms_client_1",
+          "title": "Text classification pipeline",
+          "description": "Train and evaluate NLP classifiers in PyTorch.",
+          "tech_category": "AI/ML",
+          "required_skills": [
+            "Python",
+            "NLP",
+            "PyTorch"
+          ],
+          "preferred_skills": [],
+          "difficulty_level": "intermediate",
+          "seniority_needed": "intermediate",
+          "deliverables": [
+            "Working implementation"
+          ],
+          "status": "open"
+        },
+        {
+          "id": "sel_f2g_08_nlp_synonyms_gig_02",
+          "client_id": "sel_f2g_08_nlp_synonyms_client_2",
+          "title": "Semantic search evaluation",
+          "description": "Evaluate sentence encoders for text retrieval.",
+          "tech_category": "AI/ML",
+          "required_skills": [
+            "Python",
+            "Machine Learning"
+          ],
+          "preferred_skills": [
+            "Transformers"
+          ],
+          "difficulty_level": "intermediate",
+          "seniority_needed": "intermediate",
+          "deliverables": [
+            "Working implementation"
+          ],
+          "status": "open"
+        },
+        {
+          "id": "sel_f2g_08_nlp_synonyms_gig_03",
+          "client_id": "sel_f2g_08_nlp_synonyms_client_3",
+          "title": "General data science analysis",
+          "description": "Analyze tabular datasets and build simple models.",
+          "tech_category": "data",
+          "required_skills": [
+            "Python",
+            "Machine Learning"
+          ],
+          "preferred_skills": [],
+          "difficulty_level": "intermediate",
+          "seniority_needed": "intermediate",
+          "deliverables": [
+            "Working implementation"
+          ],
+          "status": "open"
+        },
+        {
+          "id": "sel_f2g_08_nlp_synonyms_gig_04",
+          "client_id": "sel_f2g_08_nlp_synonyms_client_4",
+          "title": "AI content enthusiast",
+          "description": "Use chatbot products and write prompts; no model development.",
+          "tech_category": "AI/ML",
+          "required_skills": [
+            "Prompt Engineering"
+          ],
+          "preferred_skills": [],
+          "difficulty_level": "intermediate",
+          "seniority_needed": "intermediate",
+          "deliverables": [
+            "Working implementation"
+          ],
+          "status": "open"
+        },
+        {
+          "id": "sel_f2g_08_nlp_synonyms_gig_05",
+          "client_id": "sel_f2g_08_nlp_synonyms_client_5",
+          "title": "Frontend dashboard",
+          "description": "Build React charts.",
+          "tech_category": "frontend",
+          "required_skills": [
+            "React",
+            "TypeScript"
+          ],
+          "preferred_skills": [],
+          "difficulty_level": "intermediate",
+          "seniority_needed": "intermediate",
+          "deliverables": [
+            "Working implementation"
+          ],
+          "status": "open"
+        }
+      ],
+      "judgments": [
+        {
+          "case_id": "sel_f2g_08_nlp_synonyms_case_01",
+          "candidate_id": "sel_f2g_08_nlp_synonyms_gig_01",
+          "relevance_label": 2,
+          "label_source": "seeded_fixture",
+          "rationale": "Exact ML and NLP evidence align.",
+          "scenario_tags": [
+            "ml_nlp",
+            "exact_alias"
+          ]
+        },
+        {
+          "case_id": "sel_f2g_08_nlp_synonyms_case_02",
+          "candidate_id": "sel_f2g_08_nlp_synonyms_gig_02",
+          "relevance_label": 2,
+          "label_source": "seeded_fixture",
+          "rationale": "Sentence embeddings and transformer experience strongly transfer.",
+          "scenario_tags": [
+            "ml_nlp",
+            "synonyms"
+          ]
+        },
+        {
+          "case_id": "sel_f2g_08_nlp_synonyms_case_03",
+          "candidate_id": "sel_f2g_08_nlp_synonyms_gig_03",
+          "relevance_label": 1,
+          "label_source": "seeded_fixture",
+          "rationale": "General ML overlaps but NLP specialization is not central.",
+          "scenario_tags": [
+            "ml_nlp",
+            "synonyms"
+          ]
+        },
+        {
+          "case_id": "sel_f2g_08_nlp_synonyms_case_04",
+          "candidate_id": "sel_f2g_08_nlp_synonyms_gig_04",
+          "relevance_label": 0,
+          "label_source": "seeded_fixture",
+          "rationale": "Generic AI interest is not demonstrated ML ability.",
+          "scenario_tags": [
+            "ml_nlp",
+            "generic_ai_demonstrated_ml"
+          ]
+        },
+        {
+          "case_id": "sel_f2g_08_nlp_synonyms_case_05",
+          "candidate_id": "sel_f2g_08_nlp_synonyms_gig_05",
+          "relevance_label": 0,
+          "label_source": "seeded_fixture",
+          "rationale": "Frontend delivery is unrelated to NLP engineering.",
+          "scenario_tags": [
+            "ml_nlp",
+            "frontend_backend_mismatch"
+          ]
+        }
+      ],
+      "is_complete_judgment_set": true,
+      "notes": "Controlled ml_nlp query; rationale and tags are evaluation metadata only."
+    },
+    {
+      "query_id": "sel_g2f_09_fastapi",
+      "query_type": "gig_to_freelancers",
+      "split": "selection",
+      "query_entity": {
+        "id": "sel_g2f_09_fastapi_gig",
+        "client_id": "sel_g2f_09_fastapi_client",
+        "title": "FastAPI order service",
+        "description": "Build typed Python APIs with PostgreSQL.",
+        "tech_category": "backend",
+        "required_skills": [
+          "Python",
+          "FastAPI",
+          "PostgreSQL"
+        ],
+        "preferred_skills": [
+          "Docker"
+        ],
+        "difficulty_level": "intermediate",
+        "seniority_needed": "intermediate",
+        "deliverables": [
+          "Working implementation"
+        ],
+        "status": "open"
+      },
+      "candidate_entities": [
+        {
+          "user_id": "sel_g2f_09_fastapi_freelancer_01",
+          "display_name": "Controlled benchmark freelancer",
+          "headline": "FastAPI backend engineer",
+          "bio": "Builds typed APIs and relational persistence.",
+          "primary_role": "Backend Engineer",
+          "experience_level": "intermediate",
+          "tech_categories": [
+            "backend"
+          ],
+          "skills": [
+            "Python",
+            "FastAPI",
+            "PostgreSQL",
+            "Docker"
+          ],
+          "tools": [],
+          "projects": []
+        },
+        {
+          "user_id": "sel_g2f_09_fastapi_freelancer_02",
+          "display_name": "Controlled benchmark freelancer",
+          "headline": "Django API developer",
+          "bio": "Builds Python REST services backed by PostgreSQL.",
+          "primary_role": "Backend Developer",
+          "experience_level": "intermediate",
+          "tech_categories": [
+            "backend"
+          ],
+          "skills": [
+            "Python",
+            "Django",
+            "PostgreSQL",
+            "REST API"
+          ],
+          "tools": [],
+          "projects": []
+        },
+        {
+          "user_id": "sel_g2f_09_fastapi_freelancer_03",
+          "display_name": "Controlled benchmark freelancer",
+          "headline": "Python automation developer",
+          "bio": "Writes scripts and CSV loaders.",
+          "primary_role": "Automation Developer",
+          "experience_level": "intermediate",
+          "tech_categories": [
+            "data"
+          ],
+          "skills": [
+            "Python",
+            "PostgreSQL"
+          ],
+          "tools": [],
+          "projects": []
+        },
+        {
+          "user_id": "sel_g2f_09_fastapi_freelancer_04",
+          "display_name": "Controlled benchmark freelancer",
+          "headline": "Java Spring engineer",
+          "bio": "Builds JVM services.",
+          "primary_role": "Backend Engineer",
+          "experience_level": "intermediate",
+          "tech_categories": [
+            "backend"
+          ],
+          "skills": [
+            "Java",
+            "Spring Boot"
+          ],
+          "tools": [],
+          "projects": []
+        },
+        {
+          "user_id": "sel_g2f_09_fastapi_freelancer_05",
+          "display_name": "Controlled benchmark freelancer",
+          "headline": "React UI developer",
+          "bio": "Builds browser components.",
+          "primary_role": "Frontend Developer",
+          "experience_level": "intermediate",
+          "tech_categories": [
+            "frontend"
+          ],
+          "skills": [
+            "React",
+            "TypeScript"
+          ],
+          "tools": [],
+          "projects": []
+        }
+      ],
+      "judgments": [
+        {
+          "case_id": "sel_g2f_09_fastapi_case_01",
+          "candidate_id": "sel_g2f_09_fastapi_freelancer_01",
+          "relevance_label": 2,
+          "label_source": "seeded_fixture",
+          "rationale": "Exact service stack and tooling align.",
+          "scenario_tags": [
+            "backend_api_transfer",
+            "exact_alias"
+          ]
+        },
+        {
+          "case_id": "sel_g2f_09_fastapi_case_02",
+          "candidate_id": "sel_g2f_09_fastapi_freelancer_02",
+          "relevance_label": 2,
+          "label_source": "seeded_fixture",
+          "rationale": "Strong transferable Python API and database experience.",
+          "scenario_tags": [
+            "backend_api_transfer",
+            "framework_relationship",
+            "database_relationship"
+          ]
+        },
+        {
+          "case_id": "sel_g2f_09_fastapi_case_03",
+          "candidate_id": "sel_g2f_09_fastapi_freelancer_03",
+          "relevance_label": 1,
+          "label_source": "seeded_fixture",
+          "rationale": "Python and PostgreSQL overlap without API framework depth.",
+          "scenario_tags": [
+            "backend_api_transfer",
+            "python_scripting_ml"
+          ]
+        },
+        {
+          "case_id": "sel_g2f_09_fastapi_case_04",
+          "candidate_id": "sel_g2f_09_fastapi_freelancer_04",
+          "relevance_label": 0,
+          "label_source": "seeded_fixture",
+          "rationale": "Backend domain alone does not replace required Python/FastAPI evidence.",
+          "scenario_tags": [
+            "backend_api_transfer",
+            "java_javascript"
+          ]
+        },
+        {
+          "case_id": "sel_g2f_09_fastapi_case_05",
+          "candidate_id": "sel_g2f_09_fastapi_freelancer_05",
+          "relevance_label": 0,
+          "label_source": "seeded_fixture",
+          "rationale": "Frontend specialization is a domain mismatch.",
+          "scenario_tags": [
+            "backend_api_transfer",
+            "frontend_backend_mismatch"
+          ]
+        }
+      ],
+      "is_complete_judgment_set": true,
+      "notes": "Controlled backend_api_transfer query; rationale and tags are evaluation metadata only."
+    },
+    {
+      "query_id": "sel_g2f_10_react_native",
+      "query_type": "gig_to_freelancers",
+      "split": "selection",
+      "query_entity": {
+        "id": "sel_g2f_10_react_native_gig",
+        "client_id": "sel_g2f_10_react_native_client",
+        "title": "React Native field app",
+        "description": "Build native mobile screens and device integrations.",
+        "tech_category": "mobile",
+        "required_skills": [
+          "React Native",
+          "TypeScript"
+        ],
+        "preferred_skills": [
+          "JavaScript"
+        ],
+        "difficulty_level": "intermediate",
+        "seniority_needed": "intermediate",
+        "deliverables": [
+          "Working implementation"
+        ],
+        "status": "open"
+      },
+      "candidate_entities": [
+        {
+          "user_id": "sel_g2f_10_react_native_freelancer_01",
+          "display_name": "Controlled benchmark freelancer",
+          "headline": "React Native mobile developer",
+          "bio": "Ships cross-platform native apps.",
+          "primary_role": "Mobile Developer",
+          "experience_level": "intermediate",
+          "tech_categories": [
+            "mobile"
+          ],
+          "skills": [
+            "React Native",
+            "TypeScript",
+            "JavaScript"
+          ],
+          "tools": [],
+          "projects": []
+        },
+        {
+          "user_id": "sel_g2f_10_react_native_freelancer_02",
+          "display_name": "Controlled benchmark freelancer",
+          "headline": "Cross-platform mobile engineer",
+          "bio": "Builds mobile applications with React Native.",
+          "primary_role": "Mobile Engineer",
+          "experience_level": "intermediate",
+          "tech_categories": [
+            "mobile"
+          ],
+          "skills": [
+            "React Native",
+            "JavaScript"
+          ],
+          "tools": [],
+          "projects": []
+        },
+        {
+          "user_id": "sel_g2f_10_react_native_freelancer_03",
+          "display_name": "Controlled benchmark freelancer",
+          "headline": "React web developer",
+          "bio": "Builds browser SPAs in React.",
+          "primary_role": "Frontend Developer",
+          "experience_level": "intermediate",
+          "tech_categories": [
+            "frontend"
+          ],
+          "skills": [
+            "React",
+            "TypeScript"
+          ],
+          "tools": [],
+          "projects": []
+        },
+        {
+          "user_id": "sel_g2f_10_react_native_freelancer_04",
+          "display_name": "Controlled benchmark freelancer",
+          "headline": "Native Android engineer",
+          "bio": "Builds Kotlin Android applications.",
+          "primary_role": "Android Developer",
+          "experience_level": "intermediate",
+          "tech_categories": [
+            "mobile"
+          ],
+          "skills": [
+            "Kotlin",
+            "Android"
+          ],
+          "tools": [],
+          "projects": []
+        },
+        {
+          "user_id": "sel_g2f_10_react_native_freelancer_05",
+          "display_name": "Controlled benchmark freelancer",
+          "headline": "Backend API engineer",
+          "bio": "Builds Python services.",
+          "primary_role": "Backend Engineer",
+          "experience_level": "intermediate",
+          "tech_categories": [
+            "backend"
+          ],
+          "skills": [
+            "Python",
+            "FastAPI"
+          ],
+          "tools": [],
+          "projects": []
+        }
+      ],
+      "judgments": [
+        {
+          "case_id": "sel_g2f_10_react_native_case_01",
+          "candidate_id": "sel_g2f_10_react_native_freelancer_01",
+          "relevance_label": 2,
+          "label_source": "seeded_fixture",
+          "rationale": "Exact mobile framework and language evidence align.",
+          "scenario_tags": [
+            "react_react_native",
+            "exact_alias"
+          ]
+        },
+        {
+          "case_id": "sel_g2f_10_react_native_case_02",
+          "candidate_id": "sel_g2f_10_react_native_freelancer_02",
+          "relevance_label": 2,
+          "label_source": "seeded_fixture",
+          "rationale": "Direct React Native delivery experience is strong.",
+          "scenario_tags": [
+            "react_react_native",
+            "synonyms"
+          ]
+        },
+        {
+          "case_id": "sel_g2f_10_react_native_case_03",
+          "candidate_id": "sel_g2f_10_react_native_freelancer_03",
+          "relevance_label": 1,
+          "label_source": "seeded_fixture",
+          "rationale": "React concepts transfer partially, but native mobile experience is absent.",
+          "scenario_tags": [
+            "react_react_native",
+            "frontend_framework"
+          ]
+        },
+        {
+          "case_id": "sel_g2f_10_react_native_case_04",
+          "candidate_id": "sel_g2f_10_react_native_freelancer_04",
+          "relevance_label": 0,
+          "label_source": "seeded_fixture",
+          "rationale": "Mobile domain matches but the required cross-platform stack does not.",
+          "scenario_tags": [
+            "react_react_native",
+            "framework_relationship"
+          ]
+        },
+        {
+          "case_id": "sel_g2f_10_react_native_case_05",
+          "candidate_id": "sel_g2f_10_react_native_freelancer_05",
+          "relevance_label": 0,
+          "label_source": "seeded_fixture",
+          "rationale": "Backend specialization is unrelated to mobile UI delivery.",
+          "scenario_tags": [
+            "react_react_native",
+            "frontend_backend_mismatch"
+          ]
+        }
+      ],
+      "is_complete_judgment_set": true,
+      "notes": "Controlled react_react_native query; rationale and tags are evaluation metadata only."
+    },
+    {
+      "query_id": "sel_g2f_11_database",
+      "query_type": "gig_to_freelancers",
+      "split": "selection",
+      "query_entity": {
+        "id": "sel_g2f_11_database_gig",
+        "client_id": "sel_g2f_11_database_client",
+        "title": "PostgreSQL performance engineer",
+        "description": "Tune queries, indexes, migrations, and replication.",
+        "tech_category": "database",
+        "required_skills": [
+          "PostgreSQL",
+          "Database Design",
+          "SQL"
+        ],
+        "preferred_skills": [
+          "Linux"
+        ],
+        "difficulty_level": "intermediate",
+        "seniority_needed": "senior",
+        "deliverables": [
+          "Working implementation"
+        ],
+        "status": "open"
+      },
+      "candidate_entities": [
+        {
+          "user_id": "sel_g2f_11_database_freelancer_01",
+          "display_name": "Controlled benchmark freelancer",
+          "headline": "Senior PostgreSQL engineer",
+          "bio": "Tunes indexes and replication for production databases.",
+          "primary_role": "Database Engineer",
+          "experience_level": "senior",
+          "tech_categories": [
+            "database"
+          ],
+          "skills": [
+            "PostgreSQL",
+            "Database Design",
+            "SQL",
+            "Linux"
+          ],
+          "tools": [],
+          "projects": []
+        },
+        {
+          "user_id": "sel_g2f_11_database_freelancer_02",
+          "display_name": "Controlled benchmark freelancer",
+          "headline": "Relational database specialist",
+          "bio": "Designs schemas and optimizes SQL workloads.",
+          "primary_role": "Database Engineer",
+          "experience_level": "senior",
+          "tech_categories": [
+            "database"
+          ],
+          "skills": [
+            "SQL",
+            "Database Design",
+            "MySQL"
+          ],
+          "tools": [],
+          "projects": []
+        },
+        {
+          "user_id": "sel_g2f_11_database_freelancer_03",
+          "display_name": "Controlled benchmark freelancer",
+          "headline": "Backend application developer",
+          "bio": "Uses PostgreSQL for CRUD applications.",
+          "primary_role": "Backend Developer",
+          "experience_level": "intermediate",
+          "tech_categories": [
+            "backend"
+          ],
+          "skills": [
+            "Python",
+            "PostgreSQL",
+            "SQL"
+          ],
+          "tools": [],
+          "projects": []
+        },
+        {
+          "user_id": "sel_g2f_11_database_freelancer_04",
+          "display_name": "Controlled benchmark freelancer",
+          "headline": "Spreadsheet analyst",
+          "bio": "Writes simple SQL reports.",
+          "primary_role": "Data Analyst",
+          "experience_level": "junior",
+          "tech_categories": [
+            "data"
+          ],
+          "skills": [
+            "SQL"
+          ],
+          "tools": [],
+          "projects": []
+        },
+        {
+          "user_id": "sel_g2f_11_database_freelancer_05",
+          "display_name": "Controlled benchmark freelancer",
+          "headline": "Frontend engineer",
+          "bio": "Builds React interfaces.",
+          "primary_role": "Frontend Developer",
+          "experience_level": "intermediate",
+          "tech_categories": [
+            "frontend"
+          ],
+          "skills": [
+            "React"
+          ],
+          "tools": [],
+          "projects": []
+        }
+      ],
+      "judgments": [
+        {
+          "case_id": "sel_g2f_11_database_case_01",
+          "candidate_id": "sel_g2f_11_database_freelancer_01",
+          "relevance_label": 2,
+          "label_source": "seeded_fixture",
+          "rationale": "Exact database engineering and seniority evidence align.",
+          "scenario_tags": [
+            "database_relationship",
+            "exact_alias"
+          ]
+        },
+        {
+          "case_id": "sel_g2f_11_database_case_02",
+          "candidate_id": "sel_g2f_11_database_freelancer_02",
+          "relevance_label": 1,
+          "label_source": "seeded_fixture",
+          "rationale": "Strong relational expertise transfers, but PostgreSQL-specific operations are missing.",
+          "scenario_tags": [
+            "database_relationship",
+            "sql_database_engineering"
+          ]
+        },
+        {
+          "case_id": "sel_g2f_11_database_case_03",
+          "candidate_id": "sel_g2f_11_database_freelancer_03",
+          "relevance_label": 1,
+          "label_source": "seeded_fixture",
+          "rationale": "Application SQL is relevant but insufficient for senior database operations.",
+          "scenario_tags": [
+            "database_relationship",
+            "sql_database_engineering",
+            "seniority_mismatch"
+          ]
+        },
+        {
+          "case_id": "sel_g2f_11_database_case_04",
+          "candidate_id": "sel_g2f_11_database_freelancer_04",
+          "relevance_label": 0,
+          "label_source": "seeded_fixture",
+          "rationale": "Generic SQL does not establish database engineering depth.",
+          "scenario_tags": [
+            "database_relationship",
+            "seniority_mismatch"
+          ]
+        },
+        {
+          "case_id": "sel_g2f_11_database_case_05",
+          "candidate_id": "sel_g2f_11_database_freelancer_05",
+          "relevance_label": 0,
+          "label_source": "seeded_fixture",
+          "rationale": "Frontend work is unrelated to database engineering.",
+          "scenario_tags": [
+            "database_relationship",
+            "frontend_backend_mismatch"
+          ]
+        }
+      ],
+      "is_complete_judgment_set": true,
+      "notes": "Controlled database_relationship query; rationale and tags are evaluation metadata only."
+    },
+    {
+      "query_id": "sel_g2f_12_cloud",
+      "query_type": "gig_to_freelancers",
+      "split": "selection",
+      "query_entity": {
+        "id": "sel_g2f_12_cloud_gig",
+        "client_id": "sel_g2f_12_cloud_client",
+        "title": "AWS platform implementation",
+        "description": "Implement networked AWS infrastructure with Terraform and observability.",
+        "tech_category": "cloud",
+        "required_skills": [
+          "AWS",
+          "Terraform"
+        ],
+        "preferred_skills": [
+          "Docker"
+        ],
+        "difficulty_level": "intermediate",
+        "seniority_needed": "senior",
+        "deliverables": [
+          "Working implementation"
+        ],
+        "status": "open"
+      },
+      "candidate_entities": [
+        {
+          "user_id": "sel_g2f_12_cloud_freelancer_01",
+          "display_name": "Controlled benchmark freelancer",
+          "headline": "AWS infrastructure engineer",
+          "bio": "Builds AWS networks and infrastructure as code.",
+          "primary_role": "Cloud Engineer",
+          "experience_level": "senior",
+          "tech_categories": [
+            "cloud",
+            "devops"
+          ],
+          "skills": [
+            "AWS",
+            "Terraform",
+            "Docker"
+          ],
+          "tools": [],
+          "projects": []
+        },
+        {
+          "user_id": "sel_g2f_12_cloud_freelancer_02",
+          "display_name": "Controlled benchmark freelancer",
+          "headline": "Cloud platform engineer",
+          "bio": "Builds infrastructure across public-cloud compute and networking.",
+          "primary_role": "Platform Engineer",
+          "experience_level": "senior",
+          "tech_categories": [
+            "cloud"
+          ],
+          "skills": [
+            "AWS",
+            "Infrastructure as Code"
+          ],
+          "tools": [],
+          "projects": []
+        },
+        {
+          "user_id": "sel_g2f_12_cloud_freelancer_03",
+          "display_name": "Controlled benchmark freelancer",
+          "headline": "AWS application developer",
+          "bio": "Deploys small applications to EC2 and S3.",
+          "primary_role": "Backend Developer",
+          "experience_level": "intermediate",
+          "tech_categories": [
+            "backend",
+            "cloud"
+          ],
+          "skills": [
+            "AWS",
+            "Python"
+          ],
+          "tools": [],
+          "projects": []
+        },
+        {
+          "user_id": "sel_g2f_12_cloud_freelancer_04",
+          "display_name": "Controlled benchmark freelancer",
+          "headline": "Docker backend developer",
+          "bio": "Packages services into containers.",
+          "primary_role": "Backend Developer",
+          "experience_level": "intermediate",
+          "tech_categories": [
+            "backend"
+          ],
+          "skills": [
+            "Docker",
+            "Python"
+          ],
+          "tools": [],
+          "projects": []
+        },
+        {
+          "user_id": "sel_g2f_12_cloud_freelancer_05",
+          "display_name": "Controlled benchmark freelancer",
+          "headline": "UI designer",
+          "bio": "Creates interface prototypes.",
+          "primary_role": "Designer",
+          "experience_level": "intermediate",
+          "tech_categories": [
+            "design"
+          ],
+          "skills": [
+            "Figma"
+          ],
+          "tools": [],
+          "projects": []
+        }
+      ],
+      "judgments": [
+        {
+          "case_id": "sel_g2f_12_cloud_case_01",
+          "candidate_id": "sel_g2f_12_cloud_freelancer_01",
+          "relevance_label": 2,
+          "label_source": "seeded_fixture",
+          "rationale": "Exact cloud architecture and IaC evidence align.",
+          "scenario_tags": [
+            "cloud_relationship",
+            "exact_alias"
+          ]
+        },
+        {
+          "case_id": "sel_g2f_12_cloud_case_02",
+          "candidate_id": "sel_g2f_12_cloud_freelancer_02",
+          "relevance_label": 2,
+          "label_source": "seeded_fixture",
+          "rationale": "Cloud architecture concepts and AWS evidence strongly transfer.",
+          "scenario_tags": [
+            "cloud_relationship",
+            "synonyms"
+          ]
+        },
+        {
+          "case_id": "sel_g2f_12_cloud_case_03",
+          "candidate_id": "sel_g2f_12_cloud_freelancer_03",
+          "relevance_label": 1,
+          "label_source": "seeded_fixture",
+          "rationale": "AWS exposure is relevant but Terraform and platform depth are missing.",
+          "scenario_tags": [
+            "cloud_relationship",
+            "aws_exposure_architecture"
+          ]
+        },
+        {
+          "case_id": "sel_g2f_12_cloud_case_04",
+          "candidate_id": "sel_g2f_12_cloud_freelancer_04",
+          "relevance_label": 0,
+          "label_source": "seeded_fixture",
+          "rationale": "Docker familiarity alone is not AWS infrastructure architecture.",
+          "scenario_tags": [
+            "cloud_relationship",
+            "containerization_docker",
+            "seniority_mismatch"
+          ]
+        },
+        {
+          "case_id": "sel_g2f_12_cloud_case_05",
+          "candidate_id": "sel_g2f_12_cloud_freelancer_05",
+          "relevance_label": 0,
+          "label_source": "seeded_fixture",
+          "rationale": "Design work is unrelated to cloud infrastructure.",
+          "scenario_tags": [
+            "cloud_relationship",
+            "frontend_backend_mismatch"
+          ]
+        }
+      ],
+      "is_complete_judgment_set": true,
+      "notes": "Controlled cloud_relationship query; rationale and tags are evaluation metadata only."
+    },
+    {
+      "query_id": "sel_g2f_13_kubernetes",
+      "query_type": "gig_to_freelancers",
+      "split": "selection",
+      "query_entity": {
+        "id": "sel_g2f_13_kubernetes_gig",
+        "client_id": "sel_g2f_13_kubernetes_client",
+        "title": "Kubernetes operations",
+        "description": "Operate production clusters, deployments, networking, and Helm releases.",
+        "tech_category": "devops",
+        "required_skills": [
+          "Kubernetes",
+          "Docker"
+        ],
+        "preferred_skills": [
+          "Terraform"
+        ],
+        "difficulty_level": "intermediate",
+        "seniority_needed": "senior",
+        "deliverables": [
+          "Working implementation"
+        ],
+        "status": "open"
+      },
+      "candidate_entities": [
+        {
+          "user_id": "sel_g2f_13_kubernetes_freelancer_01",
+          "display_name": "Controlled benchmark freelancer",
+          "headline": "Kubernetes platform engineer",
+          "bio": "Operates clusters, Helm releases, and container workloads.",
+          "primary_role": "Platform Engineer",
+          "experience_level": "senior",
+          "tech_categories": [
+            "devops"
+          ],
+          "skills": [
+            "Kubernetes",
+            "Docker",
+            "Terraform"
+          ],
+          "tools": [],
+          "projects": []
+        },
+        {
+          "user_id": "sel_g2f_13_kubernetes_freelancer_02",
+          "display_name": "Controlled benchmark freelancer",
+          "headline": "Container orchestration engineer",
+          "bio": "Runs Kubernetes workloads and cluster networking.",
+          "primary_role": "DevOps Engineer",
+          "experience_level": "senior",
+          "tech_categories": [
+            "devops"
+          ],
+          "skills": [
+            "Kubernetes",
+            "Docker"
+          ],
+          "tools": [],
+          "projects": []
+        },
+        {
+          "user_id": "sel_g2f_13_kubernetes_freelancer_03",
+          "display_name": "Controlled benchmark freelancer",
+          "headline": "Docker application developer",
+          "bio": "Builds images and compose environments.",
+          "primary_role": "Backend Developer",
+          "experience_level": "intermediate",
+          "tech_categories": [
+            "backend",
+            "devops"
+          ],
+          "skills": [
+            "Docker"
+          ],
+          "tools": [],
+          "projects": []
+        },
+        {
+          "user_id": "sel_g2f_13_kubernetes_freelancer_04",
+          "display_name": "Controlled benchmark freelancer",
+          "headline": "Junior cloud user",
+          "bio": "Deploys a small service with a managed cloud console.",
+          "primary_role": "Junior Developer",
+          "experience_level": "junior",
+          "tech_categories": [
+            "cloud"
+          ],
+          "skills": [
+            "AWS"
+          ],
+          "tools": [],
+          "projects": []
+        },
+        {
+          "user_id": "sel_g2f_13_kubernetes_freelancer_05",
+          "display_name": "Controlled benchmark freelancer",
+          "headline": "React developer",
+          "bio": "Builds browser interfaces.",
+          "primary_role": "Frontend Developer",
+          "experience_level": "intermediate",
+          "tech_categories": [
+            "frontend"
+          ],
+          "skills": [
+            "React"
+          ],
+          "tools": [],
+          "projects": []
+        }
+      ],
+      "judgments": [
+        {
+          "case_id": "sel_g2f_13_kubernetes_case_01",
+          "candidate_id": "sel_g2f_13_kubernetes_freelancer_01",
+          "relevance_label": 2,
+          "label_source": "seeded_fixture",
+          "rationale": "Exact orchestration, container, and seniority evidence align.",
+          "scenario_tags": [
+            "docker_kubernetes",
+            "exact_alias"
+          ]
+        },
+        {
+          "case_id": "sel_g2f_13_kubernetes_case_02",
+          "candidate_id": "sel_g2f_13_kubernetes_freelancer_02",
+          "relevance_label": 2,
+          "label_source": "seeded_fixture",
+          "rationale": "Equivalent orchestration terminology and direct skills align.",
+          "scenario_tags": [
+            "docker_kubernetes",
+            "synonyms"
+          ]
+        },
+        {
+          "case_id": "sel_g2f_13_kubernetes_case_03",
+          "candidate_id": "sel_g2f_13_kubernetes_freelancer_03",
+          "relevance_label": 1,
+          "label_source": "seeded_fixture",
+          "rationale": "Container familiarity helps but cluster operations are unproven.",
+          "scenario_tags": [
+            "docker_kubernetes",
+            "containerization_docker"
+          ]
+        },
+        {
+          "case_id": "sel_g2f_13_kubernetes_case_04",
+          "candidate_id": "sel_g2f_13_kubernetes_freelancer_04",
+          "relevance_label": 0,
+          "label_source": "seeded_fixture",
+          "rationale": "Cloud exposure does not establish Kubernetes operations.",
+          "scenario_tags": [
+            "docker_kubernetes",
+            "aws_exposure_architecture",
+            "seniority_mismatch"
+          ]
+        },
+        {
+          "case_id": "sel_g2f_13_kubernetes_case_05",
+          "candidate_id": "sel_g2f_13_kubernetes_freelancer_05",
+          "relevance_label": 0,
+          "label_source": "seeded_fixture",
+          "rationale": "Frontend specialization is unrelated to cluster operations.",
+          "scenario_tags": [
+            "docker_kubernetes",
+            "frontend_backend_mismatch"
+          ]
+        }
+      ],
+      "is_complete_judgment_set": true,
+      "notes": "Controlled docker_kubernetes query; rationale and tags are evaluation metadata only."
+    },
+    {
+      "query_id": "sel_g2f_14_nlp",
+      "query_type": "gig_to_freelancers",
+      "split": "selection",
+      "query_entity": {
+        "id": "sel_g2f_14_nlp_gig",
+        "client_id": "sel_g2f_14_nlp_client",
+        "title": "NLP model evaluation",
+        "description": "Evaluate transformer text classifiers and embedding models.",
+        "tech_category": "AI/ML",
+        "required_skills": [
+          "Python",
+          "NLP",
+          "PyTorch"
+        ],
+        "preferred_skills": [
+          "Transformers"
+        ],
+        "difficulty_level": "intermediate",
+        "seniority_needed": "intermediate",
+        "deliverables": [
+          "Working implementation"
+        ],
+        "status": "open"
+      },
+      "candidate_entities": [
+        {
+          "user_id": "sel_g2f_14_nlp_freelancer_01",
+          "display_name": "Controlled benchmark freelancer",
+          "headline": "NLP machine-learning engineer",
+          "bio": "Trains text classifiers and sentence encoders.",
+          "primary_role": "Machine Learning Engineer",
+          "experience_level": "intermediate",
+          "tech_categories": [
+            "AI/ML"
+          ],
+          "skills": [
+            "Python",
+            "NLP",
+            "PyTorch",
+            "Transformers"
+          ],
+          "tools": [],
+          "projects": []
+        },
+        {
+          "user_id": "sel_g2f_14_nlp_freelancer_02",
+          "display_name": "Controlled benchmark freelancer",
+          "headline": "Text mining scientist",
+          "bio": "Builds statistical and neural language-processing pipelines.",
+          "primary_role": "Data Scientist",
+          "experience_level": "intermediate",
+          "tech_categories": [
+            "AI/ML"
+          ],
+          "skills": [
+            "Python",
+            "Machine Learning",
+            "NLP"
+          ],
+          "tools": [],
+          "projects": []
+        },
+        {
+          "user_id": "sel_g2f_14_nlp_freelancer_03",
+          "display_name": "Controlled benchmark freelancer",
+          "headline": "General ML developer",
+          "bio": "Builds tabular prediction models in Python.",
+          "primary_role": "Machine Learning Engineer",
+          "experience_level": "intermediate",
+          "tech_categories": [
+            "AI/ML"
+          ],
+          "skills": [
+            "Python",
+            "Machine Learning"
+          ],
+          "tools": [],
+          "projects": []
+        },
+        {
+          "user_id": "sel_g2f_14_nlp_freelancer_04",
+          "display_name": "Controlled benchmark freelancer",
+          "headline": "AI enthusiast",
+          "bio": "Uses generative-AI tools and writes prompts.",
+          "primary_role": "Content Specialist",
+          "experience_level": "intermediate",
+          "tech_categories": [
+            "content"
+          ],
+          "skills": [
+            "Prompt Engineering"
+          ],
+          "tools": [],
+          "projects": []
+        },
+        {
+          "user_id": "sel_g2f_14_nlp_freelancer_05",
+          "display_name": "Controlled benchmark freelancer",
+          "headline": "Python automation developer",
+          "bio": "Writes scripts and web scrapers.",
+          "primary_role": "Automation Developer",
+          "experience_level": "intermediate",
+          "tech_categories": [
+            "data"
+          ],
+          "skills": [
+            "Python"
+          ],
+          "tools": [],
+          "projects": []
+        }
+      ],
+      "judgments": [
+        {
+          "case_id": "sel_g2f_14_nlp_case_01",
+          "candidate_id": "sel_g2f_14_nlp_freelancer_01",
+          "relevance_label": 2,
+          "label_source": "seeded_fixture",
+          "rationale": "Exact demonstrated NLP model engineering aligns.",
+          "scenario_tags": [
+            "generic_ai_demonstrated_ml",
+            "exact_alias",
+            "ml_nlp"
+          ]
+        },
+        {
+          "case_id": "sel_g2f_14_nlp_case_02",
+          "candidate_id": "sel_g2f_14_nlp_freelancer_02",
+          "relevance_label": 2,
+          "label_source": "seeded_fixture",
+          "rationale": "Related terminology and demonstrated language-model work align.",
+          "scenario_tags": [
+            "generic_ai_demonstrated_ml",
+            "synonyms",
+            "ml_nlp"
+          ]
+        },
+        {
+          "case_id": "sel_g2f_14_nlp_case_03",
+          "candidate_id": "sel_g2f_14_nlp_freelancer_03",
+          "relevance_label": 1,
+          "label_source": "seeded_fixture",
+          "rationale": "ML foundations transfer but NLP/PyTorch evidence is missing.",
+          "scenario_tags": [
+            "generic_ai_demonstrated_ml",
+            "ml_nlp"
+          ]
+        },
+        {
+          "case_id": "sel_g2f_14_nlp_case_04",
+          "candidate_id": "sel_g2f_14_nlp_freelancer_04",
+          "relevance_label": 0,
+          "label_source": "seeded_fixture",
+          "rationale": "Tool interest is not demonstrated model engineering.",
+          "scenario_tags": [
+            "generic_ai_demonstrated_ml"
+          ]
+        },
+        {
+          "case_id": "sel_g2f_14_nlp_case_05",
+          "candidate_id": "sel_g2f_14_nlp_freelancer_05",
+          "relevance_label": 0,
+          "label_source": "seeded_fixture",
+          "rationale": "Python alone does not establish ML or NLP ability.",
+          "scenario_tags": [
+            "generic_ai_demonstrated_ml",
+            "python_scripting_ml"
+          ]
+        }
+      ],
+      "is_complete_judgment_set": true,
+      "notes": "Controlled generic_ai_demonstrated_ml query; rationale and tags are evaluation metadata only."
+    },
+    {
+      "query_id": "sel_g2f_15_node_java",
+      "query_type": "gig_to_freelancers",
+      "split": "selection",
+      "query_entity": {
+        "id": "sel_g2f_15_node_java_gig",
+        "client_id": "sel_g2f_15_node_java_client",
+        "title": "Node.js TypeScript API",
+        "description": "Build an asynchronous web API in Node.js.",
+        "tech_category": "backend",
+        "required_skills": [
+          "JavaScript",
+          "TypeScript",
+          "Node.js"
+        ],
+        "preferred_skills": [
+          "PostgreSQL"
+        ],
+        "difficulty_level": "intermediate",
+        "seniority_needed": "intermediate",
+        "deliverables": [
+          "Working implementation"
+        ],
+        "status": "open"
+      },
+      "candidate_entities": [
+        {
+          "user_id": "sel_g2f_15_node_java_freelancer_01",
+          "display_name": "Controlled benchmark freelancer",
+          "headline": "Node TypeScript engineer",
+          "bio": "Builds asynchronous APIs and relational integrations.",
+          "primary_role": "Backend Engineer",
+          "experience_level": "intermediate",
+          "tech_categories": [
+            "backend"
+          ],
+          "skills": [
+            "JavaScript",
+            "TypeScript",
+            "Node.js",
+            "PostgreSQL"
+          ],
+          "tools": [],
+          "projects": []
+        },
+        {
+          "user_id": "sel_g2f_15_node_java_freelancer_02",
+          "display_name": "Controlled benchmark freelancer",
+          "headline": "JavaScript API developer",
+          "bio": "Builds Express REST services.",
+          "primary_role": "Backend Developer",
+          "experience_level": "intermediate",
+          "tech_categories": [
+            "backend"
+          ],
+          "skills": [
+            "JavaScript",
+            "Node.js",
+            "REST API"
+          ],
+          "tools": [],
+          "projects": []
+        },
+        {
+          "user_id": "sel_g2f_15_node_java_freelancer_03",
+          "display_name": "Controlled benchmark freelancer",
+          "headline": "React TypeScript developer",
+          "bio": "Builds frontend applications.",
+          "primary_role": "Frontend Developer",
+          "experience_level": "intermediate",
+          "tech_categories": [
+            "frontend"
+          ],
+          "skills": [
+            "JavaScript",
+            "TypeScript",
+            "React"
+          ],
+          "tools": [],
+          "projects": []
+        },
+        {
+          "user_id": "sel_g2f_15_node_java_freelancer_04",
+          "display_name": "Controlled benchmark freelancer",
+          "headline": "Java Spring developer",
+          "bio": "Builds JVM services.",
+          "primary_role": "Backend Engineer",
+          "experience_level": "intermediate",
+          "tech_categories": [
+            "backend"
+          ],
+          "skills": [
+            "Java",
+            "Spring Boot"
+          ],
+          "tools": [],
+          "projects": []
+        },
+        {
+          "user_id": "sel_g2f_15_node_java_freelancer_05",
+          "display_name": "Controlled benchmark freelancer",
+          "headline": "Database analyst",
+          "bio": "Writes SQL reports.",
+          "primary_role": "Data Analyst",
+          "experience_level": "intermediate",
+          "tech_categories": [
+            "data"
+          ],
+          "skills": [
+            "SQL"
+          ],
+          "tools": [],
+          "projects": []
+        }
+      ],
+      "judgments": [
+        {
+          "case_id": "sel_g2f_15_node_java_case_01",
+          "candidate_id": "sel_g2f_15_node_java_freelancer_01",
+          "relevance_label": 2,
+          "label_source": "seeded_fixture",
+          "rationale": "Exact language, runtime, and database evidence align.",
+          "scenario_tags": [
+            "java_javascript",
+            "exact_alias",
+            "backend_api_transfer"
+          ]
+        },
+        {
+          "case_id": "sel_g2f_15_node_java_case_02",
+          "candidate_id": "sel_g2f_15_node_java_freelancer_02",
+          "relevance_label": 2,
+          "label_source": "seeded_fixture",
+          "rationale": "Strong transferable Node API experience aligns.",
+          "scenario_tags": [
+            "java_javascript",
+            "framework_relationship"
+          ]
+        },
+        {
+          "case_id": "sel_g2f_15_node_java_case_03",
+          "candidate_id": "sel_g2f_15_node_java_freelancer_03",
+          "relevance_label": 1,
+          "label_source": "seeded_fixture",
+          "rationale": "Languages overlap but backend runtime experience is missing.",
+          "scenario_tags": [
+            "java_javascript",
+            "frontend_backend_mismatch"
+          ]
+        },
+        {
+          "case_id": "sel_g2f_15_node_java_case_04",
+          "candidate_id": "sel_g2f_15_node_java_freelancer_04",
+          "relevance_label": 0,
+          "label_source": "seeded_fixture",
+          "rationale": "Java is not JavaScript and the required Node runtime is absent.",
+          "scenario_tags": [
+            "java_javascript",
+            "backend_api_transfer"
+          ]
+        },
+        {
+          "case_id": "sel_g2f_15_node_java_case_05",
+          "candidate_id": "sel_g2f_15_node_java_freelancer_05",
+          "relevance_label": 0,
+          "label_source": "seeded_fixture",
+          "rationale": "Database querying alone does not satisfy API requirements.",
+          "scenario_tags": [
+            "java_javascript",
+            "sql_database_engineering"
+          ]
+        }
+      ],
+      "is_complete_judgment_set": true,
+      "notes": "Controlled java_javascript query; rationale and tags are evaluation metadata only."
+    },
+    {
+      "query_id": "sel_g2f_16_seniority",
+      "query_type": "gig_to_freelancers",
+      "split": "selection",
+      "query_entity": {
+        "id": "sel_g2f_16_seniority_gig",
+        "client_id": "sel_g2f_16_seniority_client",
+        "title": "Senior full-stack technical lead",
+        "description": "Lead architecture and delivery for React and FastAPI systems.",
+        "tech_category": "full-stack",
+        "required_skills": [
+          "React",
+          "Python",
+          "FastAPI"
+        ],
+        "preferred_skills": [
+          "PostgreSQL"
+        ],
+        "difficulty_level": "intermediate",
+        "seniority_needed": "senior",
+        "deliverables": [
+          "Working implementation"
+        ],
+        "status": "open"
+      },
+      "candidate_entities": [
+        {
+          "user_id": "sel_g2f_16_seniority_freelancer_01",
+          "display_name": "Controlled benchmark freelancer",
+          "headline": "Senior full-stack lead",
+          "bio": "Leads React and FastAPI architecture and delivery.",
+          "primary_role": "Technical Lead",
+          "experience_level": "senior",
+          "tech_categories": [
+            "frontend",
+            "backend"
+          ],
+          "skills": [
+            "React",
+            "Python",
+            "FastAPI",
+            "PostgreSQL"
+          ],
+          "tools": [],
+          "projects": []
+        },
+        {
+          "user_id": "sel_g2f_16_seniority_freelancer_02",
+          "display_name": "Controlled benchmark freelancer",
+          "headline": "Senior web engineer",
+          "bio": "Owns end-to-end TypeScript and Python services.",
+          "primary_role": "Full-stack Engineer",
+          "experience_level": "senior",
+          "tech_categories": [
+            "frontend",
+            "backend"
+          ],
+          "skills": [
+            "React",
+            "Python",
+            "REST API"
+          ],
+          "tools": [],
+          "projects": []
+        },
+        {
+          "user_id": "sel_g2f_16_seniority_freelancer_03",
+          "display_name": "Controlled benchmark freelancer",
+          "headline": "Mid-level full-stack developer",
+          "bio": "Builds React screens and small Python endpoints.",
+          "primary_role": "Full-stack Developer",
+          "experience_level": "intermediate",
+          "tech_categories": [
+            "frontend",
+            "backend"
+          ],
+          "skills": [
+            "React",
+            "Python"
+          ],
+          "tools": [],
+          "projects": []
+        },
+        {
+          "user_id": "sel_g2f_16_seniority_freelancer_04",
+          "display_name": "Controlled benchmark freelancer",
+          "headline": "Junior React developer",
+          "bio": "Builds supervised UI tasks.",
+          "primary_role": "Frontend Developer",
+          "experience_level": "junior",
+          "tech_categories": [
+            "frontend"
+          ],
+          "skills": [
+            "React"
+          ],
+          "tools": [],
+          "projects": []
+        },
+        {
+          "user_id": "sel_g2f_16_seniority_freelancer_05",
+          "display_name": "Controlled benchmark freelancer",
+          "headline": "Senior data engineer",
+          "bio": "Leads batch data platforms.",
+          "primary_role": "Data Engineer",
+          "experience_level": "senior",
+          "tech_categories": [
+            "data"
+          ],
+          "skills": [
+            "Python",
+            "SQL"
+          ],
+          "tools": [],
+          "projects": []
+        }
+      ],
+      "judgments": [
+        {
+          "case_id": "sel_g2f_16_seniority_case_01",
+          "candidate_id": "sel_g2f_16_seniority_freelancer_01",
+          "relevance_label": 2,
+          "label_source": "seeded_fixture",
+          "rationale": "Exact stack, leadership, and seniority align.",
+          "scenario_tags": [
+            "seniority_mismatch",
+            "exact_alias",
+            "frontend_framework",
+            "backend_api_transfer"
+          ]
+        },
+        {
+          "case_id": "sel_g2f_16_seniority_case_02",
+          "candidate_id": "sel_g2f_16_seniority_freelancer_02",
+          "relevance_label": 2,
+          "label_source": "seeded_fixture",
+          "rationale": "Strong full-stack and senior delivery evidence transfers.",
+          "scenario_tags": [
+            "seniority_mismatch",
+            "synonyms"
+          ]
+        },
+        {
+          "case_id": "sel_g2f_16_seniority_case_03",
+          "candidate_id": "sel_g2f_16_seniority_freelancer_03",
+          "relevance_label": 1,
+          "label_source": "seeded_fixture",
+          "rationale": "Relevant stack evidence exists, but leadership and FastAPI depth are incomplete.",
+          "scenario_tags": [
+            "seniority_mismatch",
+            "backend_api_transfer"
+          ]
+        },
+        {
+          "case_id": "sel_g2f_16_seniority_case_04",
+          "candidate_id": "sel_g2f_16_seniority_freelancer_04",
+          "relevance_label": 0,
+          "label_source": "seeded_fixture",
+          "rationale": "Partial frontend skill cannot satisfy senior full-stack leadership.",
+          "scenario_tags": [
+            "seniority_mismatch",
+            "frontend_backend_mismatch"
+          ]
+        },
+        {
+          "case_id": "sel_g2f_16_seniority_case_05",
+          "candidate_id": "sel_g2f_16_seniority_freelancer_05",
+          "relevance_label": 0,
+          "label_source": "seeded_fixture",
+          "rationale": "Seniority alone does not overcome the product-domain and stack mismatch.",
+          "scenario_tags": [
+            "seniority_mismatch",
+            "sql_database_engineering"
+          ]
+        }
+      ],
+      "is_complete_judgment_set": true,
+      "notes": "Controlled seniority_mismatch query; rationale and tags are evaluation metadata only."
+    },
+    {
+      "query_id": "hold_f2g_17_fastapi_alias",
+      "query_type": "freelancer_to_gigs",
+      "split": "holdout",
+      "query_entity": {
+        "user_id": "hold_f2g_17_fastapi_alias_freelancer",
+        "display_name": "Controlled benchmark freelancer",
+        "headline": "API engineer using Python web frameworks",
+        "bio": "Delivers authenticated HTTP services and relational persistence.",
+        "primary_role": "Backend Engineer",
+        "experience_level": "intermediate",
+        "tech_categories": [
+          "backend"
+        ],
+        "skills": [
+          "Python",
+          "FastAPI",
+          "REST API",
+          "PostgreSQL"
+        ],
+        "tools": [
+          "Docker"
+        ],
+        "projects": []
+      },
+      "candidate_entities": [
+        {
+          "id": "hold_f2g_17_fastapi_alias_gig_01",
+          "client_id": "hold_f2g_17_fastapi_alias_client_1",
+          "title": "Authenticated FastAPI endpoints",
+          "description": "Build secure Python REST endpoints with PostgreSQL.",
+          "tech_category": "backend",
+          "required_skills": [
+            "Python",
+            "FastAPI",
+            "PostgreSQL"
+          ],
+          "preferred_skills": [],
+          "difficulty_level": "intermediate",
+          "seniority_needed": "intermediate",
+          "deliverables": [
+            "Working implementation"
+          ],
+          "status": "open"
+        },
+        {
+          "id": "hold_f2g_17_fastapi_alias_gig_02",
+          "client_id": "hold_f2g_17_fastapi_alias_client_2",
+          "title": "Python microservice",
+          "description": "Implement a typed web service with SQL persistence.",
+          "tech_category": "backend",
+          "required_skills": [
+            "Python",
+            "REST API",
+            "SQL"
+          ],
+          "preferred_skills": [],
+          "difficulty_level": "intermediate",
+          "seniority_needed": "intermediate",
+          "deliverables": [
+            "Working implementation"
+          ],
+          "status": "open"
+        },
+        {
+          "id": "hold_f2g_17_fastapi_alias_gig_03",
+          "client_id": "hold_f2g_17_fastapi_alias_client_3",
+          "title": "Python batch import",
+          "description": "Load operational files into PostgreSQL.",
+          "tech_category": "data",
+          "required_skills": [
+            "Python",
+            "PostgreSQL"
+          ],
+          "preferred_skills": [],
+          "difficulty_level": "intermediate",
+          "seniority_needed": "intermediate",
+          "deliverables": [
+            "Working implementation"
+          ],
+          "status": "open"
+        },
+        {
+          "id": "hold_f2g_17_fastapi_alias_gig_04",
+          "client_id": "hold_f2g_17_fastapi_alias_client_4",
+          "title": "React Native client",
+          "description": "Build mobile screens.",
+          "tech_category": "mobile",
+          "required_skills": [
+            "React Native"
+          ],
+          "preferred_skills": [],
+          "difficulty_level": "intermediate",
+          "seniority_needed": "intermediate",
+          "deliverables": [
+            "Working implementation"
+          ],
+          "status": "open"
+        },
+        {
+          "id": "hold_f2g_17_fastapi_alias_gig_05",
+          "client_id": "hold_f2g_17_fastapi_alias_client_5",
+          "title": "JavaScript landing page",
+          "description": "Build browser interactions.",
+          "tech_category": "frontend",
+          "required_skills": [
+            "JavaScript"
+          ],
+          "preferred_skills": [],
+          "difficulty_level": "intermediate",
+          "seniority_needed": "intermediate",
+          "deliverables": [
+            "Working implementation"
+          ],
+          "status": "open"
+        }
+      ],
+      "judgments": [
+        {
+          "case_id": "hold_f2g_17_fastapi_alias_case_01",
+          "candidate_id": "hold_f2g_17_fastapi_alias_gig_01",
+          "relevance_label": 2,
+          "label_source": "seeded_fixture",
+          "rationale": "Exact service evidence aligns.",
+          "scenario_tags": [
+            "exact_alias",
+            "backend_api_transfer"
+          ]
+        },
+        {
+          "case_id": "hold_f2g_17_fastapi_alias_case_02",
+          "candidate_id": "hold_f2g_17_fastapi_alias_gig_02",
+          "relevance_label": 2,
+          "label_source": "seeded_fixture",
+          "rationale": "Synonymous service and database requirements strongly transfer.",
+          "scenario_tags": [
+            "exact_alias",
+            "synonyms",
+            "database_relationship"
+          ]
+        },
+        {
+          "case_id": "hold_f2g_17_fastapi_alias_case_03",
+          "candidate_id": "hold_f2g_17_fastapi_alias_gig_03",
+          "relevance_label": 1,
+          "label_source": "seeded_fixture",
+          "rationale": "Language and database overlap without HTTP API work.",
+          "scenario_tags": [
+            "exact_alias",
+            "python_scripting_ml"
+          ]
+        },
+        {
+          "case_id": "hold_f2g_17_fastapi_alias_case_04",
+          "candidate_id": "hold_f2g_17_fastapi_alias_gig_04",
+          "relevance_label": 0,
+          "label_source": "seeded_fixture",
+          "rationale": "Mobile client work is unrelated to backend APIs.",
+          "scenario_tags": [
+            "exact_alias",
+            "react_react_native",
+            "frontend_backend_mismatch"
+          ]
+        },
+        {
+          "case_id": "hold_f2g_17_fastapi_alias_case_05",
+          "candidate_id": "hold_f2g_17_fastapi_alias_gig_05",
+          "relevance_label": 0,
+          "label_source": "seeded_fixture",
+          "rationale": "JavaScript frontend work does not match Python APIs.",
+          "scenario_tags": [
+            "exact_alias",
+            "java_javascript",
+            "frontend_backend_mismatch"
+          ]
+        }
+      ],
+      "is_complete_judgment_set": true,
+      "notes": "Controlled exact_alias query; rationale and tags are evaluation metadata only."
+    },
+    {
+      "query_id": "hold_f2g_18_cloud_docker",
+      "query_type": "freelancer_to_gigs",
+      "split": "holdout",
+      "query_entity": {
+        "user_id": "hold_f2g_18_cloud_docker_freelancer",
+        "display_name": "Controlled benchmark freelancer",
+        "headline": "Application engineer with containers",
+        "bio": "Deploys Dockerized services to a managed AWS environment.",
+        "primary_role": "Backend Developer",
+        "experience_level": "intermediate",
+        "tech_categories": [
+          "backend",
+          "cloud"
+        ],
+        "skills": [
+          "Python",
+          "Docker",
+          "AWS"
+        ],
+        "tools": [
+          "S3"
+        ],
+        "projects": []
+      },
+      "candidate_entities": [
+        {
+          "id": "hold_f2g_18_cloud_docker_gig_01",
+          "client_id": "hold_f2g_18_cloud_docker_client_1",
+          "title": "Deploy Dockerized Python API",
+          "description": "Package and deploy a Python service on AWS.",
+          "tech_category": "cloud",
+          "required_skills": [
+            "Python",
+            "Docker",
+            "AWS"
+          ],
+          "preferred_skills": [],
+          "difficulty_level": "intermediate",
+          "seniority_needed": "intermediate",
+          "deliverables": [
+            "Working implementation"
+          ],
+          "status": "open"
+        },
+        {
+          "id": "hold_f2g_18_cloud_docker_gig_02",
+          "client_id": "hold_f2g_18_cloud_docker_client_2",
+          "title": "Cloud container migration",
+          "description": "Move containerized services to managed cloud compute.",
+          "tech_category": "cloud",
+          "required_skills": [
+            "Docker",
+            "AWS"
+          ],
+          "preferred_skills": [],
+          "difficulty_level": "intermediate",
+          "seniority_needed": "intermediate",
+          "deliverables": [
+            "Working implementation"
+          ],
+          "status": "open"
+        },
+        {
+          "id": "hold_f2g_18_cloud_docker_gig_03",
+          "client_id": "hold_f2g_18_cloud_docker_client_3",
+          "title": "Kubernetes application support",
+          "description": "Prepare images and assist with Kubernetes manifests.",
+          "tech_category": "devops",
+          "required_skills": [
+            "Docker",
+            "Kubernetes"
+          ],
+          "preferred_skills": [],
+          "difficulty_level": "intermediate",
+          "seniority_needed": "intermediate",
+          "deliverables": [
+            "Working implementation"
+          ],
+          "status": "open"
+        },
+        {
+          "id": "hold_f2g_18_cloud_docker_gig_04",
+          "client_id": "hold_f2g_18_cloud_docker_client_4",
+          "title": "Principal cloud architecture",
+          "description": "Design multi-region networking and governance.",
+          "tech_category": "cloud",
+          "required_skills": [
+            "AWS",
+            "Terraform"
+          ],
+          "preferred_skills": [],
+          "difficulty_level": "intermediate",
+          "seniority_needed": "senior",
+          "deliverables": [
+            "Working implementation"
+          ],
+          "status": "open"
+        },
+        {
+          "id": "hold_f2g_18_cloud_docker_gig_05",
+          "client_id": "hold_f2g_18_cloud_docker_client_5",
+          "title": "Vue storefront",
+          "description": "Build frontend product views.",
+          "tech_category": "frontend",
+          "required_skills": [
+            "Vue.js"
+          ],
+          "preferred_skills": [],
+          "difficulty_level": "intermediate",
+          "seniority_needed": "intermediate",
+          "deliverables": [
+            "Working implementation"
+          ],
+          "status": "open"
+        }
+      ],
+      "judgments": [
+        {
+          "case_id": "hold_f2g_18_cloud_docker_case_01",
+          "candidate_id": "hold_f2g_18_cloud_docker_gig_01",
+          "relevance_label": 2,
+          "label_source": "seeded_fixture",
+          "rationale": "Exact application-cloud and container evidence align.",
+          "scenario_tags": [
+            "cloud_relationship",
+            "containerization_docker",
+            "exact_alias"
+          ]
+        },
+        {
+          "case_id": "hold_f2g_18_cloud_docker_case_02",
+          "candidate_id": "hold_f2g_18_cloud_docker_gig_02",
+          "relevance_label": 2,
+          "label_source": "seeded_fixture",
+          "rationale": "Container and cloud deployment experience transfer directly.",
+          "scenario_tags": [
+            "cloud_relationship",
+            "containerization_docker"
+          ]
+        },
+        {
+          "case_id": "hold_f2g_18_cloud_docker_case_03",
+          "candidate_id": "hold_f2g_18_cloud_docker_gig_03",
+          "relevance_label": 1,
+          "label_source": "seeded_fixture",
+          "rationale": "Docker is demonstrated, but orchestration expertise is partial.",
+          "scenario_tags": [
+            "cloud_relationship",
+            "docker_kubernetes"
+          ]
+        },
+        {
+          "case_id": "hold_f2g_18_cloud_docker_case_04",
+          "candidate_id": "hold_f2g_18_cloud_docker_gig_04",
+          "relevance_label": 0,
+          "label_source": "seeded_fixture",
+          "rationale": "Application deployment exposure does not establish principal architecture.",
+          "scenario_tags": [
+            "cloud_relationship",
+            "aws_exposure_architecture",
+            "seniority_mismatch"
+          ]
+        },
+        {
+          "case_id": "hold_f2g_18_cloud_docker_case_05",
+          "candidate_id": "hold_f2g_18_cloud_docker_gig_05",
+          "relevance_label": 0,
+          "label_source": "seeded_fixture",
+          "rationale": "Frontend work is unrelated to cloud deployment.",
+          "scenario_tags": [
+            "cloud_relationship",
+            "frontend_framework",
+            "frontend_backend_mismatch"
+          ]
+        }
+      ],
+      "is_complete_judgment_set": true,
+      "notes": "Controlled cloud_relationship query; rationale and tags are evaluation metadata only."
+    },
+    {
+      "query_id": "hold_f2g_19_react_web",
+      "query_type": "freelancer_to_gigs",
+      "split": "holdout",
+      "query_entity": {
+        "user_id": "hold_f2g_19_react_web_freelancer",
+        "display_name": "Controlled benchmark freelancer",
+        "headline": "Web UI engineer",
+        "bio": "Builds accessible React applications with TypeScript.",
+        "primary_role": "Frontend Engineer",
+        "experience_level": "senior",
+        "tech_categories": [
+          "frontend"
+        ],
+        "skills": [
+          "React",
+          "TypeScript",
+          "JavaScript"
+        ],
+        "tools": [
+          "Vite"
+        ],
+        "projects": []
+      },
+      "candidate_entities": [
+        {
+          "id": "hold_f2g_19_react_web_gig_01",
+          "client_id": "hold_f2g_19_react_web_client_1",
+          "title": "Accessible React application",
+          "description": "Lead TypeScript React UI delivery.",
+          "tech_category": "frontend",
+          "required_skills": [
+            "React",
+            "TypeScript"
+          ],
+          "preferred_skills": [],
+          "difficulty_level": "intermediate",
+          "seniority_needed": "intermediate",
+          "deliverables": [
+            "Working implementation"
+          ],
+          "status": "open"
+        },
+        {
+          "id": "hold_f2g_19_react_web_gig_02",
+          "client_id": "hold_f2g_19_react_web_client_2",
+          "title": "Next.js design system",
+          "description": "Build reusable React-based components in Next.js.",
+          "tech_category": "frontend",
+          "required_skills": [
+            "Next.js",
+            "TypeScript"
+          ],
+          "preferred_skills": [],
+          "difficulty_level": "intermediate",
+          "seniority_needed": "intermediate",
+          "deliverables": [
+            "Working implementation"
+          ],
+          "status": "open"
+        },
+        {
+          "id": "hold_f2g_19_react_web_gig_03",
+          "client_id": "hold_f2g_19_react_web_client_3",
+          "title": "JavaScript Vue interface",
+          "description": "Build frontend views in Vue.",
+          "tech_category": "frontend",
+          "required_skills": [
+            "Vue.js",
+            "JavaScript"
+          ],
+          "preferred_skills": [],
+          "difficulty_level": "intermediate",
+          "seniority_needed": "intermediate",
+          "deliverables": [
+            "Working implementation"
+          ],
+          "status": "open"
+        },
+        {
+          "id": "hold_f2g_19_react_web_gig_04",
+          "client_id": "hold_f2g_19_react_web_client_4",
+          "title": "React Native device app",
+          "description": "Integrate native device APIs.",
+          "tech_category": "mobile",
+          "required_skills": [
+            "React Native",
+            "TypeScript"
+          ],
+          "preferred_skills": [],
+          "difficulty_level": "intermediate",
+          "seniority_needed": "intermediate",
+          "deliverables": [
+            "Working implementation"
+          ],
+          "status": "open"
+        },
+        {
+          "id": "hold_f2g_19_react_web_gig_05",
+          "client_id": "hold_f2g_19_react_web_client_5",
+          "title": "Java service maintenance",
+          "description": "Maintain Spring APIs.",
+          "tech_category": "backend",
+          "required_skills": [
+            "Java",
+            "Spring Boot"
+          ],
+          "preferred_skills": [],
+          "difficulty_level": "intermediate",
+          "seniority_needed": "intermediate",
+          "deliverables": [
+            "Working implementation"
+          ],
+          "status": "open"
+        }
+      ],
+      "judgments": [
+        {
+          "case_id": "hold_f2g_19_react_web_case_01",
+          "candidate_id": "hold_f2g_19_react_web_gig_01",
+          "relevance_label": 2,
+          "label_source": "seeded_fixture",
+          "rationale": "Exact web framework, language, and seniority align.",
+          "scenario_tags": [
+            "frontend_framework",
+            "exact_alias"
+          ]
+        },
+        {
+          "case_id": "hold_f2g_19_react_web_case_02",
+          "candidate_id": "hold_f2g_19_react_web_gig_02",
+          "relevance_label": 2,
+          "label_source": "seeded_fixture",
+          "rationale": "Next.js and React component experience strongly transfer.",
+          "scenario_tags": [
+            "frontend_framework",
+            "framework_relationship"
+          ]
+        },
+        {
+          "case_id": "hold_f2g_19_react_web_case_03",
+          "candidate_id": "hold_f2g_19_react_web_gig_03",
+          "relevance_label": 1,
+          "label_source": "seeded_fixture",
+          "rationale": "Frontend JavaScript knowledge transfers, but the framework differs.",
+          "scenario_tags": [
+            "frontend_framework",
+            "framework_relationship"
+          ]
+        },
+        {
+          "case_id": "hold_f2g_19_react_web_case_04",
+          "candidate_id": "hold_f2g_19_react_web_gig_04",
+          "relevance_label": 0,
+          "label_source": "seeded_fixture",
+          "rationale": "Web React does not establish native mobile integration.",
+          "scenario_tags": [
+            "frontend_framework",
+            "react_react_native"
+          ]
+        },
+        {
+          "case_id": "hold_f2g_19_react_web_case_05",
+          "candidate_id": "hold_f2g_19_react_web_gig_05",
+          "relevance_label": 0,
+          "label_source": "seeded_fixture",
+          "rationale": "Java backend work is unrelated to web UI specialization.",
+          "scenario_tags": [
+            "frontend_framework",
+            "java_javascript",
+            "frontend_backend_mismatch"
+          ]
+        }
+      ],
+      "is_complete_judgment_set": true,
+      "notes": "Controlled frontend_framework query; rationale and tags are evaluation metadata only."
+    },
+    {
+      "query_id": "hold_f2g_20_ml_depth",
+      "query_type": "freelancer_to_gigs",
+      "split": "holdout",
+      "query_entity": {
+        "user_id": "hold_f2g_20_ml_depth_freelancer",
+        "display_name": "Controlled benchmark freelancer",
+        "headline": "Python data analyst",
+        "bio": "Uses Pandas and notebooks for reporting and exploratory analysis.",
+        "primary_role": "Data Analyst",
+        "experience_level": "intermediate",
+        "tech_categories": [
+          "data"
+        ],
+        "skills": [
+          "Python",
+          "Pandas",
+          "SQL"
+        ],
+        "tools": [
+          "Jupyter"
+        ],
+        "projects": []
+      },
+      "candidate_entities": [
+        {
+          "id": "hold_f2g_20_ml_depth_gig_01",
+          "client_id": "hold_f2g_20_ml_depth_client_1",
+          "title": "Exploratory data analysis",
+          "description": "Analyze tables with Pandas and SQL.",
+          "tech_category": "data",
+          "required_skills": [
+            "Python",
+            "Pandas",
+            "SQL"
+          ],
+          "preferred_skills": [],
+          "difficulty_level": "intermediate",
+          "seniority_needed": "intermediate",
+          "deliverables": [
+            "Working implementation"
+          ],
+          "status": "open"
+        },
+        {
+          "id": "hold_f2g_20_ml_depth_gig_02",
+          "client_id": "hold_f2g_20_ml_depth_client_2",
+          "title": "Data quality scripting",
+          "description": "Build Python checks for relational datasets.",
+          "tech_category": "data",
+          "required_skills": [
+            "Python",
+            "SQL"
+          ],
+          "preferred_skills": [],
+          "difficulty_level": "intermediate",
+          "seniority_needed": "intermediate",
+          "deliverables": [
+            "Working implementation"
+          ],
+          "status": "open"
+        },
+        {
+          "id": "hold_f2g_20_ml_depth_gig_03",
+          "client_id": "hold_f2g_20_ml_depth_client_3",
+          "title": "Prepare NLP training data",
+          "description": "Clean and inspect labeled text datasets.",
+          "tech_category": "AI/ML",
+          "required_skills": [
+            "Python",
+            "Pandas"
+          ],
+          "preferred_skills": [],
+          "difficulty_level": "intermediate",
+          "seniority_needed": "intermediate",
+          "deliverables": [
+            "Working implementation"
+          ],
+          "status": "open"
+        },
+        {
+          "id": "hold_f2g_20_ml_depth_gig_04",
+          "client_id": "hold_f2g_20_ml_depth_client_4",
+          "title": "Senior NLP model engineer",
+          "description": "Train transformer models with PyTorch.",
+          "tech_category": "AI/ML",
+          "required_skills": [
+            "NLP",
+            "PyTorch",
+            "Transformers"
+          ],
+          "preferred_skills": [],
+          "difficulty_level": "intermediate",
+          "seniority_needed": "senior",
+          "deliverables": [
+            "Working implementation"
+          ],
+          "status": "open"
+        },
+        {
+          "id": "hold_f2g_20_ml_depth_gig_05",
+          "client_id": "hold_f2g_20_ml_depth_client_5",
+          "title": "Kubernetes operator",
+          "description": "Operate production clusters.",
+          "tech_category": "devops",
+          "required_skills": [
+            "Kubernetes"
+          ],
+          "preferred_skills": [],
+          "difficulty_level": "intermediate",
+          "seniority_needed": "intermediate",
+          "deliverables": [
+            "Working implementation"
+          ],
+          "status": "open"
+        }
+      ],
+      "judgments": [
+        {
+          "case_id": "hold_f2g_20_ml_depth_case_01",
+          "candidate_id": "hold_f2g_20_ml_depth_gig_01",
+          "relevance_label": 2,
+          "label_source": "seeded_fixture",
+          "rationale": "Exact analytical tooling and scope align.",
+          "scenario_tags": [
+            "ml_nlp",
+            "exact_alias",
+            "sql_database_engineering"
+          ]
+        },
+        {
+          "case_id": "hold_f2g_20_ml_depth_case_02",
+          "candidate_id": "hold_f2g_20_ml_depth_gig_02",
+          "relevance_label": 2,
+          "label_source": "seeded_fixture",
+          "rationale": "Python and SQL analysis skills transfer directly.",
+          "scenario_tags": [
+            "ml_nlp",
+            "database_relationship"
+          ]
+        },
+        {
+          "case_id": "hold_f2g_20_ml_depth_case_03",
+          "candidate_id": "hold_f2g_20_ml_depth_gig_03",
+          "relevance_label": 1,
+          "label_source": "seeded_fixture",
+          "rationale": "Data preparation aligns, but NLP modeling is not required.",
+          "scenario_tags": [
+            "ml_nlp",
+            "python_scripting_ml"
+          ]
+        },
+        {
+          "case_id": "hold_f2g_20_ml_depth_case_04",
+          "candidate_id": "hold_f2g_20_ml_depth_gig_04",
+          "relevance_label": 0,
+          "label_source": "seeded_fixture",
+          "rationale": "Analytics experience does not demonstrate ML model engineering.",
+          "scenario_tags": [
+            "ml_nlp",
+            "generic_ai_demonstrated_ml",
+            "seniority_mismatch"
+          ]
+        },
+        {
+          "case_id": "hold_f2g_20_ml_depth_case_05",
+          "candidate_id": "hold_f2g_20_ml_depth_gig_05",
+          "relevance_label": 0,
+          "label_source": "seeded_fixture",
+          "rationale": "Cluster operations are unrelated to data analysis.",
+          "scenario_tags": [
+            "ml_nlp",
+            "docker_kubernetes"
+          ]
+        }
+      ],
+      "is_complete_judgment_set": true,
+      "notes": "Controlled ml_nlp query; rationale and tags are evaluation metadata only."
+    },
+    {
+      "query_id": "hold_g2f_21_api_framework",
+      "query_type": "gig_to_freelancers",
+      "split": "holdout",
+      "query_entity": {
+        "id": "hold_g2f_21_api_framework_gig",
+        "client_id": "hold_g2f_21_api_framework_client",
+        "title": "Python REST backend",
+        "description": "Deliver a maintainable Python API with relational persistence.",
+        "tech_category": "backend",
+        "required_skills": [
+          "Python",
+          "REST API",
+          "PostgreSQL"
+        ],
+        "preferred_skills": [
+          "Docker"
+        ],
+        "difficulty_level": "intermediate",
+        "seniority_needed": "intermediate",
+        "deliverables": [
+          "Working implementation"
+        ],
+        "status": "open"
+      },
+      "candidate_entities": [
+        {
+          "user_id": "hold_g2f_21_api_framework_freelancer_01",
+          "display_name": "Controlled benchmark freelancer",
+          "headline": "Python API engineer",
+          "bio": "Builds FastAPI services and PostgreSQL schemas.",
+          "primary_role": "Backend Engineer",
+          "experience_level": "intermediate",
+          "tech_categories": [
+            "backend"
+          ],
+          "skills": [
+            "Python",
+            "FastAPI",
+            "PostgreSQL",
+            "Docker"
+          ],
+          "tools": [],
+          "projects": []
+        },
+        {
+          "user_id": "hold_g2f_21_api_framework_freelancer_02",
+          "display_name": "Controlled benchmark freelancer",
+          "headline": "Django REST developer",
+          "bio": "Builds Python web APIs and relational applications.",
+          "primary_role": "Backend Developer",
+          "experience_level": "intermediate",
+          "tech_categories": [
+            "backend"
+          ],
+          "skills": [
+            "Python",
+            "Django",
+            "REST API",
+            "SQL"
+          ],
+          "tools": [],
+          "projects": []
+        },
+        {
+          "user_id": "hold_g2f_21_api_framework_freelancer_03",
+          "display_name": "Controlled benchmark freelancer",
+          "headline": "Python data scripter",
+          "bio": "Automates CSV imports into PostgreSQL.",
+          "primary_role": "Automation Developer",
+          "experience_level": "intermediate",
+          "tech_categories": [
+            "data"
+          ],
+          "skills": [
+            "Python",
+            "PostgreSQL"
+          ],
+          "tools": [],
+          "projects": []
+        },
+        {
+          "user_id": "hold_g2f_21_api_framework_freelancer_04",
+          "display_name": "Controlled benchmark freelancer",
+          "headline": "JavaScript UI engineer",
+          "bio": "Builds React interfaces.",
+          "primary_role": "Frontend Developer",
+          "experience_level": "intermediate",
+          "tech_categories": [
+            "frontend"
+          ],
+          "skills": [
+            "JavaScript",
+            "React"
+          ],
+          "tools": [],
+          "projects": []
+        },
+        {
+          "user_id": "hold_g2f_21_api_framework_freelancer_05",
+          "display_name": "Controlled benchmark freelancer",
+          "headline": "Java service developer",
+          "bio": "Builds Spring Boot services.",
+          "primary_role": "Backend Engineer",
+          "experience_level": "intermediate",
+          "tech_categories": [
+            "backend"
+          ],
+          "skills": [
+            "Java",
+            "Spring Boot"
+          ],
+          "tools": [],
+          "projects": []
+        }
+      ],
+      "judgments": [
+        {
+          "case_id": "hold_g2f_21_api_framework_case_01",
+          "candidate_id": "hold_g2f_21_api_framework_freelancer_01",
+          "relevance_label": 2,
+          "label_source": "seeded_fixture",
+          "rationale": "Exact language, API domain, database, and container evidence align.",
+          "scenario_tags": [
+            "framework_relationship",
+            "backend_api_transfer",
+            "exact_alias"
+          ]
+        },
+        {
+          "case_id": "hold_g2f_21_api_framework_case_02",
+          "candidate_id": "hold_g2f_21_api_framework_freelancer_02",
+          "relevance_label": 2,
+          "label_source": "seeded_fixture",
+          "rationale": "Framework differs but Python API and database experience transfer.",
+          "scenario_tags": [
+            "framework_relationship",
+            "backend_api_transfer",
+            "database_relationship"
+          ]
+        },
+        {
+          "case_id": "hold_g2f_21_api_framework_case_03",
+          "candidate_id": "hold_g2f_21_api_framework_freelancer_03",
+          "relevance_label": 1,
+          "label_source": "seeded_fixture",
+          "rationale": "Language and database overlap without service delivery.",
+          "scenario_tags": [
+            "framework_relationship",
+            "python_scripting_ml"
+          ]
+        },
+        {
+          "case_id": "hold_g2f_21_api_framework_case_04",
+          "candidate_id": "hold_g2f_21_api_framework_freelancer_04",
+          "relevance_label": 0,
+          "label_source": "seeded_fixture",
+          "rationale": "Frontend JavaScript does not satisfy backend API requirements.",
+          "scenario_tags": [
+            "framework_relationship",
+            "java_javascript",
+            "frontend_backend_mismatch"
+          ]
+        },
+        {
+          "case_id": "hold_g2f_21_api_framework_case_05",
+          "candidate_id": "hold_g2f_21_api_framework_freelancer_05",
+          "relevance_label": 0,
+          "label_source": "seeded_fixture",
+          "rationale": "Backend domain transfers weakly but required Python evidence is absent.",
+          "scenario_tags": [
+            "framework_relationship",
+            "java_javascript"
+          ]
+        }
+      ],
+      "is_complete_judgment_set": true,
+      "notes": "Controlled framework_relationship query; rationale and tags are evaluation metadata only."
+    },
+    {
+      "query_id": "hold_g2f_22_database_depth",
+      "query_type": "gig_to_freelancers",
+      "split": "holdout",
+      "query_entity": {
+        "id": "hold_g2f_22_database_depth_gig",
+        "client_id": "hold_g2f_22_database_depth_client",
+        "title": "Database reliability work",
+        "description": "Improve PostgreSQL indexing, migrations, and operational reliability.",
+        "tech_category": "database",
+        "required_skills": [
+          "PostgreSQL",
+          "SQL",
+          "Database Design"
+        ],
+        "preferred_skills": [],
+        "difficulty_level": "intermediate",
+        "seniority_needed": "senior",
+        "deliverables": [
+          "Working implementation"
+        ],
+        "status": "open"
+      },
+      "candidate_entities": [
+        {
+          "user_id": "hold_g2f_22_database_depth_freelancer_01",
+          "display_name": "Controlled benchmark freelancer",
+          "headline": "PostgreSQL reliability engineer",
+          "bio": "Owns indexes, migrations, and production database operations.",
+          "primary_role": "Database Engineer",
+          "experience_level": "senior",
+          "tech_categories": [
+            "database"
+          ],
+          "skills": [
+            "PostgreSQL",
+            "SQL",
+            "Database Design"
+          ],
+          "tools": [],
+          "projects": []
+        },
+        {
+          "user_id": "hold_g2f_22_database_depth_freelancer_02",
+          "display_name": "Controlled benchmark freelancer",
+          "headline": "Senior relational database engineer",
+          "bio": "Optimizes SQL schemas and transactional workloads.",
+          "primary_role": "Database Engineer",
+          "experience_level": "senior",
+          "tech_categories": [
+            "database"
+          ],
+          "skills": [
+            "SQL",
+            "Database Design",
+            "MySQL"
+          ],
+          "tools": [],
+          "projects": []
+        },
+        {
+          "user_id": "hold_g2f_22_database_depth_freelancer_03",
+          "display_name": "Controlled benchmark freelancer",
+          "headline": "Backend PostgreSQL developer",
+          "bio": "Builds CRUD APIs using PostgreSQL.",
+          "primary_role": "Backend Developer",
+          "experience_level": "intermediate",
+          "tech_categories": [
+            "backend"
+          ],
+          "skills": [
+            "Python",
+            "PostgreSQL",
+            "SQL"
+          ],
+          "tools": [],
+          "projects": []
+        },
+        {
+          "user_id": "hold_g2f_22_database_depth_freelancer_04",
+          "display_name": "Controlled benchmark freelancer",
+          "headline": "Business analyst",
+          "bio": "Runs basic SQL reports.",
+          "primary_role": "Data Analyst",
+          "experience_level": "junior",
+          "tech_categories": [
+            "data"
+          ],
+          "skills": [
+            "SQL"
+          ],
+          "tools": [],
+          "projects": []
+        },
+        {
+          "user_id": "hold_g2f_22_database_depth_freelancer_05",
+          "display_name": "Controlled benchmark freelancer",
+          "headline": "React developer",
+          "bio": "Builds frontend dashboards.",
+          "primary_role": "Frontend Developer",
+          "experience_level": "intermediate",
+          "tech_categories": [
+            "frontend"
+          ],
+          "skills": [
+            "React"
+          ],
+          "tools": [],
+          "projects": []
+        }
+      ],
+      "judgments": [
+        {
+          "case_id": "hold_g2f_22_database_depth_case_01",
+          "candidate_id": "hold_g2f_22_database_depth_freelancer_01",
+          "relevance_label": 2,
+          "label_source": "seeded_fixture",
+          "rationale": "Exact database-engineering depth and seniority align.",
+          "scenario_tags": [
+            "sql_database_engineering",
+            "exact_alias",
+            "database_relationship"
+          ]
+        },
+        {
+          "case_id": "hold_g2f_22_database_depth_case_02",
+          "candidate_id": "hold_g2f_22_database_depth_freelancer_02",
+          "relevance_label": 1,
+          "label_source": "seeded_fixture",
+          "rationale": "Relational expertise transfers but PostgreSQL-specific evidence is absent.",
+          "scenario_tags": [
+            "sql_database_engineering",
+            "database_relationship"
+          ]
+        },
+        {
+          "case_id": "hold_g2f_22_database_depth_case_03",
+          "candidate_id": "hold_g2f_22_database_depth_freelancer_03",
+          "relevance_label": 1,
+          "label_source": "seeded_fixture",
+          "rationale": "Application usage is relevant but operational depth is partial.",
+          "scenario_tags": [
+            "sql_database_engineering",
+            "backend_api_transfer"
+          ]
+        },
+        {
+          "case_id": "hold_g2f_22_database_depth_case_04",
+          "candidate_id": "hold_g2f_22_database_depth_freelancer_04",
+          "relevance_label": 0,
+          "label_source": "seeded_fixture",
+          "rationale": "Generic SQL reporting is not database reliability engineering.",
+          "scenario_tags": [
+            "sql_database_engineering",
+            "seniority_mismatch"
+          ]
+        },
+        {
+          "case_id": "hold_g2f_22_database_depth_case_05",
+          "candidate_id": "hold_g2f_22_database_depth_freelancer_05",
+          "relevance_label": 0,
+          "label_source": "seeded_fixture",
+          "rationale": "Frontend work is unrelated to database reliability.",
+          "scenario_tags": [
+            "sql_database_engineering",
+            "frontend_backend_mismatch"
+          ]
+        }
+      ],
+      "is_complete_judgment_set": true,
+      "notes": "Controlled sql_database_engineering query; rationale and tags are evaluation metadata only."
+    },
+    {
+      "query_id": "hold_g2f_23_cloud_architecture",
+      "query_type": "gig_to_freelancers",
+      "split": "holdout",
+      "query_entity": {
+        "id": "hold_g2f_23_cloud_architecture_gig",
+        "client_id": "hold_g2f_23_cloud_architecture_client",
+        "title": "Senior AWS architecture",
+        "description": "Design multi-account AWS networking, governance, and infrastructure as code.",
+        "tech_category": "cloud",
+        "required_skills": [
+          "AWS",
+          "Terraform"
+        ],
+        "preferred_skills": [
+          "Kubernetes"
+        ],
+        "difficulty_level": "intermediate",
+        "seniority_needed": "senior",
+        "deliverables": [
+          "Working implementation"
+        ],
+        "status": "open"
+      },
+      "candidate_entities": [
+        {
+          "user_id": "hold_g2f_23_cloud_architecture_freelancer_01",
+          "display_name": "Controlled benchmark freelancer",
+          "headline": "Senior AWS cloud architect",
+          "bio": "Designs governed multi-account networks with Terraform.",
+          "primary_role": "Cloud Architect",
+          "experience_level": "senior",
+          "tech_categories": [
+            "cloud"
+          ],
+          "skills": [
+            "AWS",
+            "Terraform",
+            "Kubernetes"
+          ],
+          "tools": [],
+          "projects": []
+        },
+        {
+          "user_id": "hold_g2f_23_cloud_architecture_freelancer_02",
+          "display_name": "Controlled benchmark freelancer",
+          "headline": "Senior platform engineer",
+          "bio": "Builds cloud infrastructure and container orchestration.",
+          "primary_role": "Platform Engineer",
+          "experience_level": "senior",
+          "tech_categories": [
+            "cloud",
+            "devops"
+          ],
+          "skills": [
+            "AWS",
+            "Infrastructure as Code",
+            "Kubernetes"
+          ],
+          "tools": [],
+          "projects": []
+        },
+        {
+          "user_id": "hold_g2f_23_cloud_architecture_freelancer_03",
+          "display_name": "Controlled benchmark freelancer",
+          "headline": "AWS application developer",
+          "bio": "Deploys services to EC2 and stores files in S3.",
+          "primary_role": "Backend Developer",
+          "experience_level": "intermediate",
+          "tech_categories": [
+            "backend",
+            "cloud"
+          ],
+          "skills": [
+            "AWS",
+            "Python"
+          ],
+          "tools": [],
+          "projects": []
+        },
+        {
+          "user_id": "hold_g2f_23_cloud_architecture_freelancer_04",
+          "display_name": "Controlled benchmark freelancer",
+          "headline": "Docker developer",
+          "bio": "Builds container images and compose files.",
+          "primary_role": "Backend Developer",
+          "experience_level": "intermediate",
+          "tech_categories": [
+            "backend"
+          ],
+          "skills": [
+            "Docker"
+          ],
+          "tools": [],
+          "projects": []
+        },
+        {
+          "user_id": "hold_g2f_23_cloud_architecture_freelancer_05",
+          "display_name": "Controlled benchmark freelancer",
+          "headline": "Mobile developer",
+          "bio": "Builds native applications.",
+          "primary_role": "Mobile Developer",
+          "experience_level": "intermediate",
+          "tech_categories": [
+            "mobile"
+          ],
+          "skills": [
+            "React Native"
+          ],
+          "tools": [],
+          "projects": []
+        }
+      ],
+      "judgments": [
+        {
+          "case_id": "hold_g2f_23_cloud_architecture_case_01",
+          "candidate_id": "hold_g2f_23_cloud_architecture_freelancer_01",
+          "relevance_label": 2,
+          "label_source": "seeded_fixture",
+          "rationale": "Exact architecture, IaC, and seniority align.",
+          "scenario_tags": [
+            "aws_exposure_architecture",
+            "exact_alias",
+            "cloud_relationship"
+          ]
+        },
+        {
+          "case_id": "hold_g2f_23_cloud_architecture_case_02",
+          "candidate_id": "hold_g2f_23_cloud_architecture_freelancer_02",
+          "relevance_label": 2,
+          "label_source": "seeded_fixture",
+          "rationale": "Equivalent IaC and platform architecture evidence strongly transfer.",
+          "scenario_tags": [
+            "aws_exposure_architecture",
+            "synonyms",
+            "docker_kubernetes"
+          ]
+        },
+        {
+          "case_id": "hold_g2f_23_cloud_architecture_case_03",
+          "candidate_id": "hold_g2f_23_cloud_architecture_freelancer_03",
+          "relevance_label": 1,
+          "label_source": "seeded_fixture",
+          "rationale": "AWS exposure is relevant but architecture and Terraform evidence are missing.",
+          "scenario_tags": [
+            "aws_exposure_architecture",
+            "cloud_relationship"
+          ]
+        },
+        {
+          "case_id": "hold_g2f_23_cloud_architecture_case_04",
+          "candidate_id": "hold_g2f_23_cloud_architecture_freelancer_04",
+          "relevance_label": 0,
+          "label_source": "seeded_fixture",
+          "rationale": "Container familiarity alone does not establish cloud architecture.",
+          "scenario_tags": [
+            "aws_exposure_architecture",
+            "containerization_docker",
+            "seniority_mismatch"
+          ]
+        },
+        {
+          "case_id": "hold_g2f_23_cloud_architecture_case_05",
+          "candidate_id": "hold_g2f_23_cloud_architecture_freelancer_05",
+          "relevance_label": 0,
+          "label_source": "seeded_fixture",
+          "rationale": "Mobile development is unrelated to AWS architecture.",
+          "scenario_tags": [
+            "aws_exposure_architecture",
+            "react_react_native",
+            "frontend_backend_mismatch"
+          ]
+        }
+      ],
+      "is_complete_judgment_set": true,
+      "notes": "Controlled aws_exposure_architecture query; rationale and tags are evaluation metadata only."
+    },
+    {
+      "query_id": "hold_g2f_24_ml_evidence",
+      "query_type": "gig_to_freelancers",
+      "split": "holdout",
+      "query_entity": {
+        "id": "hold_g2f_24_ml_evidence_gig",
+        "client_id": "hold_g2f_24_ml_evidence_client",
+        "title": "Applied NLP engineer",
+        "description": "Build and evaluate text classifiers and sentence-embedding pipelines.",
+        "tech_category": "AI/ML",
+        "required_skills": [
+          "Python",
+          "NLP",
+          "Machine Learning"
+        ],
+        "preferred_skills": [
+          "PyTorch"
+        ],
+        "difficulty_level": "intermediate",
+        "seniority_needed": "intermediate",
+        "deliverables": [
+          "Working implementation"
+        ],
+        "status": "open"
+      },
+      "candidate_entities": [
+        {
+          "user_id": "hold_g2f_24_ml_evidence_freelancer_01",
+          "display_name": "Controlled benchmark freelancer",
+          "headline": "Applied NLP engineer",
+          "bio": "Builds text classifiers and sentence embeddings in PyTorch.",
+          "primary_role": "Machine Learning Engineer",
+          "experience_level": "intermediate",
+          "tech_categories": [
+            "AI/ML"
+          ],
+          "skills": [
+            "Python",
+            "NLP",
+            "Machine Learning",
+            "PyTorch"
+          ],
+          "tools": [],
+          "projects": []
+        },
+        {
+          "user_id": "hold_g2f_24_ml_evidence_freelancer_02",
+          "display_name": "Controlled benchmark freelancer",
+          "headline": "Language data scientist",
+          "bio": "Develops text-mining and semantic-similarity systems.",
+          "primary_role": "Data Scientist",
+          "experience_level": "intermediate",
+          "tech_categories": [
+            "AI/ML"
+          ],
+          "skills": [
+            "Python",
+            "NLP",
+            "Machine Learning"
+          ],
+          "tools": [],
+          "projects": []
+        },
+        {
+          "user_id": "hold_g2f_24_ml_evidence_freelancer_03",
+          "display_name": "Controlled benchmark freelancer",
+          "headline": "General machine-learning developer",
+          "bio": "Builds tabular classifiers and evaluation pipelines.",
+          "primary_role": "Machine Learning Engineer",
+          "experience_level": "intermediate",
+          "tech_categories": [
+            "AI/ML"
+          ],
+          "skills": [
+            "Python",
+            "Machine Learning"
+          ],
+          "tools": [],
+          "projects": []
+        },
+        {
+          "user_id": "hold_g2f_24_ml_evidence_freelancer_04",
+          "display_name": "Controlled benchmark freelancer",
+          "headline": "AI product enthusiast",
+          "bio": "Uses chat assistants and follows AI news.",
+          "primary_role": "Product Specialist",
+          "experience_level": "intermediate",
+          "tech_categories": [
+            "product"
+          ],
+          "skills": [
+            "Prompt Engineering"
+          ],
+          "tools": [],
+          "projects": []
+        },
+        {
+          "user_id": "hold_g2f_24_ml_evidence_freelancer_05",
+          "display_name": "Controlled benchmark freelancer",
+          "headline": "Python automation engineer",
+          "bio": "Writes scripts and web scrapers.",
+          "primary_role": "Automation Developer",
+          "experience_level": "intermediate",
+          "tech_categories": [
+            "data"
+          ],
+          "skills": [
+            "Python"
+          ],
+          "tools": [],
+          "projects": []
+        }
+      ],
+      "judgments": [
+        {
+          "case_id": "hold_g2f_24_ml_evidence_case_01",
+          "candidate_id": "hold_g2f_24_ml_evidence_freelancer_01",
+          "relevance_label": 2,
+          "label_source": "seeded_fixture",
+          "rationale": "Exact demonstrated NLP and ML implementation evidence align.",
+          "scenario_tags": [
+            "generic_ai_demonstrated_ml",
+            "exact_alias",
+            "ml_nlp"
+          ]
+        },
+        {
+          "case_id": "hold_g2f_24_ml_evidence_case_02",
+          "candidate_id": "hold_g2f_24_ml_evidence_freelancer_02",
+          "relevance_label": 2,
+          "label_source": "seeded_fixture",
+          "rationale": "Related terminology and demonstrated language modeling align.",
+          "scenario_tags": [
+            "generic_ai_demonstrated_ml",
+            "synonyms",
+            "ml_nlp"
+          ]
+        },
+        {
+          "case_id": "hold_g2f_24_ml_evidence_case_03",
+          "candidate_id": "hold_g2f_24_ml_evidence_freelancer_03",
+          "relevance_label": 1,
+          "label_source": "seeded_fixture",
+          "rationale": "General ML transfers, but NLP evidence is absent.",
+          "scenario_tags": [
+            "generic_ai_demonstrated_ml",
+            "ml_nlp"
+          ]
+        },
+        {
+          "case_id": "hold_g2f_24_ml_evidence_case_04",
+          "candidate_id": "hold_g2f_24_ml_evidence_freelancer_04",
+          "relevance_label": 0,
+          "label_source": "seeded_fixture",
+          "rationale": "Interest and tool usage are not demonstrated ML ability.",
+          "scenario_tags": [
+            "generic_ai_demonstrated_ml"
+          ]
+        },
+        {
+          "case_id": "hold_g2f_24_ml_evidence_case_05",
+          "candidate_id": "hold_g2f_24_ml_evidence_freelancer_05",
+          "relevance_label": 0,
+          "label_source": "seeded_fixture",
+          "rationale": "Python scripting alone does not demonstrate NLP engineering.",
+          "scenario_tags": [
+            "generic_ai_demonstrated_ml",
+            "python_scripting_ml"
+          ]
+        }
+      ],
+      "is_complete_judgment_set": true,
+      "notes": "Controlled generic_ai_demonstrated_ml query; rationale and tags are evaluation metadata only."
+    }
+  ]
+}

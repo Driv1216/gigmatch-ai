@@ -4,7 +4,6 @@ from typing import Literal
 from fastapi import APIRouter, Depends, Header, HTTPException, Path, Query
 from pydantic import BaseModel
 
-from app.config import settings
 from app.core.auth import (
     AuthVerifier,
     InvalidTokenError,
@@ -30,6 +29,7 @@ from app.matching.explanations import (
 )
 from app.matching.hybrid import (
     HybridMatchResult,
+    HybridRankingConfig,
     rank_freelancers_for_gig_hybrid,
     rank_gigs_for_freelancer_hybrid,
 )
@@ -38,11 +38,11 @@ from app.matching.keyword import (
     rank_freelancers_for_gig,
     rank_gigs_for_freelancer,
 )
-from app.matching.semantic import (
-    EmbeddingProvider,
-    SemanticRankingUnavailableError,
-    SentenceTransformerEmbeddingProvider,
+from app.matching.provider import (
+    get_embedding_provider_factory,
+    get_production_hybrid_config,
 )
+from app.matching.semantic import EmbeddingProvider, SemanticRankingUnavailableError
 from app.marketplace.ranking import (
     RankingMetadata,
     RankingMode,
@@ -113,18 +113,6 @@ def get_matching_repository() -> MatchingRepository:
     return SupabaseMatchingRepository()
 
 
-def get_embedding_provider() -> EmbeddingProvider:
-    if not settings.embedding_model_name:
-        raise SemanticRankingUnavailableError(
-            SemanticUnavailableReason.EMBEDDING_PROVIDER_NOT_CONFIGURED
-        )
-    return SentenceTransformerEmbeddingProvider(settings.embedding_model_name)
-
-
-def get_embedding_provider_factory() -> Callable[[], EmbeddingProvider]:
-    return get_embedding_provider
-
-
 @router.get("")
 def matching_status() -> dict[str, str]:
     return {"module": "matching", "status": "ready"}
@@ -147,6 +135,7 @@ def recommended_gigs(
         data.freelancer,
         list(data.candidate_gigs),
         embedding_provider_factory,
+        get_production_hybrid_config(),
     )
     gigs_by_id = {gig.gig_id: gig for gig in data.candidate_gigs}
     items = [
@@ -175,6 +164,7 @@ def recommended_freelancers_for_gig(
         data.gig,
         list(data.candidate_freelancers),
         embedding_provider_factory,
+        get_production_hybrid_config(),
     )
     freelancers_by_id = {freelancer.freelancer_id: freelancer for freelancer in data.candidate_freelancers}
     items = [
@@ -208,10 +198,13 @@ def _rank_gigs_with_fallback(
     freelancer: FreelancerMatchProfile,
     gigs: list[GigMatchProfile],
     provider_factory: Callable[[], EmbeddingProvider],
+    hybrid_config: HybridRankingConfig | None = None,
 ) -> tuple[RankingContext, list[RankedResult]]:
     try:
         provider = provider_factory()
-        ranked: list[RankedResult] = rank_gigs_for_freelancer_hybrid(freelancer, gigs, provider)
+        ranked: list[RankedResult] = rank_gigs_for_freelancer_hybrid(
+            freelancer, gigs, provider, hybrid_config
+        )
     except SemanticRankingUnavailableError as error:
         ranked = list(rank_gigs_for_freelancer(freelancer, gigs))
         return _fallback_context(error.reason), ranked
@@ -222,10 +215,13 @@ def _rank_freelancers_with_fallback(
     gig: GigMatchProfile,
     freelancers: list[FreelancerMatchProfile],
     provider_factory: Callable[[], EmbeddingProvider],
+    hybrid_config: HybridRankingConfig | None = None,
 ) -> tuple[RankingContext, list[RankedResult]]:
     try:
         provider = provider_factory()
-        ranked: list[RankedResult] = rank_freelancers_for_gig_hybrid(gig, freelancers, provider)
+        ranked: list[RankedResult] = rank_freelancers_for_gig_hybrid(
+            gig, freelancers, provider, hybrid_config
+        )
     except SemanticRankingUnavailableError as error:
         ranked = list(rank_freelancers_for_gig(gig, freelancers))
         return _fallback_context(error.reason), ranked

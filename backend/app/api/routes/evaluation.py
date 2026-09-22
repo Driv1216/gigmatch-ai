@@ -5,7 +5,6 @@ from typing import Any
 
 from fastapi import APIRouter, Depends, Header, HTTPException, Query
 
-from app.config import settings
 from app.core.auth import AuthVerifier, InvalidTokenError, MissingTokenError, SupabaseAuthVerifier
 from app.evaluation import load_seeded_evaluation_fixtures, run_evaluation
 from app.matching.data_access import (
@@ -16,7 +15,11 @@ from app.matching.data_access import (
     UnsupportedRoleError,
     authenticate_matching_request,
 )
-from app.matching.semantic import EmbeddingProvider, SentenceTransformerEmbeddingProvider
+from app.matching.provider import (
+    get_embedding_provider_factory,
+    get_production_hybrid_config,
+)
+from app.matching.semantic import EmbeddingProvider, SemanticRankingUnavailableError
 
 router = APIRouter()
 
@@ -27,19 +30,6 @@ def get_auth_verifier() -> AuthVerifier:
 
 def get_matching_repository() -> MatchingRepository:
     return SupabaseMatchingRepository()
-
-
-def get_embedding_provider() -> EmbeddingProvider:
-    if not settings.embedding_model_name:
-        raise HTTPException(status_code=503, detail="Evaluation embedding provider is not configured.")
-    try:
-        return SentenceTransformerEmbeddingProvider(settings.embedding_model_name)
-    except RuntimeError as error:
-        raise HTTPException(status_code=503, detail=str(error)) from error
-
-
-def get_embedding_provider_factory() -> Callable[[], EmbeddingProvider]:
-    return get_embedding_provider
 
 
 @router.get("")
@@ -66,8 +56,22 @@ def matching_evaluation_summary(
 
     top_ks = _parse_top_ks(top_k)
     fixtures = load_seeded_evaluation_fixtures()
-    embedding_provider = embedding_provider_factory()
-    summary = run_evaluation(fixtures, top_ks=top_ks, embedding_provider=embedding_provider)
+    try:
+        embedding_provider = embedding_provider_factory()
+        summary = run_evaluation(
+            fixtures,
+            top_ks=top_ks,
+            embedding_provider=embedding_provider,
+            hybrid_config=get_production_hybrid_config(),
+        )
+    except SemanticRankingUnavailableError as error:
+        raise HTTPException(
+            status_code=503,
+            detail={
+                "code": "semantic_evaluation_unavailable",
+                "reason": error.reason.value,
+            },
+        ) from error
     payload = _to_jsonable(summary)
     payload["generated_from"] = "seeded_evaluation_fixtures"
     return payload

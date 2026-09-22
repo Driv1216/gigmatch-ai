@@ -1,10 +1,42 @@
 # GigMatch AI
 
-**An explainable, security-conscious marketplace that takes technical freelance work from discovery to engagement.**
+**An explainable, security-conscious marketplace for taking technical freelance work from discovery to a confirmed engagement.**
 
 GigMatch AI connects freelancers with relevant technology gigs and gives clients a structured path to publish work, evaluate applicants, agree on exact proposal terms, and manage the resulting engagement. It combines hybrid skill matching with a versioned marketplace workflow, so recommendations are understandable and commercial decisions remain auditable.
 
 This repository contains the complete product implementation: a role-aware React application, FastAPI service, Supabase/PostgreSQL data layer, database-enforced authorization, matching and evaluation systems, and automated verification across the stack.
+
+## Product promise
+
+Most freelance marketplaces stop at search and messaging. GigMatch AI treats the entire decision as one connected, auditable workflow:
+
+```text
+structured profile + structured gig
+        -> explainable recommendations
+        -> versioned proposal and review
+        -> exact-version selection
+        -> protected engagement and contact exchange
+```
+
+The product is designed around three principles:
+
+- **Relevant without being opaque:** keyword evidence remains the majority ranking signal, while a pinned local semantic model adds bounded contextual understanding.
+- **Flexible without being ambiguous:** gig terms, proposals, revisions, and selections retain exact versions and explicit state transitions.
+- **Private without relying on UI trust:** identity, ownership, sensitive fields, and critical transitions are enforced across FastAPI, PostgreSQL, RLS, grants, and transactional functions.
+
+## Current verified state
+
+The current product baseline includes the complete account-to-engagement marketplace and the R1 production semantic refinement. The final external R1 gate passed with:
+
+- 218/218 focused semantic and matching checks;
+- 3/3 real E5 integration smoke checks;
+- 458 backend tests passed, 6 intentionally skipped, and 0 failed;
+- 189/189 frontend tests, plus ESLint and production build;
+- Python 3.13.13 semantic runtime verified on CPU;
+- frozen benchmark, decision, holdout, and artifact checksums verified;
+- an identical worktree before and after verification.
+
+See the [R1 semantic closure](docs/verification/semantic-matching-refinement-closure.md) for scope, evidence, limitations, and supported claims.
 
 ## Product capabilities
 
@@ -27,17 +59,18 @@ This repository contains the complete product implementation: a role-aware React
 ### Administrators
 
 - Compare keyword, semantic, and hybrid ranking strategies against seeded relevance judgments.
-- Inspect Precision@K, Recall@K, NDCG@K, Average Precision, and MAP availability through an authenticated evaluation console.
+- Inspect Precision@K, Recall@K, NDCG@K, Average Precision, MAP, and pairwise-ordering evidence through an authenticated evaluation console.
 
 ## Engineering highlights
 
-- **Explainable hybrid matching:** deterministic keyword scoring and optional semantic similarity combine with a default `0.55 / 0.45` weighting. Recommendations include reasons, score evidence, matched skills, missing skills, and gap severity.
+- **Explainable hybrid matching:** deterministic keyword scoring and E5 semantic similarity combine with a conservative product weighting of `0.75 / 0.25`. Recommendations include reasons, score evidence, matched skills, missing skills, and gap severity, with honest keyword fallback when the model is unavailable.
 - **Version-safe workflows:** immutable proposal snapshots, material-term tokens, request IDs, idempotency controls, and guarded state transitions prevent stale or ambiguous commercial actions.
 - **Atomic selection:** PostgreSQL functions and locking enforce one accepted selection per gig and create an engagement from the exact accepted proposal version.
 - **Defense in depth:** Supabase Auth, trusted role and ownership checks, Row Level Security, restricted grants, and backend authorization protect every data path.
 - **Private contact exchange:** contact data is encrypted at rest, fingerprinted with a separate key, revealed only after authorization, rate-limited, revocable, and supported by block/report controls.
 - **Privacy-aware parsing:** PDF/DOCX extraction is stateless, uploads are not retained, and users review structured output before persistence.
-- **Layered verification:** 15 ordered database migrations, 31 backend test modules, 13 frontend test modules, and 11 SQL test suites, plus browser and concurrency artifacts.
+- **Evidence-led semantic integration:** a frozen 120-judgment benchmark separated model/weight selection from a locked holdout; keyword remained exceptionally strong, and E5 was the strongest semantic provider tested.
+- **Layered verification:** backend, frontend, SQL, browser, concurrency, model-smoke, checksum, and compile gates cover the product at different authority boundaries.
 
 ## Architecture
 
@@ -46,7 +79,7 @@ React 19 + TypeScript + Vite
         | Supabase sessions + bearer tokens
         v
 FastAPI application -----------------> Matching and evaluation
-        | verified identity             | keyword + semantic + hybrid
+        | verified identity             | keyword + pinned local E5 + hybrid
         v                               v
 Supabase Auth + PostgreSQL <------- versioned marketplace records
         |
@@ -64,7 +97,7 @@ Read the [architecture guide](docs/architecture/README.md), [matching guide](doc
 | Frontend | React 19, TypeScript, Vite, React Router, Tailwind CSS, Radix UI |
 | Backend | Python, FastAPI, Pydantic, Uvicorn |
 | Data and identity | Supabase Auth, PostgreSQL 17, RLS, SQL functions and triggers |
-| Matching | Skill taxonomy, keyword scoring, cosine similarity, pluggable embeddings, hybrid ranking |
+| Matching | Skill taxonomy, deterministic keyword scoring, pinned E5 embeddings, cosine similarity, explainable hybrid ranking |
 | Documents | PyMuPDF, python-docx, multipart validation |
 | Security | Verified tokens, role/ownership policy, contact encryption, keyed fingerprints, rate limits |
 | Quality | `unittest`, Node test runner, ESLint, TypeScript, SQL suites, browser and concurrency checks |
@@ -118,7 +151,7 @@ cp .env.example .env
 uvicorn app.main:app --reload
 ```
 
-On Windows, activate with `.venv\Scripts\Activate.ps1`. The API starts at `http://localhost:8000`; OpenAPI is at `http://localhost:8000/docs`.
+The normal backend requirements include the selected transformer stack. The E5 model is loaded lazily on the first semantic request and may download into the configured Hugging Face cache unless offline-only mode is enabled. On Windows, activate with `.venv\Scripts\Activate.ps1`. The API starts at `http://localhost:8000`; OpenAPI is at `http://localhost:8000/docs`.
 
 ```bash
 curl http://localhost:8000/health
@@ -156,7 +189,10 @@ Never expose `SUPABASE_SECRET_KEY`, contact-encryption keys, or fingerprint keys
 | `APP_NAME`, `APP_ENV`, `FRONTEND_ORIGIN` | Service metadata and browser origin |
 | `SUPABASE_URL`, `SUPABASE_PUBLISHABLE_KEY` | Token verification and authenticated access |
 | `SUPABASE_SECRET_KEY` | Trusted server-side operations only |
-| `EMBEDDING_MODEL_NAME` | Optional sentence-transformers model; blank disables runtime semantic ranking |
+| `EMBEDDING_MODEL_NAME`, `EMBEDDING_MODEL_REVISION` | Production sentence-transformers model and immutable revision |
+| `EMBEDDING_INPUT_POLICY` | Provider-local query/candidate preparation policy (`e5_retrieval` for R1) |
+| `EMBEDDING_CACHE_FOLDER`, `EMBEDDING_LOCAL_FILES_ONLY` | Optional model-cache path and offline-only loading control |
+| `HYBRID_KEYWORD_WEIGHT`, `HYBRID_SEMANTIC_WEIGHT` | Production hybrid weights; R1 uses the deliberate conservative `0.75 / 0.25` product setting |
 | `APPLICANT_SHORTLIST_CAPACITY`, `APPLICANT_ADVANCEMENT_CAPACITY` | Applicant review limits |
 | `QA_*` | Q&A burst, daily, revision, and pagination policies |
 | `CONTACT_*` | Encryption keyring, fingerprint, reveal rate, and window |
@@ -184,6 +220,12 @@ supabase test db
 
 Focused browser and concurrency helpers live in `frontend/e2e/` and `scripts/`; consult the [verification archive](docs/README.md#historical-engineering-evidence) before environment-specific checks.
 
+The complete non-rewriting R1 semantic gate is intended for a controlled environment with the frozen model cache:
+
+```bash
+./scripts/verify_semantic_r1.sh
+```
+
 ## Security model
 
 - Public signup is restricted to freelancer/client roles; administrators require trusted provisioning.
@@ -197,7 +239,8 @@ These controls do not replace an independent security review, operational monito
 
 ## Current boundaries
 
-- Semantic ranking requires a separately installed `sentence-transformers` package and configured model; unavailable infrastructure is surfaced explicitly.
+- Semantic ranking uses a local CPU model and therefore has non-trivial first-load, memory, and inference costs. If the model cannot load or encode safely, the product reports semantic unavailability and falls back to keyword ranking.
+- Python 3.13.13 is verified for the selected semantic stack. Python 3.14 remains unverified because its optional dependency environment could not be installed inside the external verification sandbox; this is not evidence of incompatibility.
 - Skill extraction recognizes a curated taxonomy and does not infer proficiency or experience duration.
 - PDF extraction supports embedded text; OCR is not included.
 - Evaluation uses seeded judgments and makes no real-world accuracy or business-impact claim.
@@ -211,6 +254,7 @@ These controls do not replace an independent security review, operational monito
 - [Matching and explainability](docs/matching.md)
 - [Parsing pipeline](docs/parsing.md)
 - [Capability history](docs/milestones.md)
+- [R1 semantic refinement closure](docs/verification/semantic-matching-refinement-closure.md)
 - [Portfolio and resume guide](docs/portfolio-resume.md)
 
 ## Project ownership

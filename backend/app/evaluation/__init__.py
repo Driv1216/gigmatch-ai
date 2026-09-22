@@ -9,6 +9,7 @@ from app.evaluation.fixtures import (
 from app.evaluation.metrics import (
     MetricResult,
     average_precision,
+    graded_pairwise_inversion_rate,
     mean_average_precision,
     ndcg_at_k,
     precision_at_k,
@@ -25,6 +26,7 @@ from app.evaluation.runner import (
     run_evaluation,
 )
 from app.evaluation.contracts import (
+    BenchmarkSplit,
     EvaluationFixture,
     EvaluationLabelSource,
     EvaluationQuery,
@@ -34,6 +36,7 @@ from app.evaluation.contracts import (
 )
 
 __all__ = [
+    "BenchmarkSplit",
     "EvaluationFixture",
     "EvaluationFixtureValidationError",
     "EvaluationLabelSource",
@@ -49,6 +52,7 @@ __all__ = [
     "RelevanceLabel",
     "StrategyEvaluationResult",
     "average_precision",
+    "graded_pairwise_inversion_rate",
     "evaluate_query",
     "load_evaluation_fixture_file",
     "load_seeded_evaluation_fixtures",

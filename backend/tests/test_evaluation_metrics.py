@@ -7,6 +7,7 @@ from app.evaluation import (
     RelevanceJudgment,
     RelevanceLabel,
     average_precision,
+    graded_pairwise_inversion_rate,
     mean_average_precision,
     ndcg_at_k,
     precision_at_k,
@@ -207,6 +208,25 @@ class EvaluationMetricTests(unittest.TestCase):
 
         self.assertUnavailable(mean_average_precision([single]), "at least two")
         self.assertUnavailable(mean_average_precision([single, invalid]), "available AP")
+
+    def test_graded_pairwise_inversion_rate_counts_hard_negative_inversions(self):
+        result = graded_pairwise_inversion_rate(
+            ["candidate-zero", "candidate-two", "candidate-one"],
+            _judgments({"candidate-two": 2, "candidate-one": 1, "candidate-zero": 0}),
+        )
+
+        self.assertAvailable(result, "graded_pairwise_inversion_rate", 2 / 3)
+        self.assertEqual(result.details["comparable_pair_count"], 3)
+        self.assertEqual(result.details["inversion_count"], 2)
+        self.assertEqual(result.details["hard_negative_inversion_count"], 1)
+
+    def test_graded_pairwise_inversion_rate_requires_complete_ranked_judgments(self):
+        result = graded_pairwise_inversion_rate(
+            ["candidate-two"],
+            _judgments({"candidate-two": 2, "candidate-zero": 0}),
+        )
+
+        self.assertUnavailable(result, "omits judged")
 
     def assertAvailable(self, result, metric_name, expected_value, k=None):
         self.assertEqual(result.metric_name, metric_name)

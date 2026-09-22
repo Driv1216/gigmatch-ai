@@ -1,0 +1,67 @@
+{
+  "schema_version": 1,
+  "benchmark_version": "1",
+  "fixture_id": "semantic_matching_benchmark_v1",
+  "fixture_sha256": "652e7439f8f43e1e0d402e57f83625e42c572c91ac930165f1c9e543056cd4d5",
+  "query_count": 24,
+  "judgment_count": 120,
+  "selection_query_ids": [
+    "sel_f2g_01_api_synonyms",
+    "sel_f2g_02_react_frameworks",
+    "sel_f2g_03_docker_kubernetes",
+    "sel_f2g_04_sql_database",
+    "sel_f2g_05_aws_cloud",
+    "sel_f2g_06_python_ml",
+    "sel_f2g_07_java_javascript",
+    "sel_f2g_08_nlp_synonyms",
+    "sel_g2f_09_fastapi",
+    "sel_g2f_10_react_native",
+    "sel_g2f_11_database",
+    "sel_g2f_12_cloud",
+    "sel_g2f_13_kubernetes",
+    "sel_g2f_14_nlp",
+    "sel_g2f_15_node_java",
+    "sel_g2f_16_seniority"
+  ],
+  "holdout_query_ids": [
+    "hold_f2g_17_fastapi_alias",
+    "hold_f2g_18_cloud_docker",
+    "hold_f2g_19_react_web",
+    "hold_f2g_20_ml_depth",
+    "hold_g2f_21_api_framework",
+    "hold_g2f_22_database_depth",
+    "hold_g2f_23_cloud_architecture",
+    "hold_g2f_24_ml_evidence"
+  ],
+  "direction_counts": {
+    "selection": {
+      "freelancer_to_gigs": 8,
+      "gig_to_freelancers": 8
+    },
+    "holdout": {
+      "freelancer_to_gigs": 4,
+      "gig_to_freelancers": 4
+    }
+  },
+  "required_scenario_tags": [
+    "aws_exposure_architecture",
+    "backend_api_transfer",
+    "cloud_relationship",
+    "containerization_docker",
+    "database_relationship",
+    "docker_kubernetes",
+    "exact_alias",
+    "framework_relationship",
+    "frontend_backend_mismatch",
+    "frontend_framework",
+    "generic_ai_demonstrated_ml",
+    "java_javascript",
+    "ml_nlp",
+    "python_scripting_ml",
+    "react_react_native",
+    "seniority_mismatch",
+    "sql_database_engineering",
+    "synonyms"
+  ],
+  "immutability_policy": "Benchmark v1 is frozen before real-model execution. Corrections require a new benchmark version; v1 is never silently rewritten."
+}

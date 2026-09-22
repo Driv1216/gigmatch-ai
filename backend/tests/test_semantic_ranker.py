@@ -1,4 +1,5 @@
 import inspect
+import math
 import sys
 import unittest
 
@@ -203,6 +204,48 @@ class SemanticRankerTests(unittest.TestCase):
         self.assertEqual(len(provider.encoded_texts), 2)
         self.assertNotIn("sentence_transformers", sys.modules)
 
+    def test_candidate_pool_uses_one_direction_aware_batch(self):
+        provider = PreparingBatchProvider()
+        freelancer = build_freelancer_match_profile({"user_id": "freelancer-batch", "primary_role": "Backend"})
+        gigs = [
+            build_gig_match_profile({"id": "gig-a", "title": "API"}),
+            build_gig_match_profile({"id": "gig-b", "title": "Database"}),
+        ]
+
+        rank_gigs_for_freelancer_semantic(freelancer, gigs, provider)
+
+        self.assertEqual(len(provider.batches), 1)
+        self.assertEqual(len(provider.batches[0]), 3)
+        self.assertTrue(provider.batches[0][0].startswith("QUERY::Role: Backend."))
+        self.assertTrue(all(text.startswith("PASSAGE::Gig:") for text in provider.batches[0][1:]))
+
+    def test_reverse_direction_prepares_gig_as_query(self):
+        provider = PreparingBatchProvider()
+        gig = build_gig_match_profile({"id": "gig-query", "title": "API platform"})
+        freelancers = [
+            build_freelancer_match_profile({"user_id": "freelancer-a", "primary_role": "Backend"}),
+            build_freelancer_match_profile({"user_id": "freelancer-b", "primary_role": "Frontend"}),
+        ]
+
+        rank_freelancers_for_gig_semantic(gig, freelancers, provider)
+
+        self.assertEqual(len(provider.batches), 1)
+        self.assertTrue(provider.batches[0][0].startswith("QUERY::Gig: API platform."))
+        self.assertTrue(all(text.startswith("PASSAGE::Role:") for text in provider.batches[0][1:]))
+
+    def test_batch_cardinality_and_finiteness_are_validated(self):
+        freelancer = build_freelancer_match_profile({"user_id": "freelancer-invalid", "primary_role": "Backend"})
+        gigs = [build_gig_match_profile({"id": "gig-invalid", "title": "API"})]
+
+        with self.assertRaisesRegex(ValueError, "returned 1 vectors for 2 texts"):
+            rank_gigs_for_freelancer_semantic(freelancer, gigs, FixedBatchProvider([[1.0, 0.0]]))
+        with self.assertRaisesRegex(ValueError, "finite"):
+            rank_gigs_for_freelancer_semantic(
+                freelancer,
+                gigs,
+                FixedBatchProvider([[1.0, 0.0], [math.nan, 0.0]]),
+            )
+
     def test_no_hybrid_api_or_supabase_behavior_is_introduced(self):
         forbidden_fragments = ("api", "hybrid", "explain", "explanation", "response")
 
@@ -225,6 +268,39 @@ class SemanticRankerTests(unittest.TestCase):
         self.assertNotIn("supabase", source.lower())
         self.assertNotIn(".insert(", source)
         self.assertNotIn(".update(", source)
+
+
+class PreparingBatchProvider:
+    model_name = "preparing-test"
+
+    def __init__(self):
+        self.batches = []
+
+    def prepare_query_text(self, text):
+        return f"QUERY::{text}"
+
+    def prepare_candidate_text(self, text):
+        return f"PASSAGE::{text}"
+
+    def encode(self, text):
+        return [1.0, 0.0]
+
+    def encode_batch(self, texts):
+        self.batches.append(list(texts))
+        return [[1.0, float(index)] for index, _ in enumerate(texts)]
+
+
+class FixedBatchProvider:
+    model_name = "fixed-batch-test"
+
+    def __init__(self, vectors):
+        self.vectors = vectors
+
+    def encode(self, text):
+        return self.vectors[0]
+
+    def encode_batch(self, texts):
+        return self.vectors
 
 
 if __name__ == "__main__":

@@ -1,9 +1,13 @@
 # Dependencies
 node_modules/
 .venv/
+.venv-r1-semantic/
+.venv-r1-semantic-314/
+.r1-model-cache/
 venv/
 __pycache__/
 *.py[cod]
+*.tsbuildinfo
 
 # Build outputs
 dist/
