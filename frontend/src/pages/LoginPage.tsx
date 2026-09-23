@@ -2,10 +2,8 @@ import { useEffect, useRef, useState, type FormEvent } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { GoogleAuthControl } from "../components/GoogleAuthControl";
 import { PasswordField } from "../components/PasswordField";
-import { VerificationRequired } from "../components/VerificationRequired";
 import { useAuth } from "../context/AuthContext";
 import { dashboardPathForRole } from "../lib/auth";
-import { isEmailNotConfirmedError } from "../lib/authFlow";
 import { supabase } from "../lib/supabaseClient";
 
 export function LoginPage() {
@@ -13,7 +11,6 @@ export function LoginPage() {
   const { refreshProfile } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [verificationEmail, setVerificationEmail] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const errorRef = useRef<HTMLParagraphElement>(null);
@@ -29,8 +26,7 @@ export function LoginPage() {
 
     const { data, error } = await supabase.auth.signInWithPassword({ email, password });
     if (error || !data.user) {
-      if (isEmailNotConfirmedError(error)) setVerificationEmail(email);
-      else setErrorMessage("Invalid email or password");
+      setErrorMessage("Invalid email or password");
       setIsSubmitting(false);
       return;
     }
@@ -47,8 +43,6 @@ export function LoginPage() {
       setIsSubmitting(false);
     }
   }
-
-  if (verificationEmail) return <VerificationRequired email={verificationEmail} />;
 
   return (
     <section className="switchboard-auth-page is-login" aria-labelledby="login-title">

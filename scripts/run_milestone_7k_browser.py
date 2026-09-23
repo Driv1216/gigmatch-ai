@@ -218,7 +218,6 @@ def provision_fixtures(status: dict[str, str]) -> tuple[dict[str, Any], set[str]
                 headers=admin_headers,
                 body={
                     "password": password,
-                    "email_confirm": True,
                     "user_metadata": {"fixture": "milestone_7k"},
                 },
             )
@@ -230,7 +229,6 @@ def provision_fixtures(status: dict[str, str]) -> tuple[dict[str, Any], set[str]
                 body={
                     "email": email,
                     "password": password,
-                    "email_confirm": True,
                     "user_metadata": {"fixture": "milestone_7k"},
                 },
             )

@@ -15,7 +15,7 @@ Browser
   ├─ Supabase Auth: signup, login, OAuth, session refresh
   ├─ Supabase Data API: narrowly permitted owner-scoped operations
   └─ FastAPI: marketplace, matching, parsing and evaluation
-          ├─ verified identity and trusted role lookup
+          ├─ authenticated identity and trusted role lookup
           ├─ domain policy and safe response assembly
           └─ PostgreSQL protected by RLS, grants and constraints
 ```
@@ -24,7 +24,7 @@ Browser
 
 The canonical application is `frontend/`, built with React 19, TypeScript, Vite, React Router, Tailwind CSS, and Radix UI.
 
-Route boundaries distinguish public, setup, freelancer, client, participant, and administrator surfaces. Protected routes use the authenticated profile role. Account-setup and public-account boundaries handle incomplete profiles, verification states, and redirects. Pages are lazy-loaded and delegate transport behavior to `src/lib` modules.
+Route boundaries distinguish public, setup, freelancer, client, participant, and administrator surfaces. Protected routes use the authenticated profile role. Account-setup and public-account boundaries handle incomplete profiles, unsupported Auth identities, and redirects. Pages are lazy-loaded and delegate transport behavior to `src/lib` modules.
 
 Product surfaces include authentication and setup; role-aware dashboards; profiles and resume parsing; gig discovery and lifecycle management; applications and proposal versioning; applicant review; Q&A and revisions; selection and reconsideration; engagement workspaces; secure contact exchange; and administrator evaluation.
 

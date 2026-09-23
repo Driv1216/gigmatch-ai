@@ -57,10 +57,10 @@ a profile projection, not sufficient verified-contact authority.
 
 Supabase Auth `auth.users` is the authoritative database source for:
 
-- exact current email plus `email_confirmed_at`;
+- exact current Supabase Auth account email (email confirmation is not required);
 - exact current phone plus `phone_confirmed_at`.
 
-Verified email, phone and WhatsApp sharing must therefore resolve the value
+Account email, verified phone and WhatsApp sharing must therefore resolve the value
 inside the service-only PostgreSQL transaction from the sharer's
 `auth.users` row. The browser and FastAPI will not send those values,
 verification flags, digests or masks.

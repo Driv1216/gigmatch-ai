@@ -6,12 +6,8 @@ export function authCallbackUrl() {
   return new URL("/auth/callback", window.location.origin).toString();
 }
 
-export function isVerifiedAuthUser(user: User | null) {
-  return Boolean(user?.email && user.email_confirmed_at && !user.is_anonymous);
-}
-
-export function isEmailNotConfirmedError(error: AuthError | null) {
-  return error?.code === "email_not_confirmed";
+export function isSupportedAuthUser(user: User | null) {
+  return Boolean(user?.email && !user.is_anonymous);
 }
 
 export function isAuthRateLimitError(error: AuthError | null) {

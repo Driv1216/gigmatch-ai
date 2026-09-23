@@ -2,9 +2,8 @@ import type { ReactNode } from "react";
 import { Navigate, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { dashboardPathForRole } from "../lib/auth";
-import { isVerifiedAuthUser } from "../lib/authFlow";
+import { isSupportedAuthUser } from "../lib/authFlow";
 import { AuthStatePage } from "./AuthStatePage";
-import { VerificationRequired } from "./VerificationRequired";
 
 type PublicAccountBoundaryProps = {
   mode: "landing" | "auth";
@@ -42,11 +41,8 @@ export function PublicAccountBoundary({ mode, children }: PublicAccountBoundaryP
     );
   }
 
-  if (!isVerifiedAuthUser(user)) {
-    if (user.email) {
-      return <VerificationRequired email={user.email} signedIn />;
-    }
-    return <AuthStatePage eyebrow="ACCOUNT / SAFE DENIAL" title="This identity cannot continue." description="A non-anonymous Supabase Auth identity with a verified email is required." panelTitle="Account not eligible" panelBody="Log out and use a supported email or Google identity." status="alert" actions={<button className="switchboard-auth-secondary" type="button" onClick={() => void logout().catch(() => undefined)}>Logout</button>} />;
+  if (!isSupportedAuthUser(user)) {
+    return <AuthStatePage eyebrow="ACCOUNT / SAFE DENIAL" title="This identity cannot continue." description="A non-anonymous Supabase Auth identity with an email is required." panelTitle="Account not eligible" panelBody="Log out and use a supported email or Google identity." status="alert" actions={<button className="switchboard-auth-secondary" type="button" onClick={() => void logout().catch(() => undefined)}>Logout</button>} />;
   }
 
   if (profileStatus === "missing") {

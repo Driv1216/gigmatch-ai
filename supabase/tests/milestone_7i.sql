@@ -184,6 +184,10 @@ select pg_temp.seed_contact('source');
 select pg_temp.seed_contact('blocked');
 select pg_temp.seed_contact('cancelled');
 
+update auth.users
+set email_confirmed_at = null
+where id = (select client_user_id from contact_cases where name = 'main');
+
 create or replace function pg_temp.method_token(
   p_name text,p_actor text,p_method text
 ) returns text language plpgsql as $$
@@ -306,7 +310,7 @@ select is(
     jsonb_array_elements(public.contact_exchange_get(
       c.engagement_id,c.client_user_id)->'available_methods')
     where c.name='main' and value->>'method'='verified_email'),
-  'verified','confirmed auth email is offered as verified'
+  'verified','server-owned account email remains available without a confirmation timestamp'
 );
 select is(
   (select value#>>'{whatsapp_availability}' from contact_cases c,
@@ -317,7 +321,7 @@ select is(
 );
 
 select lives_ok($$select pg_temp.share_auth('main','client','verified_email')$$,
-  'client shares confirmed auth email without browser value');
+  'client shares server-owned account email without browser value');
 select lives_ok($$select pg_temp.share_url('main','freelancer','meeting_link')$$,
   'freelancer shares only encrypted meeting-link material');
 select throws_ok(

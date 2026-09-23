@@ -38,7 +38,7 @@ try {
     check(overflow <= 1, `${viewport.name}: horizontal overflow of ${overflow}px`);
 
     const password = page.locator("#signup-password");
-    const showPassword = page.getByRole("button", { name: "Show password" });
+    const showPassword = password.locator("xpath=..").getByRole("button");
     await password.fill("Valid9!x");
     await showPassword.click();
     check(await password.getAttribute("type") === "text", `${viewport.name}: show-password control failed`);

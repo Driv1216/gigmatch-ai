@@ -6,33 +6,33 @@ select no_plan();
 set constraints all deferred;
 
 create temporary table auth_hardening_case (
-  verified_user uuid not null,
-  unverified_user uuid not null,
+  primary_user uuid not null,
+  null_confirmation_user uuid not null,
   mismatch_user uuid not null
 );
 grant select on auth_hardening_case to authenticated;
 
 do $$
 declare
-  verified_id uuid := gen_random_uuid();
-  unverified_id uuid := gen_random_uuid();
+  primary_id uuid := gen_random_uuid();
+  null_confirmation_id uuid := gen_random_uuid();
   mismatch_id uuid := gen_random_uuid();
 begin
   insert into auth.users (
     instance_id, id, aud, role, email, encrypted_password, email_confirmed_at,
     raw_app_meta_data, raw_user_meta_data, created_at, updated_at
   ) values
-    ('00000000-0000-0000-0000-000000000000', verified_id, 'authenticated', 'authenticated',
-      'trusted-setup@example.test', '', now(), '{"provider":"email","providers":["email"]}', '{}', now(), now()),
-    ('00000000-0000-0000-0000-000000000000', unverified_id, 'authenticated', 'authenticated',
-      'unverified-setup@example.test', '', null, '{"provider":"email","providers":["email"]}', '{}', now(), now()),
+    ('00000000-0000-0000-0000-000000000000', primary_id, 'authenticated', 'authenticated',
+      'account-setup@example.test', '', now(), '{"provider":"email","providers":["email"]}', '{}', now(), now()),
+    ('00000000-0000-0000-0000-000000000000', null_confirmation_id, 'authenticated', 'authenticated',
+      'legacy-null-confirmation@example.test', '', null, '{"provider":"email","providers":["email"]}', '{}', now(), now()),
     ('00000000-0000-0000-0000-000000000000', mismatch_id, 'authenticated', 'authenticated',
       'trusted-mismatch@example.test', '', now(), '{"provider":"email","providers":["email"]}', '{}', now(), now());
 
   insert into public.user_profiles (id, email, full_name, role)
   values (mismatch_id, 'forged-mismatch@example.test', 'Existing mismatch', 'client');
 
-  insert into auth_hardening_case values (verified_id, unverified_id, mismatch_id);
+  insert into auth_hardening_case values (primary_id, null_confirmation_id, mismatch_id);
 end;
 $$;
 
@@ -65,22 +65,22 @@ select ok(
 );
 
 set local role authenticated;
-select set_config('request.jwt.claim.sub', (select verified_user::text from auth_hardening_case), true);
+select set_config('request.jwt.claim.sub', (select primary_user::text from auth_hardening_case), true);
 
 select is(
   (select email from public.complete_account_setup('  Verified Person  ', 'freelancer')),
-  'trusted-setup@example.test',
+  'account-setup@example.test',
   'RPC persists email from the authenticated auth.users row'
 );
 
 select is(
-  (select full_name from public.user_profiles where id = (select verified_user from auth_hardening_case)),
+  (select full_name from public.user_profiles where id = (select primary_user from auth_hardening_case)),
   'Verified Person',
   'RPC trims and persists the validated full name'
 );
 
 select is(
-  (select role from public.user_profiles where id = (select verified_user from auth_hardening_case)),
+  (select role from public.user_profiles where id = (select primary_user from auth_hardening_case)),
   'freelancer',
   'RPC persists only the selected participant role'
 );
@@ -120,25 +120,25 @@ select throws_ok(
 );
 
 select throws_ok(
-  $$insert into public.user_profiles (id, email, full_name, role) values ((select verified_user from auth_hardening_case), 'browser-forged@example.test', 'Browser Forged', 'client') on conflict (id) do update set full_name = excluded.full_name$$,
+  $$insert into public.user_profiles (id, email, full_name, role) values ((select primary_user from auth_hardening_case), 'browser-forged@example.test', 'Browser Forged', 'client') on conflict (id) do update set full_name = excluded.full_name$$,
   '42501',
   null,
   'authenticated browser cannot use upsert as a creation authority'
 );
 
 select lives_ok(
-  $$update public.user_profiles set full_name = 'Safe profile update' where id = (select verified_user from auth_hardening_case)$$,
+  $$update public.user_profiles set full_name = 'Safe profile update' where id = (select primary_user from auth_hardening_case)$$,
   'existing safe full_name update remains available'
 );
 
 select is(
-  (select full_name from public.user_profiles where id = (select verified_user from auth_hardening_case)),
+  (select full_name from public.user_profiles where id = (select primary_user from auth_hardening_case)),
   'Safe profile update',
   'safe profile update persists'
 );
 
 select throws_ok(
-  $$update public.user_profiles set role = 'client' where id = (select verified_user from auth_hardening_case)$$,
+  $$update public.user_profiles set role = 'client' where id = (select primary_user from auth_hardening_case)$$,
   '42501',
   null,
   'browser role update remains unavailable'
@@ -151,12 +151,16 @@ select throws_ok(
   'RPC has no browser-controlled email parameter'
 );
 
-select set_config('request.jwt.claim.sub', (select unverified_user::text from auth_hardening_case), true);
-select throws_ok(
-  $$select * from public.complete_account_setup('Unverified Person', 'client')$$,
-  '42501',
-  'A verified email identity is required to complete account setup.',
-  'unverified identity cannot create a profile'
+select set_config('request.jwt.claim.sub', (select null_confirmation_user::text from auth_hardening_case), true);
+select is(
+  (select email from public.complete_account_setup('Legacy Account', 'client')),
+  'legacy-null-confirmation@example.test',
+  'missing legacy email confirmation timestamp does not block account setup'
+);
+select is(
+  (select role from public.user_profiles where id = (select null_confirmation_user from auth_hardening_case)),
+  'client',
+  'account setup still persists the selected trusted profile role'
 );
 
 select set_config('request.jwt.claim.sub', (select mismatch_user::text from auth_hardening_case), true);

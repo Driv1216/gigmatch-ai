@@ -223,7 +223,7 @@ try {
   await shareContactMethods(clientA);
   await freelancerA.reload();
   await settled(freelancerA, mainTitle);
-  await revealAndHide(freelancerA, "Verified Email", actors.client_a.email);
+  await revealAndHide(freelancerA, "Account email", actors.client_a.email);
   await revealAndHide(freelancerA, "Meeting Link", meetingUrl);
 
   const staleMeeting = contactCard(freelancerA, "Meeting Link");
@@ -478,12 +478,12 @@ async function openEngagement(page, title) {
 async function shareContactMethods(page) {
   await settled(page, "Secure Contact Exchange");
   const email = page
-    .getByText("Verified Email", { exact: true })
+    .getByText("Account email", { exact: true })
     .locator("xpath=ancestor::article[contains(@class,'contact-method-row')][1]");
   await email.getByRole("button", { name: "Share Method" }).click();
   await expectText(
     page.getByRole("heading", { name: "Your share history" }).locator("../.."),
-    "Verified Email",
+    "Account email",
   );
   const meeting = page
     .getByText("Meeting Link", { exact: true })

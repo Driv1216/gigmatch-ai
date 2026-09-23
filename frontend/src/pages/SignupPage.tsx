@@ -1,17 +1,19 @@
 import { useEffect, useRef, useState, type FormEvent } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { GoogleAuthControl } from "../components/GoogleAuthControl";
 import { PasswordField } from "../components/PasswordField";
-import { VerificationRequired } from "../components/VerificationRequired";
-import { authCallbackUrl, isAuthRateLimitError } from "../lib/authFlow";
+import { useAuth } from "../context/AuthContext";
+import { dashboardPathForRole } from "../lib/auth";
+import { isAuthRateLimitError } from "../lib/authFlow";
 import { passwordMeetsPolicy, passwordRules } from "../lib/passwordPolicy";
 import { supabase } from "../lib/supabaseClient";
 
 export function SignupPage() {
+  const navigate = useNavigate();
+  const { refreshProfile } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [pendingEmail, setPendingEmail] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const errorRef = useRef<HTMLParagraphElement>(null);
@@ -37,7 +39,6 @@ export function SignupPage() {
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
-      options: { emailRedirectTo: authCallbackUrl() },
     });
 
     if (error || !data.user) {
@@ -48,29 +49,32 @@ export function SignupPage() {
       return;
     }
 
-    if (data.session) {
-      await supabase.auth.signOut();
-      setErrorMessage("Registration is temporarily unavailable because email verification is not active. No profile was created.");
+    if (!data.session) {
+      setErrorMessage("Your account was created, but an authenticated session could not be started. Please try logging in.");
       setIsSubmitting(false);
       return;
     }
 
-    setPendingEmail(email);
-    setIsSubmitting(false);
+    try {
+      const profile = await refreshProfile();
+      navigate(profile ? dashboardPathForRole(profile.role) : "/account/setup", { replace: true });
+    } catch {
+      setErrorMessage("Your account was created, but its profile state could not be loaded. Please try logging in.");
+      setIsSubmitting(false);
+    }
   }
 
-  if (pendingEmail) return <VerificationRequired email={pendingEmail} />;
   const passwordsMatch = confirmPassword.length === 0 || password === confirmPassword;
 
   return (
     <section className="switchboard-auth-page is-signup" aria-labelledby="signup-title">
       <aside className="switchboard-auth-context">
-        <span className="switchboard-public-eyebrow">ACCOUNT CREATION / VERIFIED IDENTITY</span>
-        <h1 id="signup-title">Confirm identity before choosing a side.</h1>
-        <p>Signup establishes your Auth identity only. After confirmation, account setup collects your editable name and freelancer or client role.</p>
+        <span className="switchboard-public-eyebrow">ACCOUNT CREATION / AUTH IDENTITY</span>
+        <h1 id="signup-title">Create the identity. Then choose a side.</h1>
+        <p>Signup establishes your Supabase Auth identity and session. Account setup then collects your editable name and freelancer or client role.</p>
         <dl>
           <div><dt>Step 01</dt><dd>Create Auth identity</dd></div>
-          <div><dt>Step 02</dt><dd>Confirm email ownership</dd></div>
+          <div><dt>Step 02</dt><dd>Start authenticated session</dd></div>
           <div><dt>Step 03</dt><dd>Complete participant profile</dd></div>
         </dl>
       </aside>
@@ -78,7 +82,7 @@ export function SignupPage() {
         <header>
           <span>SIGNUP / NEW IDENTITY</span>
           <h2>Create account</h2>
-          <p>Your full name and role are collected only after verification.</p>
+          <p>Your full name and role are collected in the next account-setup step.</p>
         </header>
         <form onSubmit={handleSubmit} noValidate aria-describedby={errorMessage ? "signup-error" : "password-rules"}>
           <GoogleAuthControl onError={setErrorMessage} />

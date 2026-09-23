@@ -33,7 +33,7 @@ export function AccountSetupPage() {
       return;
     }
     if (!user?.email) {
-      setErrorMessage("A verified Auth email is required to complete setup.");
+      setErrorMessage("An Auth email is required to complete setup.");
       return;
     }
 
@@ -57,7 +57,7 @@ export function AccountSetupPage() {
       <aside className="switchboard-auth-context">
         <span className="switchboard-public-eyebrow">ACCOUNT SETUP / PROFILE AUTHORITY</span>
         <h1 id="setup-title">Name the profile. Choose the work.</h1>
-        <p>Your verified Supabase identity supplies ID and email. This form supplies only an editable display name and one participant role.</p>
+        <p>Your authenticated Supabase identity supplies ID and email. This form supplies only an editable display name and one participant role.</p>
         <dl>
           <div><dt>Identity</dt><dd>Trusted Auth ID and email</dd></div>
           <div><dt>Profile</dt><dd>Validated name and role</dd></div>
@@ -65,9 +65,9 @@ export function AccountSetupPage() {
         </dl>
       </aside>
       <div className="switchboard-auth-panel">
-        <header><span>SETUP / VERIFIED ACCOUNT</span><h2>Complete account</h2><p>Provider name data is only an editable prefill.</p></header>
+        <header><span>SETUP / AUTHENTICATED ACCOUNT</span><h2>Complete account</h2><p>Provider name data is only an editable prefill.</p></header>
         <form onSubmit={handleSubmit} noValidate aria-describedby={errorMessage ? "setup-error" : undefined}>
-          <label htmlFor="setup-email"><span>Verified email</span><input id="setup-email" type="email" value={user?.email ?? ""} readOnly aria-readonly="true" /></label>
+          <label htmlFor="setup-email"><span>Account email</span><input id="setup-email" type="email" value={user?.email ?? ""} readOnly aria-readonly="true" /></label>
           <label htmlFor="setup-full-name"><span>Full name</span><input id="setup-full-name" type="text" name="full-name" autoComplete="name" value={fullName} onChange={(event) => setFullName(event.target.value)} maxLength={100} required /></label>
           <fieldset className="switchboard-role-choice">
             <legend>Participant role</legend><p>This role is persisted once and cannot be switched in the browser.</p>

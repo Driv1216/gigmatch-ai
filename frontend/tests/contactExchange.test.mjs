@@ -140,6 +140,9 @@ test("ordinary contract preserves direction and rejects duplicate or misfiled sh
 });
 
 test("phone ownership and WhatsApp availability remain separate source claims", () => {
+  assert.deepEqual(contactSourceLines("verified_email", "verified"), [
+    "Supabase Auth email · Account-sourced",
+  ]);
   assert.deepEqual(contactSourceLines("verified_phone", "verified"), [
     "Supabase Auth phone · Confirmed",
   ]);

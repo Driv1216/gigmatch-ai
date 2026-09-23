@@ -2,9 +2,8 @@ import type { ReactNode } from "react";
 import { Navigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { dashboardPathForRole } from "../lib/auth";
-import { isVerifiedAuthUser } from "../lib/authFlow";
+import { isSupportedAuthUser } from "../lib/authFlow";
 import { AuthStatePage } from "./AuthStatePage";
-import { VerificationRequired } from "./VerificationRequired";
 
 export function AccountSetupBoundary({ children }: { children: ReactNode }) {
   const { user, role, loading, profileStatus, refreshProfile, logout } = useAuth();
@@ -18,11 +17,8 @@ export function AccountSetupBoundary({ children }: { children: ReactNode }) {
   if (profileStatus === "error") {
     return <AuthStatePage eyebrow="ACCOUNT SETUP / FAIL CLOSED" title="Profile setup cannot continue." description="A profile read error must be resolved before any creation attempt." panelTitle="Unable to read profile state" panelBody="Retry the profile check or log out." status="alert" actions={<><button className="switchboard-auth-submit" type="button" onClick={() => void refreshProfile().catch(() => undefined)}><span>Retry profile</span><b aria-hidden="true">→</b></button><button className="switchboard-auth-secondary" type="button" onClick={() => void logout().catch(() => undefined)}>Logout</button></>} />;
   }
-  if (!isVerifiedAuthUser(user)) {
-    if (user.email) {
-      return <VerificationRequired email={user.email} signedIn />;
-    }
-    return <AuthStatePage eyebrow="ACCOUNT SETUP / SAFE DENIAL" title="This identity is not eligible." description="Account setup requires a non-anonymous, verified Auth email." panelTitle="Setup denied" panelBody="Log out and use a supported identity." status="alert" actions={<button className="switchboard-auth-secondary" type="button" onClick={() => void logout().catch(() => undefined)}>Logout</button>} />;
+  if (!isSupportedAuthUser(user)) {
+    return <AuthStatePage eyebrow="ACCOUNT SETUP / SAFE DENIAL" title="This identity is not eligible." description="Account setup requires a non-anonymous Supabase Auth identity with an email." panelTitle="Setup denied" panelBody="Log out and use a supported identity." status="alert" actions={<button className="switchboard-auth-secondary" type="button" onClick={() => void logout().catch(() => undefined)}>Logout</button>} />;
   }
   if (profileStatus === "ready" && role) {
     return <Navigate to={dashboardPathForRole(role)} replace />;

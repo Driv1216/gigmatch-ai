@@ -59,7 +59,7 @@ export function deriveContactExchangeViewState(
 
 export function contactMethodLabel(method: ContactMethod): string {
   const labels: Record<ContactMethod, string> = {
-    verified_email: "Verified email",
+    verified_email: "Account email",
     verified_phone: "Verified phone",
     whatsapp_phone: "WhatsApp",
     meeting_link: "Meeting link",
@@ -82,7 +82,7 @@ export function contactSourceLines(
     ];
   }
   if (method === "verified_email") {
-    return ["Supabase Auth email · Confirmed"];
+    return ["Supabase Auth email · Account-sourced"];
   }
   if (method === "verified_phone") {
     return ["Supabase Auth phone · Confirmed"];

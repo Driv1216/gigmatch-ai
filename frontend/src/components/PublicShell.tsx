@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { dashboardPathForRole } from "../lib/auth";
-import { isVerifiedAuthUser } from "../lib/authFlow";
+import { isSupportedAuthUser } from "../lib/authFlow";
 
 type PublicShellProps = {
   children: ReactNode;
@@ -43,13 +43,13 @@ export function PublicShell({ children }: PublicShellProps) {
               <NavLink to={dashboardPathForRole(role)}>Open dashboard</NavLink>
               <button type="button" onClick={handleLogout}>Logout</button>
             </>
-          ) : user && isVerifiedAuthUser(user) && profileStatus === "missing" ? (
+          ) : user && isSupportedAuthUser(user) && profileStatus === "missing" ? (
             <>
               <NavLink to="/account/setup">Complete setup</NavLink>
               <button type="button" onClick={handleLogout}>Logout</button>
             </>
           ) : user ? (
-            <><span className="switchboard-public-resolution" role="status">Verification required</span><button type="button" onClick={handleLogout}>Logout</button></>
+            <><span className="switchboard-public-resolution" role="alert">Account not eligible</span><button type="button" onClick={handleLogout}>Logout</button></>
           ) : (
             <>
               <NavLink to="/login" className={publicLinkClass}>Login</NavLink>

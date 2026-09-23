@@ -19,7 +19,6 @@ const loginSource = read("../src/pages/LoginPage.tsx");
 const signupSource = read("../src/pages/SignupPage.tsx");
 const setupSource = read("../src/pages/AccountSetupPage.tsx");
 const callbackSource = read("../src/pages/AuthCallbackPage.tsx");
-const verificationSource = read("../src/components/VerificationRequired.tsx");
 const googleSource = read("../src/components/GoogleAuthControl.tsx");
 const passwordFieldSource = read("../src/components/PasswordField.tsx");
 const authSource = read("../src/lib/auth.ts");
@@ -28,6 +27,7 @@ const stylesSource = read("../src/styles.css");
 const configSource = read("../../supabase/config.toml");
 const compatibilityMigration = read("../../supabase/migrations/20260816125650_add_account_setup_rpc.sql");
 const finalMigration = read("../../supabase/migrations/20260816125654_finalize_account_setup_authority.sql");
+const noConfirmationMigration = read("../../supabase/migrations/20260922193206_remove_auth_email_confirmation_requirement.sql");
 const callerAudit = read("../../docs/verification/auth-profile-creation-caller-audit.md");
 const finalProofSource = read("../e2e/milestone-7k.mjs");
 
@@ -61,7 +61,10 @@ test("participant and admin route isolation remain intact", () => {
 
 test("signup establishes identity only and setup owns name plus role", () => {
   assert.match(signupSource, /supabase\.auth\.signUp/);
-  assert.match(signupSource, /emailRedirectTo: authCallbackUrl\(\)/);
+  assert.match(signupSource, /if \(!data\.session\)/);
+  assert.match(signupSource, /refreshProfile\(\)/);
+  assert.match(signupSource, /navigate\(profile \? dashboardPathForRole\(profile\.role\) : "\/account\/setup"/);
+  assert.doesNotMatch(signupSource, /emailRedirectTo|VerificationRequired|pendingEmail|signOut\(\)/);
   assert.doesNotMatch(signupSource, /full_name|p_full_name|user_profiles|\.insert\(/);
   assert.doesNotMatch(signupSource, /p_role|name="role"|value="freelancer"|value="client"/);
   assert.doesNotMatch(signupSource, /options:\s*\{\s*data:/);
@@ -82,6 +85,9 @@ test("setup RPC is the sole normal browser profile-creation authority", () => {
   assert.match(compatibilityMigration, /revoke all on function public\.complete_account_setup\(text, text\) from public/);
   assert.match(finalMigration, /drop policy if exists "Users can insert their own non-admin profile"/);
   assert.match(finalMigration, /revoke insert on public\.user_profiles from authenticated/);
+  assert.match(noConfirmationMigration, /from auth\.users/);
+  assert.match(noConfirmationMigration, /v_email is null or v_is_anonymous/);
+  assert.doesNotMatch(noConfirmationMigration, /email_confirmed_at|confirmed_at is null/);
   assert.match(callerAudit, /only normal browser profile-creation path/i);
 });
 
@@ -103,10 +109,12 @@ test("account-state boundaries recover missing profiles globally and fail closed
   assert.match(setupBoundarySource, /profileStatus === "error"/);
   assert.match(setupBoundarySource, /profileStatus === "ready"[\s\S]*dashboardPathForRole/);
   assert.match(protectedRouteSource, /profileStatus === "missing"[\s\S]*Navigate to="\/account\/setup"/);
+  assert.match(publicBoundarySource + setupBoundarySource + protectedRouteSource, /isSupportedAuthUser/);
+  assert.doesNotMatch(publicBoundarySource + setupBoundarySource + protectedRouteSource + authFlowSource, /email_confirmed_at|isVerifiedAuthUser|VerificationRequired/);
   assert.doesNotMatch(setupBoundarySource, /ProtectedRoute/);
 });
 
-test("password, Google, login, and resend UX match the hardened contract", () => {
+test("password, Google, login, and session-first signup UX match the hardened contract", () => {
   assert.equal(passwordRules.length, 5);
   assert.equal(passwordMeetsPolicy("Valid9!x"), true);
   assert.equal(passwordMeetsPolicy("missing9!"), false);
@@ -122,8 +130,7 @@ test("password, Google, login, and resend UX match the hardened contract", () =>
   assert.match(loginSource, /Invalid email or password/);
   assert.match(googleSource, /Continue with Google/);
   assert.match(googleSource, /switchboard-auth-divider/);
-  assert.match(verificationSource, /supabase\.auth\.resend/);
-  assert.match(verificationSource, /isAuthRateLimitError/);
+  assert.doesNotMatch(loginSource + signupSource + callbackSource, /check your email|confirm your email|confirmation email|email_not_confirmed|VerificationRequired/i);
 });
 
 test("local Auth configuration mirrors the five password rules and callback flow", () => {
@@ -131,7 +138,7 @@ test("local Auth configuration mirrors the five password rules and callback flow
   assert.match(configSource, /additional_redirect_urls = \["http:\/\/127\.0\.0\.1:5173\/auth\/callback", "http:\/\/localhost:5173\/auth\/callback"\]/);
   assert.match(configSource, /minimum_password_length = 8/);
   assert.match(configSource, /password_requirements = "lower_upper_letters_digits_symbols"/);
-  assert.match(configSource, /enable_confirmations = true/);
+  assert.match(configSource, /\[auth\.email\][\s\S]*enable_confirmations = false/);
 });
 
 test("Switchboard presentation, accessibility, and responsive proof targets remain explicit", () => {

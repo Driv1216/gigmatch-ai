@@ -2,9 +2,8 @@ import type { ReactNode } from "react";
 import { Navigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { dashboardPathForRole, type UserRole } from "../lib/auth";
-import { isVerifiedAuthUser } from "../lib/authFlow";
+import { isSupportedAuthUser } from "../lib/authFlow";
 import { AuthStatePage } from "./AuthStatePage";
-import { VerificationRequired } from "./VerificationRequired";
 import { PageContainer } from "./PageContainer";
 
 type ProtectedRouteProps = {
@@ -28,10 +27,8 @@ export function ProtectedRoute({ allowedRole, allowedRoles, children }: Protecte
     return <Navigate to="/login" replace />;
   }
 
-  if (!isVerifiedAuthUser(user)) {
-    return user.email
-      ? <VerificationRequired email={user.email} signedIn />
-      : <AuthStatePage eyebrow="PROTECTED ROUTE / SAFE DENIAL" title="This identity cannot continue." description="Protected workflows require a verified, non-anonymous Auth email and persisted profile." panelTitle="Account not eligible" panelBody="Log out and use a supported identity." status="alert" />;
+  if (!isSupportedAuthUser(user)) {
+    return <AuthStatePage eyebrow="PROTECTED ROUTE / SAFE DENIAL" title="This identity cannot continue." description="Protected workflows require a non-anonymous Supabase Auth identity with an email and persisted profile." panelTitle="Account not eligible" panelBody="Log out and use a supported identity." status="alert" />;
   }
 
   if (profileStatus === "error") {
